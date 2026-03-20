@@ -1,4 +1,15 @@
-function convertToCsv(data: any[]): string {
+import { HistoryDateRange } from '@customTypes/product';
+
+function hasValidDate(dateRange: HistoryDateRange, time: number) {
+  if (dateRange.startDate == null || dateRange.endDate == null) return true;
+  return time >= dateRange.startDate && time <= dateRange.endDate;
+}
+
+export type CSVFilter = {
+  dateRange?: HistoryDateRange;
+};
+
+function convertToCsv(data: any[], filter: CSVFilter): string {
   const csvHeader = [
     'id',
     'key',
@@ -32,7 +43,14 @@ function convertToCsv(data: any[]): string {
         history_value: item.latest.value,
         history_created_at: item.created_at
       }));
-  const lines = [csvHeader, ...csvData.map((item: any) => csvHeader.map((key) => item[key]))];
+
+  const filteredCsvData = csvData.filter((data) => {
+    if (filter.dateRange != undefined)
+      return hasValidDate(filter.dateRange, new Date(data.history_created_at).getTime());
+    return true;
+  });
+
+  const lines = [csvHeader, ...filteredCsvData.map((item: any) => csvHeader.map((key) => item[key]))];
   return lines.map((line) => line.join(',')).join('\n');
 }
 

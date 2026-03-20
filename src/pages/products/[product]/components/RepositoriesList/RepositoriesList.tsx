@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useRepositoryContext } from '@contexts/RepositoryProvider';
 import { useProductContext } from '@contexts/ProductProvider';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import { useTranslation } from 'react-i18next';
 import RepositoriesTable from './RepositoriesTable';
 import Skeleton from './Skeleton';
 import * as Styles from './styles';
@@ -14,6 +15,7 @@ function RepositoriesList() {
   const { repositoryList } = useRepositoryContext();
   const { currentProduct } = useProductContext();
   const { currentOrganization } = useOrganizationContext();
+  const { t } = useTranslation('repositories')
   const router = useRouter();
 
   const pushToRepositoriesPath = () => {
@@ -30,13 +32,13 @@ function RepositoriesList() {
       <Styles.Wrapper>
         <Container>
           <Typography variant="h5" marginRight="10px" mb="16px" color="#538BA3" fontWeight="500">
-            Repositórios
+            {t('title')}
             <IconButton
               color="primary"
               aria-label="add repository"
               style={{
                 backgroundColor: '#538BA3',
-                marginLeft: '12px',
+                marginLeft: '80%',
                 borderRadius: '50%',
                 width: '25px',
                 height: '25px',
@@ -68,8 +70,8 @@ function RepositoriesList() {
           </RepositoriesTable>
 
           <Box display="flex" flexDirection="column" mt="10px" alignItems="center">
-            <Button onClick={() => pushToRepositoriesPath()} variant="text">
-              VER MAIS...
+            <Button onClick={() => pushToRepositoriesPath()} variant="text" data-testid="button-ver-mais">
+              {t('more')}
             </Button>
           </Box>
         </Container>

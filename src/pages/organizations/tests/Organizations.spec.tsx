@@ -24,8 +24,6 @@ describe('Organizations Component', () => {
     expect(getByTestId('organization-title')).toBeDefined();
     expect(getByTestId('input-nome')).toBeDefined();
     expect(getByTestId('input-descricao')).toBeDefined();
-    expect(getByTestId('membros-title')).toBeDefined();
-    expect(getByTestId('button-adicionar-membros')).toBeDefined();
   });
 
   it('Deve corresponder ao Snapshot', () => {

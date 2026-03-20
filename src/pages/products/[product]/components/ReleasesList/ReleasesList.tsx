@@ -8,6 +8,7 @@ import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import { useRequest } from '@hooks/useRequest';
 import { ReleasesPaginated } from '@customTypes/product';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import ReleasesTable from './ReleasesTable';
 
 import * as Styles from './styles';
@@ -17,6 +18,7 @@ function ReleasesList() {
   const { currentProduct } = useProductContext();
   const { currentOrganization } = useOrganizationContext();
   const router = useRouter();
+  const { t } = useTranslation('sidebar');
 
   const { data: release, isLoading } = useRequest<any>(
     productQuery.getReleaseList(currentOrganization?.id as string, currentProduct?.id as string)
@@ -31,6 +33,7 @@ function ReleasesList() {
     void router.push(releasesPath);
   }
 
+
   return (
     <Box display="flex" flexDirection="column" mt="42px">
       <Styles.Wrapper>
@@ -41,8 +44,8 @@ function ReleasesList() {
 
           <ReleasesTable releaseList={releaseList?.slice(0, 1) ?? []} />
           <Box display="flex" flexDirection="column" mt="10px" alignItems="center">
-            <Button onClick={() => pushToReleasesPath()} variant="text">
-              VER MAIS...
+            <Button data-testid="ver-mais-release" onClick={() => pushToReleasesPath()} variant="text">
+              {t('release.more')}
             </Button>
           </Box>
         </Container>

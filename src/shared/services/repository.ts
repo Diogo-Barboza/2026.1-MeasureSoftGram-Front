@@ -1,12 +1,13 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
-import api from './api';
 import { getAccessToken } from '@services/Auth';
+import api from './api';
 
 interface RepositoryFormData {
   name: string;
   description?: string;
   url?: string;
   platform: string;
+  imported?: boolean;
 }
 
 interface HistoricalCharacteristicsProps {
@@ -27,8 +28,6 @@ class Repository {
         return {};
       }
 
-
-
       return { Authorization: `Token ${tokenResult.value.key}` };
     } catch (error) {
       console.error('Failed to fetch authentication token:', error);
@@ -36,14 +35,24 @@ class Repository {
     }
   }
 
-  async createRepository(organizationId: string, productId: string, data: RepositoryFormData): Promise<Result<RepositoryFormData>> {
+  async createRepository(
+    organizationId: string,
+    productId: string,
+    { imported = false, ...data }: RepositoryFormData
+  ): Promise<Result<RepositoryFormData>> {
     try {
       const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
       if (!headers) {
         throw new Error('Access token not found.');
       }
 
-      const response = await api.post(`/organizations/${organizationId}/products/${productId}/repositories/`, data, { headers });
+      const response = await api.post(
+        `/organizations/${organizationId}/products/${productId}/repositories/`,
+        { ...data, imported },
+        {
+          headers
+        }
+      );
       return { type: 'success', value: response?.data };
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -53,24 +62,31 @@ class Repository {
     }
   }
 
+  async updateRepository(
+    organizationId: string,
+    productId: string,
+    repositoryId: string,
+    { imported = false, ...data }: RepositoryFormData
+  ): Promise<Result<RepositoryFormData>> {
+    try {
+      const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
+      if (!headers) {
+        throw new Error('Access token not found.');
+      }
 
-async updateRepository(organizationId: string, productId: string, repositoryId: string, data: RepositoryFormData): Promise<Result<RepositoryFormData>> {
-  try {
-    const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
-    if (!headers) {
-      throw new Error('Access token not found.');
+      const response = await api.put(
+        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
+        { ...data, imported },
+        { headers }
+      );
+      return { type: 'success', value: response?.data };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return { type: 'error', error: err };
+      }
+      return { type: 'error', error: new Error('Failed to update repository.') };
     }
-
-    const response = await api.put(`/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`, data, { headers });
-    return { type: 'success', value: response?.data };
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      return { type: 'error', error: err };
-    }
-    return { type: 'error', error: new Error('Failed to update repository.') };
   }
-}
-
 
   async deleteRepository(organizationId: string, productId: string, repositoryId: string): Promise<Result<void>> {
     try {
@@ -78,7 +94,10 @@ async updateRepository(organizationId: string, productId: string, repositoryId: 
       if (!headers) {
         throw new Error('Access token not found.');
       }
-      const response = await api.delete(`/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`, { headers });
+      const response = await api.delete(
+        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
+        { headers }
+      );
       return { type: 'success', value: response?.data };
     } catch (err) {
       return { type: 'error', error: new Error('Failed to delete repository.') };
@@ -92,7 +111,10 @@ async updateRepository(organizationId: string, productId: string, repositoryId: 
       if (!headers) {
         throw new Error('Access token not found.');
       }
-      const response = await api.get(`/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`, { headers });
+      const response = await api.get(
+        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`,
+        { headers }
+      );
       return { type: 'success', value: response?.data };
     } catch (err) {
       return { type: 'error', error: new Error('Failed to fetch historical data.') };
@@ -112,20 +134,24 @@ async updateRepository(organizationId: string, productId: string, repositoryId: 
     );
   }
 
-  getLatest(props: HistoricalCharacteristicsProps) {
+  async getLatest(props: HistoricalCharacteristicsProps) {
     const { organizationId, entity, productId, repositoryId } = props;
-    return api.get(
-      `organizations/${organizationId}` +
-        `/products/${productId}/repositories/${repositoryId}` +
-        `/latest-values/${entity}/`
-    );
+
+    try {
+      return await api.get(
+        `organizations/${organizationId}` +
+          `/products/${productId}/repositories/${repositoryId}` +
+          `/latest-values/${entity}/`
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   getTsqmiBadgeUrl(props: HistoricalCharacteristicsProps) {
     const { organizationId, entity, productId, repositoryId } = props;
     return (
-      api.getUri() +
-      `/organizations/${organizationId}` +
+      `${api.getUri()}/organizations/${organizationId}` +
       `/products/${productId}/repositories/${repositoryId}` +
       `/latest-values/${entity}/badge`
     );

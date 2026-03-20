@@ -70,7 +70,6 @@ export const useQuery = () => {
       setCheckedOptions(formatCheckedOptions(characteristics, subCharacteristics, measures, metrics));
     } catch (error) {
       // eslint-disable-next-line no-console
-
     }
   }
 
@@ -86,7 +85,6 @@ export const useQuery = () => {
       setRepositoryHistoricalCharacteristics(result.data.results);
     } catch (error) {
       // eslint-disable-next-line no-console
-
     }
   }
 
@@ -97,7 +95,6 @@ export const useQuery = () => {
       setLatestValueCharacteristics(result.data);
     } catch (error) {
       // eslint-disable-next-line no-console
-
     }
   }
 
@@ -119,7 +116,6 @@ export const useQuery = () => {
       setHistoricalTSQMI({ id, key: 'TSQMI', name: 'TSQMI', history: results });
     } catch (error) {
       // eslint-disable-next-line no-console
-
     }
   }
 
@@ -152,7 +148,6 @@ export const useQuery = () => {
       setCurrentRepository(data);
     } catch (error) {
       // eslint-disable-next-line no-console
-
     }
   }
 
@@ -168,7 +163,6 @@ export const useQuery = () => {
       ]).then();
     } catch (error) {
       // eslint-disable-next-line no-console
-
     }
   }
 
@@ -177,8 +171,7 @@ export const useQuery = () => {
       const result = await productQuery.getCompareGoalAccomplished(organizationId, productId, repositoryId);
       return result?.data;
     } catch (error) {
-      // eslint-disable-next-line no-console
-
+      console.error(error);
     }
   }
 

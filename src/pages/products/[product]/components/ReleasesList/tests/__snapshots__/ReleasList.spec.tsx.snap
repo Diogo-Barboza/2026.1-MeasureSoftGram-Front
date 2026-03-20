@@ -32,19 +32,25 @@ exports[`<ReleasesList /> renders without crashing 1`] = `
                   class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1ygcj2i-MuiTableCell-root"
                   scope="col"
                 >
-                  Nome
+                  table.name
                 </th>
                 <th
                   class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1ygcj2i-MuiTableCell-root"
                   scope="col"
                 >
-                  Início da release
+                  table.startDate
                 </th>
                 <th
                   class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1ygcj2i-MuiTableCell-root"
                   scope="col"
                 >
-                  Fim da release
+                  table.endDate
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1ygcj2i-MuiTableCell-root"
+                  scope="col"
+                >
+                  table.details
                 </th>
               </tr>
             </thead>
@@ -57,11 +63,12 @@ exports[`<ReleasesList /> renders without crashing 1`] = `
           class="MuiBox-root css-1aobbod"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium css-1e6y48t-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-1e6y48t-MuiButtonBase-root-MuiButton-root"
+            data-testid="ver-mais-release"
             tabindex="0"
             type="button"
           >
-            VER MAIS...
+            release.more
             <span
               class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
             />

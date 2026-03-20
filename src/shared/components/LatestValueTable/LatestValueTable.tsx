@@ -17,6 +17,7 @@ import {
 
 import _ from 'lodash';
 import { useRequestValues } from '@hooks/useRequestValues';
+import { useTranslation } from 'react-i18next';
 
 interface Prop {
   title: string;
@@ -24,6 +25,8 @@ interface Prop {
 }
 
 function LatestValueTable({ title, value }: Prop) {
+  const { t } = useTranslation('lates_value_table');
+
   const { data, error, isLoading, isEmpty } = useRequestValues({ type: 'latest-values', value });
   const tableRows: { name: string; latestValue: number; latestData: string }[] = [];
 
@@ -48,8 +51,8 @@ function LatestValueTable({ title, value }: Prop) {
             <TableHead>
               <TableRow>
                 <TableCell>{title}</TableCell>
-                <TableCell align="right">Último valor</TableCell>
-                <TableCell align="right">Última medição</TableCell>
+                <TableCell align="right">{t('lastValue')}</TableCell>
+                <TableCell align="right">{t('lastMeasurement')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -71,14 +74,14 @@ function LatestValueTable({ title, value }: Prop) {
       {error && (
         <Fade in>
           <Alert variant="standard" severity="error">
-            Ocorreu um erro ao tentar carregar as informações
+            {t('error')}
           </Alert>
         </Fade>
       )}
       {isEmpty && (
         <Fade in>
           <Alert variant="standard" severity="warning">
-            Não há dados para serem exibidos
+            {t('noData')}
           </Alert>
         </Fade>
       )}

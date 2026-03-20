@@ -57,6 +57,10 @@ export interface CurrentPreConfig {
   };
 }
 
+export interface DefaultPreConfig {
+  characteristics: Array<PreConfigCharacteristics>;
+}
+
 export interface PreConfigEntitiesRelationship extends DefaultAttr {
   subcharacteristics: Array<PreConfigSubCharacteristics>;
 }
@@ -78,15 +82,6 @@ export interface ValuesCommitted {
 export interface Changes {
   characteristic_key: keyof ValuesCommitted;
   delta: number;
-}
-
-export interface ReleaseGoal {
-  id: number;
-  release_name: string;
-  start_at: string;
-  end_at: string;
-  changes: Changes[];
-  allow_dynamic: boolean;
 }
 
 export interface ButtonType extends Omit<Partial<ButtonProps>, 'color'> {
@@ -188,6 +183,16 @@ export interface Goal {
   data: Characteristics;
 }
 
+export interface Change {
+  characteristic_key: string;
+  delta: number;
+}
+
+export interface ReleaseGoal {
+  changes: Change[],
+  allow_dynamic: boolean
+}
+
 export interface IReleases {
   id: number;
   release_name: string;
@@ -206,8 +211,25 @@ export interface ReleasesPaginated {
   results?: IReleases[];
 }
 
+export interface Characteristic {
+  name: string;
+  value: number;
+  diff: number;
+}
+
+export interface AccomplishedRepository {
+  repository_name: string;
+  characteristics: Characteristic[];
+  norm_diff?: number;
+}
+
 export interface IReleasesWithGoalAndAccomplished {
   release: IReleases;
-  planned: Characteristics;
-  accomplished?: any;
+  planned: Characteristic[];
+  accomplished?: AccomplishedRepository[];
+}
+
+export interface HistoryDateRange {
+  startDate: number | null;
+  endDate: number | null;
 }

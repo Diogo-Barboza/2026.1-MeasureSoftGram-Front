@@ -6,6 +6,7 @@ import { Container, TextField, InputAdornment, IconButton } from '@mui/material'
 import { Visibility, VisibilityOff, ContentCopy } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { getAccessToken } from '@services/Auth';
+import { useTranslation } from 'react-i18next';
 
 const ProfileConfig: NextPageWithLayout = () => {
   useRequireAuth();
@@ -30,20 +31,22 @@ const ProfileConfig: NextPageWithLayout = () => {
     navigator.clipboard.writeText(apiToken);
   };
 
+  const { t } = useTranslation('settings');
+
   return (
     <>
       <Head>
         <title>Config</title>
       </Head>
       <Container>
-        <h1>Configurações</h1>
+        <h1>{t('pageTitle')}</h1>
 
-        <h3 style={{ textAlign: 'left' }}>Chave secreta para acesso à API</h3>
+        <h3 style={{ textAlign: 'left' }}>{t('apiKeyHeader')}</h3>
         <TextField
           style={{ textAlign: 'center' }}
           type={tokenVisible ? 'text' : 'password'}
           value={apiToken}
-          label="Chave secreta"
+          label={t('apiKeyLabel')}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">

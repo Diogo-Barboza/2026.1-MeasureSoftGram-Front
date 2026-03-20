@@ -11,16 +11,16 @@ export const Wrapper = styled.div<{ $collapsed?: boolean | null; $selected?: boo
   align-items: center;
   padding: 0 4px;
 
-  color: #474747;
+  color: #f5f5f5;
   font-weight: 400;
   font-size: 1.2rem;
   cursor: pointer;
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: #38618A;
   }
 
-  background-color: ${(props) => (props.$selected ? '#f0f0f0' : 'none')};
+  background-color: ${(props) => (props.$selected ? '#38618A' : 'none')};
 `;
 
 export const IconContainer = styled.div`

@@ -6,9 +6,11 @@ import { Breadcrumbs as BreadcrumbsMUI, Typography, Box } from '@mui/material';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
-import { TRANSLATION } from './consts';
+import { useTranslation } from 'react-i18next';
 
 export function Breadcrumbs() {
+  const { t } = useTranslation('breadcrumb');
+
   const router = useRouter();
 
   const getCrumbs = () => {
@@ -23,7 +25,7 @@ export function Breadcrumbs() {
         if (pathArray[0] === '') {
           return (
             <Typography color="text.primary" variant="subtitle1" key={path}>
-              Produtos
+              {t('products')}
             </Typography>
           );
         }
@@ -33,20 +35,20 @@ export function Breadcrumbs() {
         if (pathArray.length === index + 1)
           return (
             <Typography color="text.primary" variant="subtitle1" key={path}>
-              {TRANSLATION[path] || decodeURIComponent(productName)}
+              {t(path)}
             </Typography>
           );
 
         return (
           <Typography key={path} variant="subtitle1">
-            <Link href={`/${currentPath.join('/')}`}>{TRANSLATION[path] || decodeURIComponent(productName)}</Link>
+            <Link href={`/${currentPath.join('/')}`}>{t(path) || decodeURIComponent(productName)}</Link>
           </Typography>
         );
       })
 
     paths.unshift(
       <Typography color="text.primary" variant="subtitle1" key="organizations">
-        Organizações
+        {t('organizations')}
       </Typography>
     );
 

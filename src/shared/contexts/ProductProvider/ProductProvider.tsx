@@ -9,8 +9,8 @@ interface Props {
 }
 
 export interface IProductContext {
-  currentProduct?: Product;
-  setCurrentProduct: (product: Product) => void;
+  currentProduct?: Product | null;
+  setCurrentProduct: (product: Product | null) => void;
   productsList?: Product[];
   updateProductList: (products: Product[]) => void;
 }
@@ -18,7 +18,7 @@ export interface IProductContext {
 export const ProductContext = createContext<IProductContext | undefined>(undefined);
 
 export function ProductProvider({ children }: Props) {
-  const [currentProduct, setCurrentProduct] = useState<Product | undefined>();
+  const [currentProduct, setCurrentProduct] = useState<Product | null | undefined>(undefined); // Initialize with undefined
   const [productsList, setProductsList] = useState<Product[]>([]);
 
   const { currentOrganization } = useOrganizationContext();
@@ -35,8 +35,9 @@ export function ProductProvider({ children }: Props) {
       }
 
       const result = await productQuery.getAllProducts(currentOrganization.id);
-
-      updateProductList(result.data.results);
+      if (result.status === 200) {
+        updateProductList(result.data.results);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -44,9 +45,9 @@ export function ProductProvider({ children }: Props) {
 
   useEffect(() => {
     if (currentOrganization) {
+      setCurrentProduct(null);
       loadAllProducts();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentOrganization]);
 
   const value = useMemo(
@@ -54,7 +55,7 @@ export function ProductProvider({ children }: Props) {
       currentProduct,
       setCurrentProduct,
       productsList,
-      updateProductList
+      updateProductList,
     }),
     [currentProduct, productsList, updateProductList]
   );

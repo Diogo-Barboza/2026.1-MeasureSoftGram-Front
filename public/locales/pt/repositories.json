@@ -1,0 +1,48 @@
+{
+  "title": "Repositórios",
+  "more": "VER MAIS...",
+  "input-placeholder": "Insira o nome do repositório",
+  "history": "Histórico",
+  "current-scenario": "Cenário Atual",
+  "create": "CRIAR",
+  "choose": "Escolha um repositório para importar",
+  "not-found": "Nenhum Repositório encontrado...",
+  "delete": {
+    "title": "Confirme a exclusão de ",
+    "titleRest": "digitando o nome dele abaixo.",
+    "alert": "Isso irá deletar permanentemente o item ",
+    "button": "CONFIRMAR EXCLUSÃO",
+    "toast-sucess": "Repositório excluído com sucesso!",
+    "toast-error": "Erro ao excluir o repositório."
+  },
+  "edit": {
+    "title": "Editar Repositório",
+    "name": "Nome do Repositório",
+    "description": "Descrição",
+    "url": "URL do Repositório",
+    "platform": "Plataforma",
+    "save": "Salvar Alterações",
+    "sucess": "Repositório atualizado com sucesso!",
+    "product": "Produto"
+  },
+  "register": {
+    "title": "Cadastro de Repositório",
+    "create": "Criar Repositório",
+    "sucess": "Repositório criado com sucesso"
+  },
+  "error": {
+    "data": "Erro ao carregar dados do repositório.",
+    "error": "Não foi possível carregar os dados do repositório."
+  },
+  "repository": {
+    "characteristic": "Características",
+    "sub-characteristic": "Sub-Características",
+    "history": "Histórico das Características",
+    "current-scenario": "Cenário atual das Características",
+    "current-scenario-sub": "Cenário atual das Sub-Características",
+    "measure": "Medidas",
+    "measure-history": "Histórico de Medidas",
+    "measure-scenario": "Cenário atual das Medidas",
+    "metrics": "Métricas"
+  }
+}

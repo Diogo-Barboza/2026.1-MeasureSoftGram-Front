@@ -10,14 +10,8 @@ Object {
         style="width: 100%;"
       >
         <div
-          class="MuiBox-root css-j7qwjs"
+          class="MuiBox-root css-av4yu3"
         >
-          <h4
-            class="MuiTypography-root MuiTypography-h4 css-ebmdmk-MuiTypography-root"
-            data-testid="organization-title"
-          >
-            Organizações
-          </h4>
           <div
             class="MuiBox-root css-g8qhew"
             data-testid="organization-box"
@@ -27,6 +21,45 @@ Object {
               class="MuiBox-root css-o4ooe"
               style="gap: 1rem; padding: 0px; margin-left: -36px; box-sizing: border-box;"
             />
+          </div>
+          <div
+            class="MuiBox-root css-0"
+            style="border: 1px solid #2b4d6f; border-radius: 10px; box-sizing: border-box;"
+          >
+             
+            <div
+              class="MuiBox-root css-j7qwjs"
+            >
+              <div
+                class="MuiBox-root css-z5fpi6"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span
+                    class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+                    style="width: 300px; height: 65px;"
+                  />
+                </div>
+              </div>
+              <div
+                class="MuiBox-root css-1182l2u"
+              >
+                <div
+                  class="MuiBox-root css-lvyu5j"
+                >
+                  <span
+                    class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+                    style="width: 250px; height: 60px;"
+                  />
+                </div>
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-circular MuiSkeleton-pulse css-wkdwxb-MuiSkeleton-root"
+                  style="width: 40px; height: 40px;"
+                />
+              </div>
+            </div>
+             
           </div>
         </div>
       </div>
@@ -38,14 +71,8 @@ Object {
       style="width: 100%;"
     >
       <div
-        class="MuiBox-root css-j7qwjs"
+        class="MuiBox-root css-av4yu3"
       >
-        <h4
-          class="MuiTypography-root MuiTypography-h4 css-ebmdmk-MuiTypography-root"
-          data-testid="organization-title"
-        >
-          Organizações
-        </h4>
         <div
           class="MuiBox-root css-g8qhew"
           data-testid="organization-box"
@@ -55,6 +82,45 @@ Object {
             class="MuiBox-root css-o4ooe"
             style="gap: 1rem; padding: 0px; margin-left: -36px; box-sizing: border-box;"
           />
+        </div>
+        <div
+          class="MuiBox-root css-0"
+          style="border: 1px solid #2b4d6f; border-radius: 10px; box-sizing: border-box;"
+        >
+           
+          <div
+            class="MuiBox-root css-j7qwjs"
+          >
+            <div
+              class="MuiBox-root css-z5fpi6"
+            >
+              <div
+                class="MuiBox-root css-0"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+                  style="width: 300px; height: 65px;"
+                />
+              </div>
+            </div>
+            <div
+              class="MuiBox-root css-1182l2u"
+            >
+              <div
+                class="MuiBox-root css-lvyu5j"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+                  style="width: 250px; height: 60px;"
+                />
+              </div>
+              <span
+                class="MuiSkeleton-root MuiSkeleton-circular MuiSkeleton-pulse css-wkdwxb-MuiSkeleton-root"
+                style="width: 40px; height: 40px;"
+              />
+            </div>
+          </div>
+           
         </div>
       </div>
     </div>

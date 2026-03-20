@@ -1,8 +1,7 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import OptionsHeader from '../OptionsHeader';
 import '@testing-library/jest-dom';
-
 
 describe('OptionsHeader', () => {
 
@@ -20,54 +19,57 @@ describe('OptionsHeader', () => {
 
   it('should call setIsHistoricOpen(true) when "Histórico" is clicked', () => {
     const setIsHistoricOpen = jest.fn();
-    const { getByText } = render(
+    const { getByTestId } = render(
       <OptionsHeader
         title="Teste"
         isHistoricOpen={false}
         setIsHistoricOpen={setIsHistoricOpen}
       />
     );
-    const historicButton = getByText('Histórico');
+
+    const historicButton = getByTestId('history-button');
     fireEvent.click(historicButton);
     expect(setIsHistoricOpen).toHaveBeenCalledWith(true);
   });
 
   it('should call setIsHistoricOpen(false) when "Cenário Atual" is clicked', () => {
     const setIsHistoricOpen = jest.fn();
-    const { getByText } = render(
+    render(
       <OptionsHeader
         title="Teste"
         isHistoricOpen={false}
         setIsHistoricOpen={setIsHistoricOpen}
       />
     );
-    const currentButton = getByText('Cenário Atual');
+    const currentButton = screen.getByTestId('button-current-scenario');
+
     fireEvent.click(currentButton);
     expect(setIsHistoricOpen).toHaveBeenCalledWith(false);
   });
 
   it('"Histórico" button should render with class "contained" when isHistoricOpen is true', () => {
     const isOpen = true;
-    const { getByText } = render(
+    const { getByTestId } = render(
       <OptionsHeader
         title="Teste"
         isHistoricOpen={isOpen}
         setIsHistoricOpen={() => { }}
       />
     );
-    const statusButton = getByText('Histórico');
-    expect(statusButton).toHaveClass('MuiButton-contained');
+    const historicButton = getByTestId('history-button');
+
+    expect(historicButton).toHaveClass('MuiButton-contained');
   });
 
   it('"Cenário Atual" button should render with class "contained" when isHistoricOpen is false', () => {
-    const { getByText } = render(
+    render(
       <OptionsHeader
         title="Teste"
         isHistoricOpen={false}
         setIsHistoricOpen={() => { }}
       />
     );
-    const statusButton = getByText('Cenário Atual');
+    const statusButton = screen.getByTestId('button-current-scenario');
     expect(statusButton).toHaveClass('MuiButton-contained');
   });
 

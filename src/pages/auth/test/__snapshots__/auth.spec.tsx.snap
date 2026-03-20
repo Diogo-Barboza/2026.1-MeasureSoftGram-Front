@@ -15,37 +15,31 @@ Object {
             class="MuiBox-root css-0"
           >
             <div
-              class="MuiBox-root css-1r2zjfs"
+              class="MuiBox-root css-19s3t1h"
             >
-              <h4
-                class="MuiTypography-root MuiTypography-h4 css-1313egv-MuiTypography-root"
-              >
-                Login
-              </h4>
               <div
-                class="MuiDivider-root MuiDivider-fullWidth MuiDivider-withChildren css-9ujrzd-MuiDivider-root"
-                role="separator"
+                class="MuiBox-root css-1iljo26"
               >
-                <span
-                  class="MuiDivider-wrapper css-qywfm8-MuiDivider-wrapper"
-                >
-                  <p
-                    class="MuiTypography-root MuiTypography-body1 css-1cgnqgr-MuiTypography-root"
-                  >
-                    Ou utilize o Email
-                  </p>
-                </span>
+                <img
+                  alt="Logo Measure"
+                  src="props => (0, _jsxDevRuntime.jsxDEV)(\\"svg\\", _objectSpread({}, props), void 0, false, {
+  fileName: _jsxFileName,
+  lineNumber: 3,
+  columnNumber: 28
+}, void 0)"
+                  style="width: 100%; height: auto;"
+                />
               </div>
               <div
-                class="MuiBox-root css-9owrop"
+                class="MuiBox-root css-130v8nk"
               >
                 <button
-                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-fullWidth MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-fullWidth css-xsqe0f-MuiButtonBase-root-MuiButton-root"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth css-xsqe0f-MuiButtonBase-root-MuiButton-root"
                   tabindex="0"
                   type="button"
                 >
                   <span
-                    class="MuiButton-startIcon MuiButton-iconSizeMedium css-1d6wzja-MuiButton-startIcon"
+                    class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1d6wzja-MuiButton-startIcon"
                   >
                     <svg
                       aria-hidden="true"
@@ -64,6 +58,24 @@ Object {
                     class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                   />
                 </button>
+              </div>
+              <div
+                class="MuiBox-root css-8fkoyy"
+              >
+                <div
+                  class="MuiDivider-root MuiDivider-fullWidth MuiDivider-withChildren css-rit6oy-MuiDivider-root"
+                  role="separator"
+                >
+                  <span
+                    class="MuiDivider-wrapper css-qywfm8-MuiDivider-wrapper"
+                  >
+                    <p
+                      class="MuiTypography-root MuiTypography-body1 css-1cgnqgr-MuiTypography-root"
+                    >
+                      OU
+                    </p>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -168,7 +180,7 @@ Object {
                 </div>
               </div>
               <button
-                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-sghohy-MuiButtonBase-root-MuiButton-root"
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-sghohy-MuiButtonBase-root-MuiButton-root"
                 tabindex="0"
                 type="submit"
               >
@@ -177,23 +189,23 @@ Object {
                   class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
+              <div
+                class="MuiBox-root css-qwujcl"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2 css-e784if-MuiTypography-root"
+                >
+                  Ainda não tem cadastro?
+                   
+                  <span
+                    class="MuiTypography-root MuiTypography-body2 css-z4apz2-MuiTypography-root"
+                  >
+                    Crie uma conta agora
+                  </span>
+                </p>
+              </div>
             </div>
           </form>
-        </div>
-        <div
-          class="MuiBox-root css-by4u4l"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body1 css-17lv4cc-MuiTypography-root"
-          >
-            Ainda não tem cadastro?
-          </p>
-          <button
-            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineAlways MuiLink-button css-xl06p-MuiTypography-root-MuiLink-root"
-            href="#"
-          >
-            Crie agora uma conta
-          </button>
         </div>
       </div>
     </div>
@@ -209,37 +221,31 @@ Object {
           class="MuiBox-root css-0"
         >
           <div
-            class="MuiBox-root css-1r2zjfs"
+            class="MuiBox-root css-19s3t1h"
           >
-            <h4
-              class="MuiTypography-root MuiTypography-h4 css-1313egv-MuiTypography-root"
-            >
-              Login
-            </h4>
             <div
-              class="MuiDivider-root MuiDivider-fullWidth MuiDivider-withChildren css-9ujrzd-MuiDivider-root"
-              role="separator"
+              class="MuiBox-root css-1iljo26"
             >
-              <span
-                class="MuiDivider-wrapper css-qywfm8-MuiDivider-wrapper"
-              >
-                <p
-                  class="MuiTypography-root MuiTypography-body1 css-1cgnqgr-MuiTypography-root"
-                >
-                  Ou utilize o Email
-                </p>
-              </span>
+              <img
+                alt="Logo Measure"
+                src="props => (0, _jsxDevRuntime.jsxDEV)(\\"svg\\", _objectSpread({}, props), void 0, false, {
+  fileName: _jsxFileName,
+  lineNumber: 3,
+  columnNumber: 28
+}, void 0)"
+                style="width: 100%; height: auto;"
+              />
             </div>
             <div
-              class="MuiBox-root css-9owrop"
+              class="MuiBox-root css-130v8nk"
             >
               <button
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-fullWidth MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-fullWidth css-xsqe0f-MuiButtonBase-root-MuiButton-root"
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-fullWidth css-xsqe0f-MuiButtonBase-root-MuiButton-root"
                 tabindex="0"
                 type="button"
               >
                 <span
-                  class="MuiButton-startIcon MuiButton-iconSizeMedium css-1d6wzja-MuiButton-startIcon"
+                  class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1d6wzja-MuiButton-startIcon"
                 >
                   <svg
                     aria-hidden="true"
@@ -258,6 +264,24 @@ Object {
                   class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
+            </div>
+            <div
+              class="MuiBox-root css-8fkoyy"
+            >
+              <div
+                class="MuiDivider-root MuiDivider-fullWidth MuiDivider-withChildren css-rit6oy-MuiDivider-root"
+                role="separator"
+              >
+                <span
+                  class="MuiDivider-wrapper css-qywfm8-MuiDivider-wrapper"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1 css-1cgnqgr-MuiTypography-root"
+                  >
+                    OU
+                  </p>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -362,7 +386,7 @@ Object {
               </div>
             </div>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-sghohy-MuiButtonBase-root-MuiButton-root"
+              class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-sghohy-MuiButtonBase-root-MuiButton-root"
               tabindex="0"
               type="submit"
             >
@@ -371,23 +395,23 @@ Object {
                 class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
               />
             </button>
+            <div
+              class="MuiBox-root css-qwujcl"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 css-e784if-MuiTypography-root"
+              >
+                Ainda não tem cadastro?
+                 
+                <span
+                  class="MuiTypography-root MuiTypography-body2 css-z4apz2-MuiTypography-root"
+                >
+                  Crie uma conta agora
+                </span>
+              </p>
+            </div>
           </div>
         </form>
-      </div>
-      <div
-        class="MuiBox-root css-by4u4l"
-      >
-        <p
-          class="MuiTypography-root MuiTypography-body1 css-17lv4cc-MuiTypography-root"
-        >
-          Ainda não tem cadastro?
-        </p>
-        <button
-          class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineAlways MuiLink-button css-xl06p-MuiTypography-root-MuiLink-root"
-          href="#"
-        >
-          Crie agora uma conta
-        </button>
       </div>
     </div>
   </div>,

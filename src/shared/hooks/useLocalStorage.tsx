@@ -46,13 +46,15 @@ export function useLocalStorage<T>(
     }
   };
 
-  /* eslint consistent-return: off */
+  // Function to remove value from local storage and update state
   const removeValue = () => {
     if (typeof window === 'undefined') {
-      return initialValue;
+      return;
     }
 
     localStorage.removeItem(key);
+    setStoredValue(initialValue); // Update state to initial value
+    window.dispatchEvent(new Event('local-storage'));
   };
 
   useEffect(() => {
@@ -60,8 +62,7 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key);
       setStoredValue(item ? JSON.parse(item) : initialValue);
     } catch (error) {
-
-      return setStoredValue(initialValue);
+      setStoredValue(initialValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

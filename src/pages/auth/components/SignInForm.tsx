@@ -8,22 +8,29 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@contexts/Auth';
 
-export const SignInForm = () => {
+interface SignInFormProps {
+  changeAuthState: () => void;
+}
+
+export const SignInForm: React.FC<SignInFormProps> = ({ changeAuthState }) => {
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<LoginFormData>();
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
@@ -33,6 +40,7 @@ export const SignInForm = () => {
     setProvider('credentials');
     await signInWithCredentials(data);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '2rem' }}>
@@ -74,6 +82,20 @@ export const SignInForm = () => {
         <Button type="submit" variant="contained">
           Login
         </Button>
+
+        <Box sx={{ mt: 2, textAlign: 'center' }}>
+          <Typography variant="body2">
+            Ainda não tem cadastro?{' '}
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{ color: 'primary.main', cursor: 'pointer' }}
+              onClick={changeAuthState}
+            >
+              Crie uma conta agora
+            </Typography>
+          </Typography>
+        </Box>
       </Box>
     </form>
   );

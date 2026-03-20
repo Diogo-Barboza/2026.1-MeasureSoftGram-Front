@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import Head from 'next/head';
 
-import { Box, Container, Pagination, Skeleton, Stack, TextField, Typography, Tooltip } from '@mui/material';
+import { Box, Container, Pagination, Skeleton, Stack, TextField, Typography, Tooltip, Button, Grid } from '@mui/material';
+import AddchartIcon from '@mui/icons-material/Addchart';
+import { useTranslation } from 'react-i18next';
+import router from 'next/router';
 
 import { NextPageWithLayout } from '@pages/_app.next';
 
@@ -30,69 +33,85 @@ const Releases: NextPageWithLayout = () => {
   );
 
   const filteredReleaseList = useMemo(() => filterReleaseList(releaseList! ?? [], name, startDate, endDate), [releaseList, name, startDate, endDate])
+  const createRelease = () => router.push(`/products/${router.query.product}/releases/create`);
+
+  const { t } = useTranslation('releases');
 
   return isLoading ? (<Skeleton />) :
     <>
       <Head>
-        <title> Releases </title>
+        <title> {t('pageTitle')} </title>
       </Head>
 
       <Container>
         <Box display="flex" flexDirection="column">
-          <Box display="flex" gap="1rem" marginTop="40px" marginBottom="36px">
-            <Box display="flex" alignItems="center">
+          <Grid container marginTop="40px" marginBottom="36px">
+            <Grid item md={8} display="flex" alignItems="center">
               <Typography variant="h4" marginRight="10px" color="#33568E" fontWeight="500">
-                Releases
+                {t('heading')}
               </Typography>
-            </Box>
-          </Box>
+            </Grid>
+            <Grid item md={4} container justifyContent="flex-end">
+              <Button onClick={createRelease} startIcon={<AddchartIcon />} variant="contained">
+                {t('planRelease')}
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
         <Box display="flex" flexDirection="column" padding="20px"
-          style={{ backgroundColor: 'white', border: '1px solid #113d4c80', borderRadius: '10px' }}>
-          <Box display="flex" justifyContent="space-between" marginBottom='30px'>
-            <Box>
-              <Typography color="#538BA3">
-                Início da release
-              </Typography>
-              <Tooltip title='Ao selecionar uma data, são apresentadas todas as releases com datas iniciais exatamente iguais e posteriores às da selecionada'>
-                <TextField
-                  type="date"
-                  required
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  inputProps={{
-                    'data-testid': 'inicio-release'
-                  }}
-                  size='small'
+          style={{ backgroundColor: 'white', border: '1px solid #2B4D6F80', borderRadius: '10px' }}>
+          <Grid container display="flex" justifyContent="space-between" marginBottom='30px'>
+            <Grid item md={4} display="flex" alignItems="center">
+              <Box>
+                <Typography color="#538BA3">
+                  {t('searchButtonLabel')}
+                </Typography>
+                <SearchButton
+                  placeHolder={t('searchPlaceholder')}
+                  aria-label={t('searchButtonLabel')}
+                  onInput={(e) => setName(e.target.value)}
                 />
-              </Tooltip>
-            </Box>
-
-            <Box>
-              <Typography color="#538BA3">
-                Fim da release
-              </Typography>
-              <Tooltip title='Ao selecionar uma data, são apresentadas todas as releases com datas finais exatamente iguais e anteriores às da selecionada'>
-                <TextField
-                  type="date"
-                  required
-                  size='small'
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  inputProps={{
-                    'data-testid': 'fim-release'
-                  }}
-                />
-              </Tooltip>
-            </Box>
-            <Box marginTop="16px">
-              <SearchButton
-                label='Buscar releases'
-                placeHolder='Insira o nome da release'
-                onInput={(e) => setName(e.target.value)}
-              />
-            </Box>
-          </Box>
+              </Box>
+            </Grid>
+            <Grid item md={4} display="flex" alignItems="center">
+              <Box>
+                <Typography color="#538BA3">
+                  {t('startDateLabel')}
+                </Typography>
+                <Tooltip title={t('startDateTooltip')}>
+                  <TextField
+                    type="date"
+                    required
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    inputProps={{
+                      'data-testid': 'inicio-release'
+                    }}
+                    size='small'
+                  />
+                </Tooltip>
+              </Box>
+            </Grid>
+            <Grid item md={4} display="flex" alignItems="center">
+              <Box>
+                <Typography color="#538BA3">
+                  {t('endDateLabel')}
+                </Typography>
+                <Tooltip title={t('endDateTooltip')}>
+                  <TextField
+                    type="date"
+                    required
+                    size='small'
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    inputProps={{
+                      'data-testid': 'fim-release'
+                    }}
+                  />
+                </Tooltip>
+              </Box>
+            </Grid>
+          </Grid>
           <ReleasesTable releaseList={(filteredReleaseList.slice((page - 1) * RELEASES_PER_PAGE, page * RELEASES_PER_PAGE))} />
           <Stack spacing={2} sx={{ mt: 2 }} justifyContent="center" alignItems="center">
             <Pagination

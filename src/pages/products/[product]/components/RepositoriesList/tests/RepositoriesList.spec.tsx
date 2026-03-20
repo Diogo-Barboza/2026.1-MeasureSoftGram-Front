@@ -36,7 +36,7 @@ jest.mock('@contexts/OrganizationProvider', () => ({
 describe('RepositoriesList', () => {
   test('Navega para a página de repositórios quando clica em VER MAIS', () => {
     render(<RepositoriesList />);
-    const buttonElement = screen.getByText('VER MAIS...');
+    const buttonElement = screen.getByTestId('button-ver-mais');
     fireEvent.click(buttonElement);
     const mockRouterPush = useRouter().push;
     expect(mockRouterPush).toHaveBeenCalledTimes(1);

@@ -1,0 +1,10 @@
+{
+  "repository": "Repository",
+  "edit_intervals": "Edit Intervals",
+  "cancel": "Cancel",
+  "save": "Save",
+  "warning_message": "Attention: This configuration will be applied to all product repositories.",
+  "error_message": "An error occurred while trying to load the information.",
+  "update_success": "Intervals updated successfully!",
+  "update_error": "Error updating intervals!"
+}

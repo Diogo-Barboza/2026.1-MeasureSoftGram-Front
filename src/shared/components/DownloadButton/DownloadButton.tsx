@@ -75,7 +75,7 @@ const Download = ({ product, kind, startDate, endDate, checkedOptions }: Downloa
         a.download = `${kind}Historical.json`;
         a.click();
       } else if (downloadFormat === 'csv') {
-        const csv = convertToCsv(filteredResults);
+        const csv = convertToCsv(filteredResults, {});
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');

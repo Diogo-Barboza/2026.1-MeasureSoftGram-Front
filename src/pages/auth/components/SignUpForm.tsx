@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  TextField,
+  Typography
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useForm } from 'react-hook-form';
 import { signUp } from '@services/Auth';
@@ -9,7 +18,8 @@ import { toast } from 'react-toastify';
 interface SignupFormProps {
   changeAuthState: () => void;
 }
-export const SignUpForm = ({ changeAuthState }: SignupFormProps) => {
+
+export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
   const {
     register,
     handleSubmit,
@@ -22,6 +32,7 @@ export const SignUpForm = ({ changeAuthState }: SignupFormProps) => {
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
@@ -30,11 +41,12 @@ export const SignUpForm = ({ changeAuthState }: SignupFormProps) => {
     const response = await signUp(data);
     if (response.type === 'success') {
       toast.success('Usuário cadastrado com sucesso!');
-      changeAuthState();
+      changeAuthState(); // Switch to sign-in state after successful sign-up
     } else {
       toast.error(`Erro ao cadastrar usuário: ${response.error.message}`);
     }
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '2rem' }}>
@@ -87,7 +99,7 @@ export const SignUpForm = ({ changeAuthState }: SignupFormProps) => {
           error={!!errors?.last_name}
           helperText={errors?.last_name?.message as string}
         />
-        <FormControl variant="outlined">
+        <FormControl variant="outlined" error={!!errors?.password}>
           <InputLabel htmlFor="outlined-adornment-password">Senha</InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
@@ -106,14 +118,24 @@ export const SignUpForm = ({ changeAuthState }: SignupFormProps) => {
             }
             label="Password"
             {...register('password', {
+              required: 'Senha é obrigatória',
               minLength: {
                 value: 6,
                 message: 'Senha precisa ter ao menos 6 dígitos'
+              },
+              pattern: {
+                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/,
+                message: 'A senha deve conter ao menos 1 letra maiúscula, 1 número, e ter no mínimo 6 caracteres'
               }
             })}
           />
+          {errors.password && (
+            <Typography variant="body2" color="error">
+              {errors.password.message}
+            </Typography>
+          )}
         </FormControl>
-        <FormControl variant="outlined">
+        <FormControl variant="outlined" error={!!errors?.confirmPassword}>
           <InputLabel htmlFor="outlined-adornment-password">Confirmar senha</InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
@@ -132,14 +154,34 @@ export const SignUpForm = ({ changeAuthState }: SignupFormProps) => {
             }
             label="Confirmar senha"
             {...register('confirmPassword', {
-              validate: (value) => value === watch('password') || 'auth:signup.messages.passwordMatch'
+              required: 'Confirmação de senha é obrigatória',
+              validate: (value) => value === watch('password') || 'As senhas devem corresponder'
             })}
           />
+          {errors.confirmPassword && (
+            <Typography variant="body2" color="error">
+              {errors.confirmPassword.message}
+            </Typography>
+          )}
         </FormControl>
 
         <LoadingButton type="submit" variant="contained" color="primary" loading={isSubmitting}>
           Cadastrar
         </LoadingButton>
+
+        <Box sx={{ mt: 2, textAlign: 'center' }}>
+          <Typography variant="body2">
+            Já possui conta?{' '}
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{ color: 'primary.main', cursor: 'pointer' }}
+              onClick={changeAuthState}
+            >
+              Faça login agora
+            </Typography>
+          </Typography>
+        </Box>
       </Box>
     </form>
   );

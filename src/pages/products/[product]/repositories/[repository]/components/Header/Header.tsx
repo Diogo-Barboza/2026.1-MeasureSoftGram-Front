@@ -12,6 +12,7 @@ import ReactEcharts from 'echarts-for-react';
 import { ProductFormData } from '@services/product';
 import { toNumber } from 'lodash';
 import { useProductQuery } from '@pages/products/hooks/useProductQuery';
+import { useTranslation } from 'react-i18next';
 import GaugeSlider from '../GaugeSlider';
 import CopyBadgeModal from '../CopyBadgeModal';
 
@@ -28,6 +29,8 @@ function Header() {
   );
 
   const { query } = useRouter();
+
+  const { t } = useTranslation('header');
 
   useEffect(() => {
     if (initialValues && !values) {
@@ -89,12 +92,11 @@ function Header() {
 
       const result = await updateProduct(productId, productData);
       if (result.type === 'success') {
-        toast.success('Intervalos atualizados com sucesso!');
+        toast.success(t("update_success"));
         setCurrentProduct(result.value);
       } else {
-        toast.success('Erro ao atualizar intervalos!');
+        toast.success(t("update_error"));
       }
-
       setOpenModal(false);
     }
   };
@@ -104,7 +106,7 @@ function Header() {
       <Box display="flex" flexDirection="column">
         <Box display="flex">
           <Typography variant="h4" marginRight="10px">
-            Repositório
+            {t("repository")}
           </Typography>
           <Typography variant="h4" fontWeight="500" color="#33568E">
             {currentRepository?.name}
@@ -176,16 +178,16 @@ function Header() {
                   variant='contained'
                   onClick={onSubmit}
                 >
-                  Salvar
+                  {t("save")}
                 </Button>
               </Box>
               <Alert icon={<WarningIcon />} sx={{ display: "flex", justifyContent: "center", textAlign: 'center' }} severity="warning">
-                Atenção: Essa configuração será aplicada a todos os repositórios do produto.
+                {t("warning_message")}
               </Alert>
             </>
             :
             <Alert sx={{ display: "flex", justifyContent: "center", textAlign: 'center' }} severity="error">
-              Ocorreu um erro ao tentar carregar as informações.
+              {t("error_message")}
             </Alert>
           }
         </Box>

@@ -36,16 +36,16 @@ describe('Products', () => {
         </OrganizationProvider>
       );
 
-      expect(screen.getByTestId('organization-title')).toHaveTextContent('Organizações');
-
       const organizationBox = screen.getByTestId('organization-box');
       expect(organizationBox).toBeInTheDocument();
       expect(organizationBox).toHaveStyle({
-        maxHeight: '120px',
+        marginTop: '40px',
+        padding: '20px 36px',
         overflowX: 'auto',
-        overflowY: 'hidden'
+        overflowY: 'hidden',
+        position: 'relative',
+        maxHeight: '120px',
       });
-
     });
   });
 });

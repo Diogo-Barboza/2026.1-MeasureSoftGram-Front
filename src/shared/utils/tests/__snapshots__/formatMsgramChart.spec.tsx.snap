@@ -12,6 +12,9 @@ Object {
   ],
   "grid": Array [],
   "legend": Array [],
+  "onEvents": Object {
+    "datazoom": [Function],
+  },
   "series": Array [],
   "title": Object {
     "text": "title-test",
@@ -86,6 +89,9 @@ Object {
       "y": "129px",
     },
   ],
+  "onEvents": Object {
+    "datazoom": [Function],
+  },
   "series": Array [
     Object {
       "data": Array [

@@ -7,7 +7,7 @@ exports[`SideMenuItem should render the SideMenuItem component 1`] = `
   >
     <div
       aria-label="Tooltip Text"
-      class="styles__Wrapper-sc-13gge7k-0 PRxzx"
+      class="styles__Wrapper-sc-13gge7k-0 kpGTRb"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -42,7 +42,7 @@ exports[`SideMenuItem should render the SideMenuItem component 1`] = `
         </svg>
       </div>
       <div
-        class="MuiBox-root css-ofjrfz"
+        class="MuiBox-root css-1113w14"
       >
         Text
       </div>
@@ -58,7 +58,7 @@ exports[`SideMenuItem should render the SideMenuItem component with disable 1`] 
   >
     <div
       aria-label="Tooltip Text"
-      class="styles__Wrapper-sc-13gge7k-0 PRxzx"
+      class="styles__Wrapper-sc-13gge7k-0 kpGTRb"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -93,7 +93,7 @@ exports[`SideMenuItem should render the SideMenuItem component with disable 1`] 
         </svg>
       </div>
       <div
-        class="MuiBox-root css-ofjrfz"
+        class="MuiBox-root css-1113w14"
       >
         Text
       </div>
@@ -109,7 +109,7 @@ exports[`SideMenuItem should render the SideMenuItem component with endIcon 1`] 
   >
     <div
       aria-label="Tooltip Text"
-      class="styles__Wrapper-sc-13gge7k-0 PRxzx"
+      class="styles__Wrapper-sc-13gge7k-0 kpGTRb"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -144,12 +144,12 @@ exports[`SideMenuItem should render the SideMenuItem component with endIcon 1`] 
         </svg>
       </div>
       <div
-        class="MuiBox-root css-ofjrfz"
+        class="MuiBox-root css-1113w14"
       >
         Text
       </div>
       <div
-        class="MuiBox-root css-1p2jtab"
+        class="MuiBox-root css-ccw5zh"
       >
         <svg
           fill="none"
@@ -191,7 +191,7 @@ exports[`SideMenuItem should render the SideMenuItem component with onClick 1`] 
   >
     <div
       aria-label="Tooltip Text"
-      class="styles__Wrapper-sc-13gge7k-0 PRxzx"
+      class="styles__Wrapper-sc-13gge7k-0 kpGTRb"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -226,7 +226,7 @@ exports[`SideMenuItem should render the SideMenuItem component with onClick 1`] 
         </svg>
       </div>
       <div
-        class="MuiBox-root css-ofjrfz"
+        class="MuiBox-root css-1113w14"
       >
         Text
       </div>
@@ -242,7 +242,7 @@ exports[`SideMenuItem should render the SideMenuItem component with selected 1`]
   >
     <div
       aria-label="Tooltip Text"
-      class="styles__Wrapper-sc-13gge7k-0 gwifLq"
+      class="styles__Wrapper-sc-13gge7k-0 dgACGX"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -277,7 +277,7 @@ exports[`SideMenuItem should render the SideMenuItem component with selected 1`]
         </svg>
       </div>
       <div
-        class="MuiBox-root css-ofjrfz"
+        class="MuiBox-root css-1113w14"
       >
         Text
       </div>

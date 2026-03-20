@@ -1,7 +1,15 @@
+const locales = {
+  pt: 'pt-BR',
+  en: 'en-US'
+};
+
 export type dateFormats = 'numeric' | 'long';
 
-export const formatDate = (date: Date | number | string, format: dateFormats = 'long', locale = 'pt-BR'): string => {
-  const formatMap = {
+export const formatDate = (date: Date | number | string, format: 'numeric' | 'long' = 'long'): string => {
+  const currentLanguage: string | null = window.localStorage.getItem('locale_lang');
+  const locale = currentLanguage ? locales[currentLanguage] : 'pt-BR';
+
+  const formatMap: Record<string, Intl.DateTimeFormatOptions> = {
     numeric: {
       year: 'numeric',
       month: 'numeric',
@@ -15,17 +23,20 @@ export const formatDate = (date: Date | number | string, format: dateFormats = '
   };
 
   try {
-    return new Intl.DateTimeFormat(locale, formatMap[format] as Intl.DateTimeFormatOptions).format(new Date(date));
+    const parsedDate = new Date(date);
+    return new Intl.DateTimeFormat(locale, {
+      ...formatMap[format],
+      timeZone: 'UTC'
+    }).format(parsedDate);
   } catch (error) {
     return '-';
   }
 };
 
-export const formatDateTime = (
-  date: Date | number | string,
-  format: dateFormats = 'long',
-  locale = 'pt-BR'
-): string => {
+export const formatDateTime = (date: Date | number | string, format: dateFormats = 'long'): string => {
+  const currentLanguage: string | null = window.localStorage.getItem('locale_lang');
+  const locale = currentLanguage ? locales[currentLanguage] : 'pt-BR';
+
   const formatMap = {
     numeric: {
       year: 'numeric',

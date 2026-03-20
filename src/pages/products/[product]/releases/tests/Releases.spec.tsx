@@ -58,7 +58,7 @@ describe('<Releases />', () => {
 
     const startDate = getByTestId('inicio-release');
     const endDate = getByTestId('fim-release');
-    const searchButton = getByRole('textbox', { name: /Buscar releases/i });
+    const searchButton = getByRole('textbox');
 
     await act(async () => {
       fireEvent.change(startDate, { target: { value: '2021-01-01' } });
@@ -67,7 +67,7 @@ describe('<Releases />', () => {
     });
 
     expect(filterReleaseList).toHaveBeenCalledWith([], 'MeasureSoftGram', '2021-01-01', '2021-01-02');
-  })
+  });
 
   it('Deve mostrar ao menos uma opção de página', async () => {
     const { getByTestId } = render(<Releases />);

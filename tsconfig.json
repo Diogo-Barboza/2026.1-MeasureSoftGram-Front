@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["src/shared/components/*"],
+      "@idvInputs/*": ["src/components/idv/inputs/*"],
       "@contexts/*": ["src/shared/contexts/*"],
       "@hooks/*": ["src/shared/hooks/*"],
       "@pages/*": ["src/pages/*"],

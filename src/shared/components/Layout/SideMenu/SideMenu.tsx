@@ -4,6 +4,7 @@ import { useAuth } from '@contexts/Auth';
 import { useProductContext } from '@contexts/ProductProvider';
 import { useRouter } from 'next/router';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import { useTranslation } from 'react-i18next';
 import SideMenuItem from './SideMenuItem/SideMenuItem';
 import SideMenuWrapper from './SideMenuWrapper';
 import UserMenu from './UserMenu';
@@ -26,31 +27,21 @@ function SideMenu() {
   useEffect(() => {
   }, [currentOrganization, currentProduct]);
 
-  let itemType: 'product' | 'organization' | 'unknown' = 'unknown';
-
-  if (currentProduct && currentOrganization) {
-    itemType = 'product';
-  } else if (!currentProduct && currentOrganization) {
-    itemType = 'organization';
-  }
-
-  // if (itemType === 'unknown') {
-  //   console.warn('The itemType is set to unknown. Please handle this case appropriately.');
-  // }
+  const { t } = useTranslation('sidebar')
 
   const MenuItems: SideMenuItemType[] = [
     {
       startIcon: <FiBarChart2 fontSize={28} />,
-      text: 'Visão Geral',
-      tooltip: 'Visão Geral do Produto',
+      text: t('sidebar-options.overview.text'),
+      tooltip: t('sidebar-options.overview.tooltip'),
       path: `/products/${currentOrganization?.id}-${currentProduct?.id}-${currentProduct?.name}`,
       disable: !currentOrganization,
       selected: router.pathname === '/products/[product]'
     },
     {
       startIcon: <FiGitBranch fontSize={28} />,
-      text: 'Repositórios',
-      tooltip: 'Repositórios do Produto',
+      text: t('sidebar-options.repos.text'),
+      tooltip: t('sidebar-options.repos.tooltip'),
       path: `/products/${currentOrganization?.id}-${currentProduct?.id}-${currentProduct?.name}/repositories`,
       disable: !currentProduct,
       selected: router.query?.repository !== undefined || router.pathname === '/products/[product]/repositories'
@@ -58,7 +49,7 @@ function SideMenu() {
     {
       startIcon: <FiPaperclip fontSize={28} />,
       text: 'Releases',
-      tooltip: 'Releases de cada repositório',
+      tooltip: t('sidebar-options.release.tooltip'),
       path: `/products/${currentOrganization?.id}-${currentProduct?.id}-${currentProduct?.name}/releases`,
       disable: !currentProduct,
       selected: router.query?.release !== undefined
@@ -68,7 +59,6 @@ function SideMenu() {
   return (
     <SideMenuWrapper
       key={`${currentOrganization?.id}-${currentProduct?.id}`}
-      itemType={itemType}
       menuItems={
         currentProduct &&
         MenuItems.map((item) => (

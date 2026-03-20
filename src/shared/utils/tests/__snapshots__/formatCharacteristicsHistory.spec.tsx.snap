@@ -32,6 +32,9 @@ Object {
     "type": "scroll",
     "width": "80%",
   },
+  "onEvents": Object {
+    "datazoom": [Function],
+  },
   "series": Array [
     Object {
       "data": Array [

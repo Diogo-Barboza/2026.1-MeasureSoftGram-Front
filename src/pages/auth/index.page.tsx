@@ -25,8 +25,6 @@ const Auth: NextPageWithLayout = () => {
         {
           signin: (
             <AuthHeader
-              title="Login"
-              subTitle="Ou utilize o Email"
               loginButton={
                 <Button
                   fullWidth
@@ -40,39 +38,25 @@ const Auth: NextPageWithLayout = () => {
                   Login com Github
                 </Button>
               }
+              subTitle="OU"
             />
           ),
           signup: (
             <AuthHeader
-              title="Cadastro"
-              subTitle="Ou utilize o Email"
               loginButton={
                 <Button fullWidth variant="outlined" startIcon={<GitHub />}>
                   Cadastro com Github
                 </Button>
               }
+              subTitle="OU"
             />
-          )
-        }[authState]
-      }
-      footer={
-        {
-          signin: (
-            <AuthFooter
-              text="Ainda não tem cadastro?"
-              link="Crie agora uma conta"
-              changeAuthState={changeAuthState('signup')}
-            />
-          ),
-          signup: (
-            <AuthFooter text="Já possui conta?" link="Faça login agora" changeAuthState={changeAuthState('signin')} />
           )
         }[authState]
       }
     >
       {
         {
-          signin: <SignInForm />,
+          signin: <SignInForm changeAuthState={changeAuthState('signup')} />,
           signup: <SignUpForm changeAuthState={changeAuthState('signin')} />
         }[authState]
       }

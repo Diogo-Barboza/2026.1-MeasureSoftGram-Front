@@ -1,28 +1,35 @@
 import React from 'react';
-import { IconButton, TextField } from '@mui/material';
+import { InputAdornment, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
 interface SearchProps {
   onInput?: React.FormEventHandler<HTMLDivElement>;
-  label: string;
+  label?: string;
   placeHolder?: string;
 }
 
 const SearchButton = ({ onInput, label, placeHolder }: SearchProps) => (
-  <>
-    <IconButton aria-label="search">
-      <Search style={{ fill: '#113d4c' }} />
-    </IconButton>
-    <TextField
-      id="search-bar"
-      className="text"
-      onInput={onInput}
-      label={label}
-      variant="outlined"
-      placeholder={placeHolder ?? 'Buscar...'}
-      size="small"
-    />
-  </>
+  <TextField
+    data-testid="input"
+    id="search-bar"
+    aria-label={label ?? 'search-bar-label'}
+    className="text"
+    onInput={onInput}
+    label={label}
+    variant="outlined"
+    placeholder={placeHolder ?? 'Buscar...'}
+    size="small"
+    style={{
+      minWidth: '250px'
+    }}
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+          <Search style={{ fill: '#2B4D6F' }} />
+        </InputAdornment>
+      ),
+    }}
+  />
 );
 
 export default SearchButton;

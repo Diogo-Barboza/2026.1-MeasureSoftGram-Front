@@ -8,8 +8,12 @@ module.exports = {
           importSource: '@emotion/react'
         }
       }
-    ],
+    ]
   ],
 
-  plugins: [['styled-components', { ssr: true }], '@emotion/babel-plugin']
+  plugins: [
+    ['@babel/plugin-transform-modules-commonjs', { strictMode: false }],
+    ['styled-components', { ssr: true }],
+    '@emotion/babel-plugin'
+  ]
 };

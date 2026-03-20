@@ -17,7 +17,7 @@ interface Props {
 function LetterAvatar({ name, icon }: Props) {
   return (
     <Box sx={{ maxHeight: '40px' }}>
-      <Avatar sx={{ bgcolor: '#ffa500' }}>{stringAvatar(name)}</Avatar>
+      <Avatar sx={{ bgcolor: '#38618A' }}>{stringAvatar(name)}</Avatar>
       {icon && <Styles.IconContainer>{icon}</Styles.IconContainer>}
     </Box>
   );

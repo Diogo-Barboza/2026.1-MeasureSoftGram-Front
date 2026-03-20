@@ -11,7 +11,7 @@ import { useRepositoryContext } from '@contexts/RepositoryProvider';
 import { getPathId } from '@utils/pathDestructer';
 
 export const useQuery = () => {
-  const { setCurrentProduct } = useProductContext();
+  const { setCurrentProduct, currentProduct } = useProductContext();
   const { setRepositoryList, setRepositoriesLatestTsqmi } = useRepositoryContext();
   const [repositoriesTsqmiHistory, setRepositoriesTsqmiHistory] = useState<RepositoriesTsqmiHistory>();
 
@@ -19,8 +19,10 @@ export const useQuery = () => {
 
   async function loadProduct(organizationId: string, productId: string) {
     try {
-      const result = await productQuery.getProductById(organizationId, productId);
-      setCurrentProduct(result.value);
+      if(!currentProduct) {
+        const result = await productQuery.getProductById(organizationId, productId);
+        setCurrentProduct(result.value);
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
     }

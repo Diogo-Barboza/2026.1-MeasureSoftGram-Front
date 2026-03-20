@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { ComponentRef, useMemo, useRef, useState } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 import formatCharacteristicsHistory from '@utils/formatCharacteristicsHistory';
@@ -13,6 +13,8 @@ import { useProductConfigFilterContext } from '@contexts/ProductConfigFilterProv
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import { useProductContext } from '@contexts/ProductProvider';
+import { HistoryDateRange } from '@customTypes/product';
+import { useTranslation } from 'react-i18next';
 
 interface Prop {
   title: string;
@@ -22,6 +24,7 @@ interface Prop {
   autoGrid?: boolean;
   addHistoricalTSQMI?: boolean;
   addCurrentGoal?: boolean;
+  collectionSource?: 'github' | 'sonarqube'
 }
 
 type formatFunctionType = {
@@ -43,17 +46,19 @@ const GraphicChart = ({
   autoGrid = false,
   addHistoricalTSQMI = false,
   addCurrentGoal = false,
+  collectionSource,
 }: Prop) => {
   const {
     data: historical,
     error,
     isLoading,
     isEmpty
-  } = useRequestValues({ type: valueType, value, addHistoricalTSQMI, addCurrentGoal });
+  } = useRequestValues({ type: valueType, value, addHistoricalTSQMI, addCurrentGoal, collectionSource });
   const { hasKey } = useProductConfigFilterContext();
   const [showCharts, setShowCharts] = useState(false);
   const { currentProduct } = useProductContext();
 
+  const { t } = useTranslation('graphic_chart');
 
   const sliceHistorical = (rowIdx: number): Historical[] => {
     if (!autoGrid) return historical;
@@ -72,6 +77,13 @@ const GraphicChart = ({
     chartStyle = { height: chartBoxHeight };
   }
 
+  const echartsRef = useRef<ComponentRef<typeof ReactEcharts>>(null);
+
+  const dateRange: HistoryDateRange = {
+    startDate: null,
+    endDate: null
+  };
+
   const chartsOption = useMemo(
     () =>
       _.range(numLines).map((i) => ({
@@ -80,9 +92,11 @@ const GraphicChart = ({
           title: i === 0 ? title : '',
           isEmpty: isEmpty || error,
           redLimit: currentProduct?.gaugeRedLimit,
-          yellowLimit: currentProduct?.gaugeYellowLimit
+          yellowLimit: currentProduct?.gaugeYellowLimit,
+          csvFilters: { dateRange },
+          ref: echartsRef
         }),
-        key: `graphic-chart-${i}`
+        key: `graphic - chart - ${i}`
       })
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +105,7 @@ const GraphicChart = ({
 
   const filteredChartsOptions = chartsOption.filter((option, index) => {
     if (type === 'gauge') {
-      return (index <= 1) ? true : false;
+      return (index <= 1);
     }
     return true;
   });
@@ -110,17 +124,17 @@ const GraphicChart = ({
           width="100%"
           height={chartBoxHeight}
         >
-          {(type !== 'gauge') || (type === 'gauge' && showCharts) ?
-            chartsOption.map((option) => (
-              <>
-                <ReactEcharts key={option.key} notMerge lazyUpdate style={chartStyle} option={option} />
-              </>
+          {(type !== 'gauge') || (type === 'gauge' && showCharts) && (typeof window !== 'undefined') ?
+            (typeof window !== 'undefined') && chartsOption.map((option) => (
+              < ReactEcharts
+                ref={echartsRef}
+                onEvents={option?.onEvents}
+                key={option.key} notMerge lazyUpdate style={chartStyle} option={option} />
             ))
             :
-            filteredChartsOptions.map((option) => (
-              <>
-                <ReactEcharts key={option.key} notMerge lazyUpdate style={chartStyle} option={option} />
-              </>
+            (typeof window !== 'undefined') && filteredChartsOptions.map((option) => (
+              <ReactEcharts
+                key={option.key} notMerge lazyUpdate style={chartStyle} option={option} />
             ))
           }
 
@@ -140,13 +154,13 @@ const GraphicChart = ({
       </Fade>
       {error && (
         <Fade in timeout={1000}>
-          <Alert severity="error">Ocorreu um erro ao tentar carregar as informações</Alert>
+          <Alert severity="error">{t('error')}</Alert>
         </Fade>
       )}
       {isEmpty && (
         <Fade in timeout={1000}>
           <Alert variant="standard" severity="warning">
-            Não há dados para serem exibidos
+            {t('noData')}
           </Alert>
         </Fade>
       )}

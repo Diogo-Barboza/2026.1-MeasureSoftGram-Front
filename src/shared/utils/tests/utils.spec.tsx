@@ -140,8 +140,8 @@ describe('Utils', () => {
   });
   describe('formatRepositoriesTsqmiHistory', () => {
     it('Deve formatar valores do grafico TSQMI corretamente', () => {
-      const graph = formatRepositoriesTsqmiHistory(TSQMI_HISTORY_MOCKED);
-      expect(graph).toMatchObject(EXPECTED_TSQMI_GRAPH);
+      const graph = formatRepositoriesTsqmiHistory({ history: TSQMI_HISTORY_MOCKED, csvFilters: {} });
+      expect(graph.options).toMatchObject(EXPECTED_TSQMI_GRAPH);
     });
   });
   describe('formatEntitiesFilter', () => {

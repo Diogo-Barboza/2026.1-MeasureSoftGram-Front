@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import getLayout from '@components/Layout';
 import { toast } from 'react-toastify';
-import { Container, TextField, Button, Typography, Box, Grid, MenuItem } from '@mui/material';
+import { TextField, MenuItem } from '@mui/material';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import { Botoes, Container, Description, Form, Header, Wrapper } from '@pages/organizations/styles';
+import { useTranslation } from 'react-i18next';
+import MSGButton from '../../../components/idv/buttons/MSGButton';
 import { useProductQuery } from '../hooks/useProductQuery';
 
 interface OrganizationsType extends React.FC {
@@ -21,18 +23,24 @@ const ProductsCreation: OrganizationsType = () => {
   const { createProduct, getProductById, updateProduct } = useProductQuery();
   const currentOrganizationId = router.query.id_organization;
   const currentProductId = router.query.id_product;
+  const { t } = useTranslation('product');
 
   useEffect(() => {
     const editMode = router.query.id_product;
-
     if (editMode) {
       setIsEditMode(true);
       const fetchProductData = async () => {
-        const result = await getProductById(currentOrganizationId as string, currentProductId as string);
-        if (result.type === 'success') {
-          setName(result.value.name);
-          setDescription(result.value.description || '');
-          setOrganizationId(result.value.organizationId || 0);
+        try {
+          const result = await getProductById(currentOrganizationId as string, currentProductId as string);
+
+          if (result.type === 'success') {
+            setName(result.value.name);
+            setDescription(result.value.description || '');
+            setOrganizationId(result.value.organizationId || 0);
+          }
+        }
+        catch (e) {
+          console.log(e)
         }
       };
       fetchProductData();
@@ -54,53 +62,54 @@ const ProductsCreation: OrganizationsType = () => {
       novoProduto.organizationId = parseInt(currentOrganizationId[0], 10);
     }
 
-    const nameExist = "Já existe um Produto com este nome."
+    const nameExist = t('toast.name-exists')
 
     if (isEditMode) {
       result = await updateProduct(currentProductId as string, novoProduto);
       if (result.type === 'success') {
-        toast.success('Produto atualizado com sucesso!');
-        setTimeout(() => {
-          window.location.reload();
-          window.location.href = '/home';
-        }, 2000);
+        toast.success(t('toast.success-edit'));
+        window.location.reload();
+        window.location.href = '/home';
       } else if (result.error.message === nameExist) {
         toast.error(nameExist);
       } else {
-        toast.error('Erro ao atualizar o Produto!');
+        toast.error(t('toast.error-edit'));
       }
     } else {
-      result = await createProduct(novoProduto);
-      if (result.type === 'success') {
-        toast.success('Produto criado com sucesso!');
-        setTimeout(() => {
+
+      try {
+        result = await createProduct(novoProduto);
+        if (result.type === 'success') {
+          toast.success(t('toast.sucess'));
           window.location.reload();
           window.location.href = '/home';
-        }, 2000);
-      } else if (result.error.message === nameExist) {
-        toast.error(nameExist);
-      } else {
-        toast.error('Erro ao criar o Produto!');
+        } else if (result.error.message === nameExist) {
+          toast.error(nameExist);
+        } else {
+          toast.error(t('toast.error-create'));
+        }
+      }
+      catch (e) {
+        console.log(e)
       }
     }
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Head>
-        <title>{isEditMode ? 'Editar Produto' : 'Cadastro de Produto'}</title>
-      </Head>
-      <Typography variant="h4" gutterBottom>
-        {isEditMode ? 'Editar Produto' : 'Cadastro de Produto'}
-      </Typography>
-      <form onSubmit={handleSubmit} sx={{ mt: 2 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
+    <Container>
+      <Header>{isEditMode ? t('title-edit') : t('title-create')}</Header>
+      <Wrapper>
+        <Description>
+          {t('description')}
+        </Description>
+
+        <form onSubmit={handleSubmit} sx={{ mt: 2 }}>
+          <Form>
             <TextField
               select
               required
               fullWidth
-              label="Organizações"
+              label={t('label-input')}
               variant="outlined"
               value={organizationId || currentOrganizationId}
               onChange={(e) => setOrganizationId(+e.target.value)}
@@ -115,9 +124,10 @@ const ProductsCreation: OrganizationsType = () => {
                 ))
               }
             </TextField>
+
             <TextField
               fullWidth
-              label="Nome"
+              label={t('name-input')}
               variant="outlined"
               value={nome}
               onChange={(e) => setName(e.target.value)}
@@ -125,9 +135,10 @@ const ProductsCreation: OrganizationsType = () => {
               sx={{ mb: 2 }}
               data-testid="name-input"
             />
+
             <TextField
               fullWidth
-              label="Descrição"
+              label={t('description-input')}
               variant="outlined"
               value={descricao}
               onChange={(e) => setDescription(e.target.value)}
@@ -136,23 +147,15 @@ const ProductsCreation: OrganizationsType = () => {
               sx={{ mb: 2 }}
               data-testid="description-input"
             />
-          </Grid>
-          <Grid item xs={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-              >
-                {isEditMode ? 'Salvar' : 'Criar'}
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-      </form>
+            <Botoes>
+              <MSGButton width="200px" variant='secondary' onClick={() => router.push('/home')}  >{t('back')}</MSGButton>
 
-
-    </Container>
+              <MSGButton width="200px" type='submit' >{isEditMode ? t('save') : t('create')}</MSGButton>
+            </Botoes>
+          </Form>
+        </form>
+      </Wrapper>
+    </Container >
   );
 };
 

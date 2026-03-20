@@ -9,6 +9,7 @@ import getLayout from '@components/Layout';
 import useRequireAuth from '@hooks/useRequireAuth';
 import { useProductContext } from '@contexts/ProductProvider';
 
+import { useTranslation } from 'react-i18next';
 import { useQuery } from './hooks/useQuery';
 import ProductContent from './components/ProductContent';
 
@@ -17,6 +18,7 @@ const Product: NextPageWithLayout = () => {
   const { repositoriesTsqmiHistory } = useQuery();
   const { currentProduct } = useProductContext();
   const router = useRouter();
+  const { t } = useTranslation('overview');
 
   const handleViewRepositories = () => {
     router.push(`/products/${router.query.product}/repositories`);
@@ -37,19 +39,19 @@ const Product: NextPageWithLayout = () => {
       <div style={{ margin: '20px', paddingLeft: '15px' }}>
         <div style={{ marginBottom: '20px' }}>
           <Typography variant="h5" gutterBottom>
-            Repositórios
+            {t('repo')}
           </Typography>
           <Button variant="contained" color="primary" onClick={handleViewRepositories}>
-            VER REPOSITÓRIOS
+            {t('repo-button')}
           </Button>
         </div>
 
         <div style={{ marginBottom: '20px' }}>
           <Typography variant="h5" gutterBottom>
-            Releases
+            {t('release')}
           </Typography>
           <Button variant="contained" color="primary" onClick={handleViewReleases}>
-            VER RELEASES
+            {t('release-button')}
           </Button>
         </div>
       </div>

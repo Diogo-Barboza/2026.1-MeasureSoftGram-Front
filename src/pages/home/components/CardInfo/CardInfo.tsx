@@ -5,13 +5,17 @@ import Link from "next/link";
 import { Box, Typography, Card, Button, CardMedia, CardContent } from "@mui/material";
 
 import { InfoData } from "@customTypes/home";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   cardData: InfoData,
 }
 
-const CardInfo: React.FC<Props> = ({ cardData }) => (
-  <Card
+const CardInfo: React.FC<Props> = ({ cardData }) => {
+
+  const { t } = useTranslation('home');
+
+  return <Card
     id={cardData?.id}
     sx={{
       overflow: "visible",
@@ -140,7 +144,7 @@ const CardInfo: React.FC<Props> = ({ cardData }) => (
                 >
                   <Link href="/products">
                     <Button variant="contained" fullWidth>
-                      Visualizar Organizações e Produtos
+                      {t("organization.view-organization")}
                     </Button>
                   </Link>
                 </Box>
@@ -151,7 +155,7 @@ const CardInfo: React.FC<Props> = ({ cardData }) => (
                   >
                     <Link href="/organizations">
                       <Button variant="contained" fullWidth>
-                        Criar Organização
+                        {t("organization.create-organization")}
                       </Button>
                     </Link>
                   </Box></Box>
@@ -164,7 +168,7 @@ const CardInfo: React.FC<Props> = ({ cardData }) => (
                 >
                   <Link href="/products/create">
                     <Button variant="contained" fullWidth>
-                      Criar Produto
+                      {t("product.create-product")}
                     </Button>
                   </Link>
                 </Box>
@@ -176,6 +180,6 @@ const CardInfo: React.FC<Props> = ({ cardData }) => (
       </CardContent>
     ))}
   </Card>
-);
+};
 
 export default CardInfo;

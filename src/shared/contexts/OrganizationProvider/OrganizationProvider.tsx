@@ -14,7 +14,7 @@ interface IOrganizationContext {
   setCurrentOrganizations: (organizations: Organization[]) => void;
   organizationList: Organization[];
   isLoading: boolean;
-  fetchOrganizations: () => void;
+  fetchOrganizations: (forceFetch?: boolean) => void;
 }
 
 const OrganizationContext = createContext<IOrganizationContext | undefined>(undefined);
@@ -26,8 +26,8 @@ export function OrganizationProvider({ children }: Props) {
   const [organizationList, setOrganizationList] = useState<Organization[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchOrganizations = async () => {
-    if (!session) return;
+  const fetchOrganizations = async (forceFetch?: boolean) => {
+    if (!session && !forceFetch) return;
     setIsLoading(true);
     try {
       const result = await organizationQuery.getAllOrganization();
@@ -70,16 +70,14 @@ export function OrganizationProvider({ children }: Props) {
     }
   }, [currentOrganizations]);
 
-  const value = useMemo(() => {
-    return {
-      currentOrganization,
-      currentOrganizations,
-      setCurrentOrganizations,
-      organizationList,
-      isLoading,
-      fetchOrganizations
-    };
-  }, [currentOrganization, currentOrganizations, organizationList, isLoading]);
+  const value = useMemo(() => ({
+    currentOrganization,
+    currentOrganizations,
+    setCurrentOrganizations,
+    organizationList,
+    isLoading,
+    fetchOrganizations
+  }), [currentOrganization, currentOrganizations, organizationList, isLoading]);
 
   return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>;
 }
