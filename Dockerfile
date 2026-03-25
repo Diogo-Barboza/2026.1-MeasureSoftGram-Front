@@ -1,15 +1,28 @@
-FROM node:lts-alpine
+FROM node:20-alpine
 
-WORKDIR /usr/src/
+# Set environment
+ENV NODE_ENV=development
+ENV PORT=3000
 
-COPY package.json yarn.lock /usr/src/
+# Install dependencies needed for node-gyp and others if necessary
+RUN apk add --no-cache libc6-compat
 
-RUN yarn
+# Enable corepack for pnpm support
+RUN corepack enable pnpm
 
-COPY . /usr/src/
+WORKDIR /usr/src
 
-RUN yarn build
+# Copy package management files
+COPY package.json pnpm-lock.yaml* ./
 
-RUN yarn cache clean
+# Install dependencies
+RUN pnpm install
 
-CMD [ "yarn", "dev" ]
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Start development server
+CMD ["pnpm", "dev"]

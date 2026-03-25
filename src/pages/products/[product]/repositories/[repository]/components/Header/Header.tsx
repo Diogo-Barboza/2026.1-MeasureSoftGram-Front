@@ -8,13 +8,15 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { getPathId } from '@utils/pathDestructer';
 import { useProductContext } from '@contexts/ProductProvider';
-import ReactEcharts from 'echarts-for-react';
+import dynamic from 'next/dynamic';
 import { ProductFormData } from '@services/product';
 import { toNumber } from 'lodash';
 import { useProductQuery } from '@pages/products/hooks/useProductQuery';
 import { useTranslation } from 'react-i18next';
 import GaugeSlider from '../GaugeSlider';
 import CopyBadgeModal from '../CopyBadgeModal';
+
+const ReactEcharts = dynamic(() => import('echarts-for-react'), { ssr: false });
 
 function Header() {
   const { currentProduct, setCurrentProduct } = useProductContext();
