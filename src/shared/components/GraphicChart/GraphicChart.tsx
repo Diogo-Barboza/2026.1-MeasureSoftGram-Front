@@ -1,5 +1,7 @@
 import React, { ComponentRef, useMemo, useRef, useState } from 'react';
-import ReactEcharts from 'echarts-for-react';
+import dynamic from 'next/dynamic';
+import type ReactEchartsType from 'echarts-for-react';
+const ReactEcharts = dynamic(() => import('echarts-for-react'), { ssr: false });
 
 import formatCharacteristicsHistory from '@utils/formatCharacteristicsHistory';
 import formatMsgramChart from '@utils/formatMsgramChart';
@@ -77,7 +79,7 @@ const GraphicChart = ({
     chartStyle = { height: chartBoxHeight };
   }
 
-  const echartsRef = useRef<ComponentRef<typeof ReactEcharts>>(null);
+  const echartsRef = useRef<any>(null);
 
   const dateRange: HistoryDateRange = {
     startDate: null,
@@ -127,6 +129,7 @@ const GraphicChart = ({
           {(type !== 'gauge') || (type === 'gauge' && showCharts) && (typeof window !== 'undefined') ?
             (typeof window !== 'undefined') && chartsOption.map((option) => (
               < ReactEcharts
+                // @ts-ignore
                 ref={echartsRef}
                 onEvents={option?.onEvents}
                 key={option.key} notMerge lazyUpdate style={chartStyle} option={option} />

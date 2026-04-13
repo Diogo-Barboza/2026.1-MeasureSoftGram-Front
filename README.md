@@ -1,9 +1,9 @@
-# 2024-1 MeasureSoftGram Frontend
+# 2026-1 MeasureSoftGram Frontend
 
-Frontend repository of MeasureSoftGram application in 2024.1.
+Frontend repository of MeasureSoftGram application in 2026.1.
 
 ## Badges
-
+<!--
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=fga-eps-mds_2023-1-MeasureSoftGram-Front&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=fga-eps-mds_2023-1-MeasureSoftGram-Front)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=fga-eps-mds_2023-1-MeasureSoftGram-Front&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=fga-eps-mds_2023-1-MeasureSoftGram-Front)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=fga-eps-mds_2023-1-MeasureSoftGram-Front&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=fga-eps-mds_2023-1-MeasureSoftGram-Front)
@@ -20,47 +20,145 @@ Frontend repository of MeasureSoftGram application in 2024.1.
 <br>
 
 <img src="https://codecov.io/gh/fga-eps-mds/2023-1-MeasureSoftGram-Front/branch/develop/graphs/sunburst.svg?token=A76GCxS118" width="128"/>
+ -->
+ 🚧 Work in Progress 🚧
+
+## Requirements
+### Local development (without Docker)
+- Node.js `20.x`
+- `corepack` enabled
+- `pnpm` `10.x`
+### Development with Docker
+- Docker
+- Docker Compose v.2
+---
+
+## Environment configuration
+Create the `.env` file at the root of the project:
+```bash
+cp .env.example .env
+```
+
+Make sure to set the URL for your backend API.
+
+## Running with Docker (recommended)
+
+### 1) Subir Containers
+
+```bash
+docker compose up --build
+```
+
+Aplicação disponível em http://localhost:3000
+
+### 2) Parar containers
+
+```bash
+docker compose down
+```
+
+### 3) Scripts Úteis
+
+- Rodar linter:
+```bash
+make lint
+```
+- Rodar testes:
+```bash
+make test
+```
+
+- Rodar testes no modo CI:
+```bash
+make ci-test
+```
+
+- Build de Produção
+```bash
+make build
+make start
+```
+
+- Comandos personalizados
+```bash
+make pnpm SCRIPT=<script> [ARGS="..."]
+```
+permite executar qualquer script do `package.json` dentro do container, passando argumentos adicionais se desejado.
+
+Exemplo:
+```bash
+make pnpm SCRIPT=build
+```
+ou
+```bash
+make pnpm SCRIPT=test ARGS="src/pages"
+```
 
 
-## Links
+## Rodar localmente (sem Docker)
 
-- Prod/Homolog: [https://2024-1-measure-soft-gram.vercel.app/](https://2024-1-measure-soft-gram.vercel.app/)
+Primeiramente garanta que está utilizando a versão 20 do Node. Ferramentas para gerenciamento de versões Node como `nvm` e `n` podem ser úteis.
 
-## Installation
+### 1) Ativar pnpm
 
-### Install nvm
+```bash
+corepack enable
+corepack prepare pnpm@10.15.0 --activate
+pnpm -v
+```
 
-* <code>sudo apt install curl </code>
-* <code>curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash </code>
+### 2) Instalar dependências
 
-Close the terminal and run the following command:
-* <code>command -v nvm</code>
+```bash
+pnpm install
+```
 
-It should print 'nvm' if the installation was successful.
+### 3) Subir o projeto
 
-### Install node with nvm
+```bash
+pnpm dev
+```
+Aplicação disponível em: http://localhost:3000
 
-* <code>nvm install v16.13.1</code>
+### 4) Scripts úteis
 
-### Install yarn
+- Rodar linter:
+```bash
+pnpm lint
+```
+- Rodar testes:
+```bash
+pnpm test
+```
+- Rodar testes no modo CI:
+```bash
+pnpm run ci:test
+```
 
-* <code>npm install --global yarn</code>
+- Build de produção:
+```bash
+pnpm build
+pnpm start
+```
 
-It should print the version of yarn if the installation was successful.
 
-## Usage
+## Troubleshooting
 
-### Copy environment variables
+### Erro de versão do Node com pnpm
+Se aparecer algo como: This version of pnpm requires at least Node.js v18.12
 
-#### Local or Development
-* <code>cp .envs/.env.local .env </code>
-* <code>cp .envs/.env.development .env </code>
+Garanta que você está usando Node 20:
+```bash
+node -v
+v20.20.2
+```
 
-### Start project local
-
-* <code>yarn dev</code>
-
-The project will run on [http://localhost:3000](http://localhost:3000)
-
-### Run ESLint
-* <code>yarn lint</code>
+### Erro de permissão no `.next` (`EACCES`)
+Se aparecer erro ao rodar pnpm dev:
+```bash
+sudo chown -R $USER:$USER .next node_modules .pnpm-store
+chmod -R u+rwX .next
+rm -rf .next
+pnpm dev
+```
+> Evite rodar comandos de node/pnpm com sudo dentro do projeto.
