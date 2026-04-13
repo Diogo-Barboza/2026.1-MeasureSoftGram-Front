@@ -1,27 +1,50 @@
 services:
   front:
     container_name: front
-    image: measuresoftgram-front:latest
-    restart: on-failure
     build:
       context: .
+    restart: on-failure
     ports:
       - '3000:3000'
     volumes:
       - .:/usr/src/
+      # Mantém os arquivos gerados no build do Docker (não apaga com o código local)
       - /usr/src/node_modules
       - /usr/src/.next
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /usr/src/src
-        - action: sync
-          path: ./public
-          target: /usr/src/public
-        - action: rebuild
-          path: package.json
-          target: /usr/src/package.json
-        - action: rebuild
-          path: pnpm-lock.yaml
-          target: /usr/src/pnpm-lock.yaml
+    depends_on:
+      - service
+
+  service:
+    container_name: msgram-service
+    image: joaoseisei1/msgram-service:1.0
+    command: ["./start_service.sh"]
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./env-vars/.service.env
+      - ./env-vars/.postgres.env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: msgram-postgres
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - service_postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./env-vars/.postgres.env
+    healthcheck:
+      # Teste mais simples e direto para o Postgres no Alpine
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s # Dá 20 segundos para o banco criar as tabelas antes de começar a testar
+
+volumes:
+  service_postgres_data:
