@@ -3,13 +3,13 @@
 exports[`<TreeViewFilter /> should render correctly 1`] = `
 <div>
   <div
-    class="styles__Wrapper-sc-1n65t6s-0 fbkKaA"
+    class="sc-aXZVg bSSnKO"
   >
     <div
       class="MuiBox-root css-13y5u2s"
     >
       <div
-        class="styles__CollapseButton-sc-1n65t6s-1 fpXLoM"
+        class="sc-gEvEer iiWWN"
       >
         <button
           aria-label="Ocultar Filtros"
@@ -26,7 +26,7 @@ exports[`<TreeViewFilter /> should render correctly 1`] = `
             viewBox="0 0 24 24"
           >
             <path
-              d="M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z"
+              d="M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01"
             />
           </svg>
           <span
@@ -80,16 +80,16 @@ exports[`<TreeViewFilter /> should render correctly 1`] = `
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                      d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
                     />
                   </svg>
                 </div>
                 <fieldset
                   aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+                  class="MuiOutlinedInput-notchedOutline css-r01yff-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="css-yjsfm1"
+                    class="css-njhac4-MuiNotchedOutlined-root"
                   >
                     <span>
                       search
@@ -134,7 +134,7 @@ exports[`<TreeViewFilter /> should render correctly 1`] = `
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M9.29 15.88 13.17 12 9.29 8.12a.9959.9959 0 0 1 0-1.41c.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"
+                      d="M9.29 15.88 13.17 12 9.29 8.12a.9959.9959 0 0 1 0-1.41c.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42"
                     />
                   </svg>
                 </div>
@@ -145,11 +145,11 @@ exports[`<TreeViewFilter /> should render correctly 1`] = `
                     class="MuiBox-root css-u4p24i"
                   >
                     <span
-                      class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-355xbt-MuiButtonBase-root-MuiCheckbox-root"
+                      class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-ldw3vz-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                     >
                       <input
                         checked=""
-                        class="PrivateSwitchBase-input css-1m9pwf3"
+                        class="PrivateSwitchBase-input css-1p3z7et-MuiSwitchBase-root"
                         data-indeterminate="false"
                         tabindex="-1"
                         type="checkbox"
