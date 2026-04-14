@@ -8,7 +8,7 @@ on:
 
 jobs:
   pipeline:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -25,6 +25,11 @@ jobs:
 
       - name: Instalar pnpm packages
         run: pnpm install --frozen-lockfile
+
+      - name: Instalar dependência libssl1.1 para o SWC do Next.js
+        run: |
+          wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+          sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
 
       - name: Rodar testes
         run: pnpm run ci:test --coverage
