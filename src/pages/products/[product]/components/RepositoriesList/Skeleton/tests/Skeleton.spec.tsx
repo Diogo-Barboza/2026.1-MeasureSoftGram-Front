@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import Skeleton from '../Skeleton';
-import '@testing-library/jest-dom/extend-expect'; // para usar matchers como .toBeInTheDocument()
+import '@testing-library/jest-dom'; // para usar matchers como .toBeInTheDocument()
 
 describe('Skeleton component', () => {
   test('deve renderizar o componente corretamente', () => {
