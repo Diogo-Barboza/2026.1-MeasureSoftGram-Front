@@ -1,46 +1,28 @@
-# Estágio 1: Instalação de dependências
-FROM node:18-alpine AS deps
-# Adicionado para compatibilidade de algumas libs nativas no Alpine
+FROM node:20-alpine
+
+# Set environment
+ENV NODE_ENV=development
+ENV PORT=3000
+
+# Install dependencies needed for node-gyp and others if necessary
 RUN apk add --no-cache libc6-compat
+
+# Enable corepack for pnpm support
+RUN corepack enable pnpm
+
 WORKDIR /usr/src
 
-# Copia apenas os arquivos de pacotes para aproveitar o cache de camadas
-COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+# Copy package management files
+COPY package.json pnpm-lock.yaml* ./
 
-# Estágio 2: Build da aplicação
-FROM node:18-alpine AS builder
-WORKDIR /usr/src
+# Install dependencies
+RUN pnpm install
 
-COPY --from=deps /usr/src/node_modules ./node_modules
+# Copy application code
 COPY . .
 
-# Desabilita telemetria do Next.js (comum nesse projeto)
-ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN npm run build
-
-# Estágio 3: Runner (Imagem final leve)
-FROM node:18-alpine AS runner
-WORKDIR /usr/src
-
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Segurança: Rodar como usuário não-root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /usr/src/public ./public
-COPY --from=builder /usr/src/package.json ./package.json
-
-# Copia o build e as dependências instaladas
-COPY --from=builder --chown=nextjs:nodejs /usr/src/.next ./.next
-COPY --from=builder /usr/src/node_modules ./node_modules
-
-USER nextjs
-
+# Expose port
 EXPOSE 3000
-ENV PORT 3000
 
-CMD ["npm", "start"]
+# Start development server
+CMD ["pnpm", "dev"]

@@ -8,7 +8,6 @@ services:
       - '3000:3000'
     volumes:
       - .:/usr/src/
-      # Mantém os arquivos gerados no build do Docker (não apaga com o código local)
       - /usr/src/node_modules
       - /usr/src/.next
     depends_on:
@@ -39,12 +38,11 @@ services:
     env_file:
       - ./env-vars/.postgres.env
     healthcheck:
-      # Teste mais simples e direto para o Postgres no Alpine
       test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s # Dá 20 segundos para o banco criar as tabelas antes de começar a testar
+      start_period: 30s
 
 volumes:
   service_postgres_data:
