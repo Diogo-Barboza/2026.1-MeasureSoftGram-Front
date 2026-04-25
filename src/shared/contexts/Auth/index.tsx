@@ -3,6 +3,7 @@ import { getUserInfo, signInCredentials, signInGithub, signOut } from '@services
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { useLocalStorage } from '@hooks/useLocalStorage';
+import ConfirmModal from '@components/ConfirmModal/ConfirmModal'; // NOVO IMPORT
 
 export const authContextDefaultValues: authContextType = {
   session: null,
@@ -18,8 +19,10 @@ export const AuthContext = createContext<authContextType>(authContextDefaultValu
 
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [loading, setLoading] = useState<'loading' | 'loaded'>('loading');
+  const [isWarningOpen, setIsWarningOpen] = useState(false); // ESTADO PARA O MODAL
   const router = useRouter();
   const hasExecuted = useRef(false);
+
   const {
     storedValue: session,
     setValue: setSession,
@@ -42,6 +45,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     removeSession();
     removeToken();
     removeProvider();
+    localStorage.removeItem('login_timestamp'); // GARANTE A LIMPEZA DO TIMER
   }, [removeProvider, removeSession, removeToken]);
 
   const logout = useCallback(async () => {
@@ -76,6 +80,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
 
       if (response.type === 'success' && response?.value?.key) {
         setToken(response.value.key);
+        localStorage.setItem('login_timestamp', Date.now().toString()); // MARCA O INÍCIO DA SESSÃO
         toast.success('Login realizado com sucesso!');
 
         return {
@@ -111,6 +116,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
 
       if (response.type === 'success' && response?.value?.key) {
         setToken(response.value.key);
+        localStorage.setItem('login_timestamp', Date.now().toString()); // MARCA O INÍCIO DA SESSÃO
         toast.success('Login realizado com sucesso!');
         await router.push('/home');
         return response;
@@ -125,42 +131,35 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     [router, setProvider, setToken]
   );
 
-  // Função para monitorar inatividade
-  const INACTIVITY_TIME = 3 * 60 * 1000;
-
   useEffect(() => {
-    let logoutTimer: NodeJS.Timeout;
+    const checkSessionTime = () => {
+      const loginTime = localStorage.getItem('login_timestamp');
 
-    const resetLogoutTimer = () => {
-      if (logoutTimer) {
-        clearTimeout(logoutTimer);
+      // Só monitora se o usuário tiver feito login
+      if (!loginTime || (!session && !token)) return;
+
+      const limitMs = 2 * 60 * 60 * 1000; // 2 horas
+      const warningMs = limitMs - (10 * 60 * 1000); // 1h e 50min
+      const now = Date.now();
+      const elapsed = now - parseInt(loginTime);
+
+      // Passou de 2 horas -> Logout automático
+      if (elapsed >= limitMs) {
+        logout();
+        setIsWarningOpen(false);
+        toast.warning('Sua sessão expirou por segurança (limite de 2h).');
       }
-
-      logoutTimer = setTimeout(() => {
-        console.log(session);
-        console.log(token);
-        if (session != null || token != null) {
-          logout();
-          toast.warning('Você foi desconectado por inatividade.');
-        }
-      }, INACTIVITY_TIME);
+      // Entrou nos últimos 10 minutos -> Exibe o aviso
+      else if (elapsed >= warningMs && !isWarningOpen) {
+        setIsWarningOpen(true);
+      }
     };
 
-    const activityEvents = ['mousemove', 'keydown', 'mousedown', 'touchstart'];
+    // Checa a condição a cada 1 minuto
+    const interval = setInterval(checkSessionTime, 60000);
 
-    activityEvents.forEach((event) =>
-      window.addEventListener(event, resetLogoutTimer)
-    );
-
-    resetLogoutTimer(); // Inicia o timer ao montar o componente
-
-    return () => {
-      activityEvents.forEach((event) =>
-        window.removeEventListener(event, resetLogoutTimer)
-      );
-      clearTimeout(logoutTimer); // Limpa o timer quando o componente é desmontado
-    };
-  }, [logout]);
+    return () => clearInterval(interval);
+  }, [logout, session, token, isWarningOpen]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -192,7 +191,24 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     [logout, provider, session, setProvider, signInWithCredentials, signInWithGithub, loading]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      {/* NOVO: Modal que será exibido aos 1h50 de sessão */}
+      <ConfirmModal
+        isModalOpen={isWarningOpen}
+        setIsModalOpen={setIsWarningOpen}
+        text="Sua sessão expirará em menos de 10 minutos. Salve seu trabalho para evitar perda de dados."
+        btnConfirmText="Entendi"
+        btnDismissText="Sair Agora"
+        handleConfirmBtnClick={() => setIsWarningOpen(false)}
+        handleDismissBtnClick={() => {
+          setIsWarningOpen(false);
+          logout();
+        }}
+      />
+    </AuthContext.Provider>
+  );
 };
 
 export function useAuth() {
