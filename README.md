@@ -176,3 +176,9 @@ rm -rf .next
 pnpm dev
 ```
 > Evite rodar comandos de node/pnpm com sudo dentro do projeto.
+
+## Governança e contribuição
+
+- **Licença:** este projeto é distribuído sob a [GNU AGPL-3.0](LICENSE).
+- **Código de conduta:** consulte [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) antes de interagir com a comunidade.
+- **Como contribuir:** veja [CONTRIBUTING.md](CONTRIBUTING.md) para padrões de branch, PR e revisão.
