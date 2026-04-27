@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [isWarningOpen, setIsWarningOpen] = useState(false); // ESTADO PARA O MODAL
   const router = useRouter();
   const hasExecuted = useRef(false);
+  const warningShownRef = useRef(false); // NOVO: Rastreia se o aviso já foi mostrado
 
   const {
     storedValue: session,
@@ -131,6 +132,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     [router, setProvider, setToken]
   );
 
+
   useEffect(() => {
     const checkSessionTime = () => {
       const loginTime = localStorage.getItem('login_timestamp');
@@ -146,12 +148,15 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
       // Passou de 2 horas -> Logout automático
       if (elapsed >= limitMs) {
         logout();
+        warningShownRef.current = false;
         setIsWarningOpen(false);
         toast.warning('Sua sessão expirou por segurança (limite de 2h).');
       }
-      // Entrou nos últimos 10 minutos -> Exibe o aviso
-      else if (elapsed >= warningMs && !isWarningOpen) {
+      // Aviso apenas UMA VEZ quando atingir o tempo limite
+      else if (elapsed >= warningMs && !warningShownRef.current) {
+        warningShownRef.current = true;
         setIsWarningOpen(true);
+        toast.warning('Sua sessão expirará em menos de 10 minutos. Salve seu trabalho para evitar perda de dados.');
       }
     };
 
@@ -159,7 +164,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     const interval = setInterval(checkSessionTime, 60000);
 
     return () => clearInterval(interval);
-  }, [logout, session, token, isWarningOpen]);
+  }, [logout, session, token]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
