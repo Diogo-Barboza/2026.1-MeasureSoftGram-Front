@@ -16,8 +16,27 @@ api.interceptors.request.use(
     }
     return config;
   },
-
   (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      if (typeof window !== 'undefined') {
+        // Limpa todos os dados de autenticação armazenados
+        localStorage.removeItem('token');
+        localStorage.removeItem('session');
+        localStorage.removeItem('provider');
+        localStorage.removeItem('login_timestamp');
+
+        window.location.href = '/auth';
+      }
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api;

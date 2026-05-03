@@ -43,21 +43,35 @@ Make sure to set the URL for your backend API.
 
 ## Running with Docker (recommended)
 
-### 1) Subir Containers
+> O compose do Front sobe **somente o serviço `front`**. Backend (Service + Postgres) é responsabilidade do compose do repositório [`2026.1-MeasureSoftGram-Service`](https://github.com/fga-eps-mds/2026.1-MeasureSoftGram-Service) — suba lá primeiro.
+
+### 1) Subir o Service (em outro terminal, no repo do Service)
+
+```bash
+cd ../2026.1-MeasureSoftGram-Service
+cp -R env-vars-example env-vars   # primeiro setup
+docker compose up -d
+```
+
+API disponível em http://localhost:8080.
+
+### 2) Subir o Front
 
 ```bash
 docker compose up --build
 ```
 
-Aplicação disponível em http://localhost:3000
+Aplicação disponível em http://localhost:3000.
 
-### 2) Parar containers
+> No container do Front, `SERVICE_URL` aponta para `http://host.docker.internal:8080` para acessar o Service rodando no host. No browser, `NEXT_PUBLIC_API_URL` segue como `http://localhost:8080`.
+
+### 3) Parar containers
 
 ```bash
 docker compose down
 ```
 
-### 3) Scripts Úteis
+### 4) Scripts Úteis
 
 - Rodar linter:
 ```bash
@@ -162,3 +176,9 @@ rm -rf .next
 pnpm dev
 ```
 > Evite rodar comandos de node/pnpm com sudo dentro do projeto.
+
+## Governança e contribuição
+
+- **Licença:** este projeto é distribuído sob a [GNU AGPL-3.0](LICENSE).
+- **Código de conduta:** consulte [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) antes de interagir com a comunidade.
+- **Como contribuir:** veja [CONTRIBUTING.md](CONTRIBUTING.md) para padrões de branch, PR e revisão.
