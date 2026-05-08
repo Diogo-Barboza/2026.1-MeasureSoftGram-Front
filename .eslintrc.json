@@ -37,6 +37,7 @@
     "no-use-before-define": "off",
     "no-undef": "off",
     "no-void": "off",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
   }
 }

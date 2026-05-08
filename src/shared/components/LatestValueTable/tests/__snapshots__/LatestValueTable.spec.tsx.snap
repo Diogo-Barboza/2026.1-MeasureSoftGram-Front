@@ -59,7 +59,7 @@ exports[`<LatestValueTable /> should render correctly 1`] = `
             <td
               class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-15suxum-MuiTableCell-root"
             >
-              21/06/2023 19:42:39
+              21/06/2023 22:42:39
             </td>
           </tr>
           <tr
@@ -79,7 +79,7 @@ exports[`<LatestValueTable /> should render correctly 1`] = `
             <td
               class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-15suxum-MuiTableCell-root"
             >
-              21/06/2023 19:42:39
+              21/06/2023 22:42:39
             </td>
           </tr>
         </tbody>

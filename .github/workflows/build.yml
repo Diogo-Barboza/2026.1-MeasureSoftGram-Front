@@ -1,36 +1,18 @@
-name: Build
+name: Build Docker
+
 on:
   push:
-    branches:
-      - develop
+    branches: [ main, develop ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ main, develop ]
+
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  docker-build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Instalar dependências
-        run: pnpm install --frozen-lockfile
-
-      - name: Rodar testes
-        run: pnpm run ci:test --coverage
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Build da imagem Docker
+        run: docker build -t measuresoftgram-front:ci -f Dockerfile .

@@ -6,19 +6,19 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="styles__LayoutGrid-sc-1vn80o5-0 imgYUJ"
+        class="sc-jXbUNg fzDCPM"
       >
         <div
-          class="styles__SideMenuArea-sc-1vn80o5-1 hhwMgH"
+          class="sc-dhKdcB jbKGak"
         >
           <div
-            class="styles__Wrapper-sc-b15uhj-0 cHngTa"
+            class="sc-eqUAAy eEnUfC"
           >
             <div
               class="MuiBox-root css-nb2z2f"
             >
               <img
-                class="styles__Logo-sc-b15uhj-3 kOREjR"
+                class="sc-iGgWBj chccMS"
                 height="50"
                 src="/images/svg/logo_white.svg"
               />
@@ -70,7 +70,7 @@ Object {
                 organization.placeholder
               </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MSGSelectBox__MSGSelectStyle-sc-v6tb10-0 IhjZt css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl sc-kAyceB clWvmT css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
               >
                 <div
                   aria-controls=":r0:"
@@ -108,10 +108,10 @@ Object {
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+                  class="MuiOutlinedInput-notchedOutline css-r01yff-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="css-yjsfm1"
+                    class="css-njhac4-MuiNotchedOutlined-root"
                   >
                     <span>
                       organization.placeholder
@@ -121,7 +121,7 @@ Object {
               </div>
             </div>
             <div
-              class="styles__CollapseButton-sc-b15uhj-2 kKwAzd"
+              class="sc-dcJsrY aKLgq"
             >
               <svg
                 aria-hidden="true"
@@ -131,7 +131,7 @@ Object {
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M14.91 6.71a.9959.9959 0 0 0-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41z"
+                  d="M14.91 6.71a.9959.9959 0 0 0-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41"
                 />
               </svg>
             </div>
@@ -139,7 +139,7 @@ Object {
               class="MuiDivider-root MuiDivider-fullWidth css-qrim74-MuiDivider-root"
             />
             <div
-              class="styles__ItemContainer-sc-b15uhj-1 eKkGaj"
+              class="sc-fqkvVR aYBmB"
             />
             <hr
               class="MuiDivider-root MuiDivider-fullWidth css-fan870-MuiDivider-root"
@@ -149,11 +149,11 @@ Object {
             >
               <div
                 aria-label="tooltip.user-menu"
-                class="styles__Wrapper-sc-13gge7k-0 kpGTRb"
+                class="sc-aXZVg iCpfhn"
                 data-mui-internal-clone-element="true"
               >
                 <div
-                  class="styles__IconContainer-sc-13gge7k-1 iqhYai"
+                  class="sc-gEvEer Ydgym"
                 >
                   <div
                     class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-128rogb-MuiAvatar-root"
@@ -201,10 +201,10 @@ Object {
           </div>
         </div>
         <div
-          class="styles__MainContentArea-sc-1vn80o5-2 jdRHxL"
+          class="sc-kpDqfm kkwtWg"
         >
           <div
-            class="styles__Wrapper-sc-qmak3r-0 ijzQmD"
+            class="sc-imWYAI HEnJP"
           >
             <div
               class="MuiContainer-root MuiContainer-maxWidthLg css-1oqqzyl-MuiContainer-root"
@@ -232,7 +232,7 @@ Object {
                           viewBox="0 0 24 24"
                         >
                           <path
-                            d="m12 5.69 5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3 2 12h3v8h6v-6h2v6h6v-8h3L12 3z"
+                            d="m12 5.69 5 4.5V18h-2v-6H9v6H7v-7.81zM12 3 2 12h3v8h6v-6h2v6h6v-8h3z"
                           />
                         </svg>
                       </div>
@@ -326,26 +326,26 @@ Object {
           </div>
         </div>
         <div
-          class="styles__RightSideArea-sc-1vn80o5-3 kQzEBF"
+          class="sc-dAlyuH kmUtgo"
         />
       </div>
     </div>
   </body>,
   "container": <div>
     <div
-      class="styles__LayoutGrid-sc-1vn80o5-0 imgYUJ"
+      class="sc-jXbUNg fzDCPM"
     >
       <div
-        class="styles__SideMenuArea-sc-1vn80o5-1 hhwMgH"
+        class="sc-dhKdcB jbKGak"
       >
         <div
-          class="styles__Wrapper-sc-b15uhj-0 cHngTa"
+          class="sc-eqUAAy eEnUfC"
         >
           <div
             class="MuiBox-root css-nb2z2f"
           >
             <img
-              class="styles__Logo-sc-b15uhj-3 kOREjR"
+              class="sc-iGgWBj chccMS"
               height="50"
               src="/images/svg/logo_white.svg"
             />
@@ -397,7 +397,7 @@ Object {
               organization.placeholder
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MSGSelectBox__MSGSelectStyle-sc-v6tb10-0 IhjZt css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl sc-kAyceB clWvmT css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
             >
               <div
                 aria-controls=":r0:"
@@ -435,10 +435,10 @@ Object {
               </svg>
               <fieldset
                 aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-r01yff-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="css-yjsfm1"
+                  class="css-njhac4-MuiNotchedOutlined-root"
                 >
                   <span>
                     organization.placeholder
@@ -448,7 +448,7 @@ Object {
             </div>
           </div>
           <div
-            class="styles__CollapseButton-sc-b15uhj-2 kKwAzd"
+            class="sc-dcJsrY aKLgq"
           >
             <svg
               aria-hidden="true"
@@ -458,7 +458,7 @@ Object {
               viewBox="0 0 24 24"
             >
               <path
-                d="M14.91 6.71a.9959.9959 0 0 0-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41z"
+                d="M14.91 6.71a.9959.9959 0 0 0-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41"
               />
             </svg>
           </div>
@@ -466,7 +466,7 @@ Object {
             class="MuiDivider-root MuiDivider-fullWidth css-qrim74-MuiDivider-root"
           />
           <div
-            class="styles__ItemContainer-sc-b15uhj-1 eKkGaj"
+            class="sc-fqkvVR aYBmB"
           />
           <hr
             class="MuiDivider-root MuiDivider-fullWidth css-fan870-MuiDivider-root"
@@ -476,11 +476,11 @@ Object {
           >
             <div
               aria-label="tooltip.user-menu"
-              class="styles__Wrapper-sc-13gge7k-0 kpGTRb"
+              class="sc-aXZVg iCpfhn"
               data-mui-internal-clone-element="true"
             >
               <div
-                class="styles__IconContainer-sc-13gge7k-1 iqhYai"
+                class="sc-gEvEer Ydgym"
               >
                 <div
                   class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-128rogb-MuiAvatar-root"
@@ -528,10 +528,10 @@ Object {
         </div>
       </div>
       <div
-        class="styles__MainContentArea-sc-1vn80o5-2 jdRHxL"
+        class="sc-kpDqfm kkwtWg"
       >
         <div
-          class="styles__Wrapper-sc-qmak3r-0 ijzQmD"
+          class="sc-imWYAI HEnJP"
         >
           <div
             class="MuiContainer-root MuiContainer-maxWidthLg css-1oqqzyl-MuiContainer-root"
@@ -559,7 +559,7 @@ Object {
                         viewBox="0 0 24 24"
                       >
                         <path
-                          d="m12 5.69 5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3 2 12h3v8h6v-6h2v6h6v-8h3L12 3z"
+                          d="m12 5.69 5 4.5V18h-2v-6H9v6H7v-7.81zM12 3 2 12h3v8h6v-6h2v6h6v-8h3z"
                         />
                       </svg>
                     </div>
@@ -653,7 +653,7 @@ Object {
         </div>
       </div>
       <div
-        class="styles__RightSideArea-sc-1vn80o5-3 kQzEBF"
+        class="sc-dAlyuH kmUtgo"
       />
     </div>
   </div>,
