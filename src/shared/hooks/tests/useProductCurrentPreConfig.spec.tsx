@@ -1,5 +1,5 @@
 import React from "react";
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { useProductCurrentPreConfig } from "@hooks/useProductCurrentPreConfig";
 import { renderHook, waitFor } from "@testing-library/react";
 import { OrganizationProvider } from "@contexts/OrganizationProvider";
