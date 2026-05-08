@@ -39,11 +39,21 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
 
   const onSubmit = async (data: SignUpFormData) => {
     const response = await signUp(data);
+
     if (response.type === 'success') {
       toast.success('Usuário cadastrado com sucesso!');
-      changeAuthState(); // Switch to sign-in state after successful sign-up
+      changeAuthState();
     } else {
-      toast.error(`Erro ao cadastrar usuário: ${response.error.message}`);
+      // Captura o erro 400 e verifica se é um erro de duplicidade
+      const AxiosError = response.error;
+      const status = AxiosError.response?.status;
+      const errorData = AxiosError.response?.data as any;
+
+      if (status === 400 && (errorData?.email || errorData?.username || JSON.stringify(errorData).includes('already exists'))) {
+        toast.error("Esse usuário já existe no banco, use um email diferente.");
+      } else {
+        toast.error(`Erro ao cadastrar usuário: ${AxiosError.message}`);
+      }
     }
   };
 
