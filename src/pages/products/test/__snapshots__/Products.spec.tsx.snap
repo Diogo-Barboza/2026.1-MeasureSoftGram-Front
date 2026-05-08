@@ -24,7 +24,7 @@ Object {
           </div>
           <div
             class="MuiBox-root css-0"
-            style="border: 1px solid rgb(43, 77, 111); border-radius: 10px; box-sizing: border-box;"
+            style="border: 1px solid #2b4d6f; border-radius: 10px; box-sizing: border-box;"
           >
              
             <div
@@ -85,7 +85,7 @@ Object {
         </div>
         <div
           class="MuiBox-root css-0"
-          style="border: 1px solid rgb(43, 77, 111); border-radius: 10px; box-sizing: border-box;"
+          style="border: 1px solid #2b4d6f; border-radius: 10px; box-sizing: border-box;"
         >
            
           <div

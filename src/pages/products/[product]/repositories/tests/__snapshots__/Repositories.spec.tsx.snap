@@ -46,7 +46,7 @@ Object {
         </div>
         <div
           class="MuiBox-root css-1k9wtw"
-          style="background-color: white; border: 1px solid rgba(43, 77, 111, 0.5); border-radius: 10px;"
+          style="background-color: white; border: 1px solid #2b4d6f80; border-radius: 10px;"
         >
           <div
             class="MuiTableContainer-root css-rorn0c-MuiTableContainer-root"
@@ -186,7 +186,7 @@ Object {
       </div>
       <div
         class="MuiBox-root css-1k9wtw"
-        style="background-color: white; border: 1px solid rgba(43, 77, 111, 0.5); border-radius: 10px;"
+        style="background-color: white; border: 1px solid #2b4d6f80; border-radius: 10px;"
       >
         <div
           class="MuiTableContainer-root css-rorn0c-MuiTableContainer-root"

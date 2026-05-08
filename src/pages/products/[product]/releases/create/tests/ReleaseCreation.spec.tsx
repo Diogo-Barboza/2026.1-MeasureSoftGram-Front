@@ -644,13 +644,8 @@ describe('ReleaseInfo Component', () => {
     const checkbox = screen.getByLabelText(t('followLastConfig')) as HTMLInputElement;
     fireEvent.click(checkbox);
 
-    let nextButton: HTMLElement;
-    for (let i = 0; i < 3; i++) {
-      nextButton = await screen.findByText(/Next/i);
-      fireEvent.click(nextButton);
-    }
-
-    expect(await screen.findByText(t("balanceGoal"))).toBeInTheDocument();
+    await clickButtonAndWaitFor(t('next'), t('defineCharacteristics'));
+    await clickButtonAndWaitFor(t('next'), t('balanceGoal'));
 
   });
 
@@ -1009,11 +1004,9 @@ describe('ReleaseInfo Component', () => {
     const checkbox = screen.getByLabelText(t('followLastConfig')) as HTMLInputElement;
     fireEvent.click(checkbox);
 
-    let nextButton: HTMLElement;
-    for (let i = 0; i < 3; i++) {
-      nextButton = await screen.findByText(/Next/i);
-      fireEvent.click(nextButton);
-    }
+    await clickButtonAndWaitFor(t('next'), t('defineCharacteristics'));
+    await clickButtonAndWaitFor(t('next'), t('balanceGoal'));
+
     fireEvent.click(await screen.findByText(t('allowBalanceGoal')));
     expect(await screen.findByText(t("balanceGoal"))).toBeInTheDocument();
   });
