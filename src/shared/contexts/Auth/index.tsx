@@ -3,8 +3,7 @@ import { getUserInfo, signInCredentials, signInGithub, signOut } from '@services
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { useLocalStorage } from '@hooks/useLocalStorage';
-import ConfirmModal from '@components/ConfirmModal/ConfirmModal'; // NOVO IMPORT
-
+import ConfirmModal from '@components/ConfirmModal/ConfirmModal';
 export const authContextDefaultValues: authContextType = {
   session: null,
   loading: 'loading',
@@ -23,6 +22,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const router = useRouter();
   const hasExecuted = useRef(false);
   const warningShownRef = useRef(false); // NOVO: Rastreia se o aviso já foi mostrado
+  const hasRedirected = useRef(false);
 
   const {
     storedValue: session,
@@ -64,7 +64,13 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     const response = await getUserInfo();
     if (response.type === 'success') {
       setSession(response.value);
-      if (router?.pathname === '/') {
+      
+      const params = new URLSearchParams(window.location.search);
+      const state = params.get('state');
+
+      // Se estamos na raiz mas viemos com um "state" do GitHub, não redirecione para a home, 
+      // pois o outro useEffect vai cuidar de redirecionar para o local correto.
+      if (router?.pathname === '/' && !state) {
         await router.push('/home');
         toast.success(`Bem vindo ao MeasureSoftGram ${response?.value?.username}!`);
       }
@@ -169,11 +175,20 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
+    const state = params.get('state');
+
+    if (code && state && state.startsWith('/') && !hasRedirected.current) {
+      hasRedirected.current = true;
+      const separator = state.includes('?') ? '&' : '?';
+      router.push(`${state}${separator}code=${code}`);
+      return;
+    }
+
     if (code && provider === 'github' && !token && !hasExecuted.current) {
       hasExecuted.current = true;
       signInWithGithub(code as string);
     }
-  }, [provider, token, signInWithGithub]);
+  }, [provider, token, signInWithGithub, router]);
 
   useEffect(() => {
     setLoading('loading');

@@ -53,7 +53,7 @@ const Repositories: NextPageWithLayout = () => {
   };
 
   const handleGithubClick = () => {
-    router.push(getGithubAuthUrlToRepositoriesPage(router.asPath), undefined);
+    router.push(getGithubAuthUrlToRepositoriesPage(router.asPath.split('?')[0]), undefined);
   }
 
   const handleCloseModal = () => {

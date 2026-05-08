@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import { useRepositoryContext } from '@contexts/RepositoryProvider';
+import { useProductContext } from '@contexts/ProductProvider';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
 
 import { repository } from '@services/repository';
 import { productQuery } from '@services/product';
@@ -25,6 +27,9 @@ export const useQuery = () => {
     setLatestTSQMI,
     setLatestTSQMIBadgeUrl
   } = useRepositoryContext();
+
+  const { setCurrentProduct, currentProduct } = useProductContext();
+  const { currentOrganization, organizationList, setCurrentOrganizations } = useOrganizationContext();
 
   const [repositoryHistoricalCharacteristics, setRepositoryHistoricalCharacteristics] = useState<Historical[]>([]);
   const [latestValueCharacteristics, setLatestValueCharacteristics] = useState<LatestValues[]>([]);
@@ -175,11 +180,38 @@ export const useQuery = () => {
     }
   }
 
+  async function loadProduct(organizationId: string, productId: string) {
+    try {
+      const result = await productQuery.getProductById(organizationId, productId);
+      if (result.type === 'success') {
+        setCurrentProduct(result.value);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+    }
+  }
+
+  // Sincroniza a organização selecionada com base na URL (caso o usuário entre direto na página)
+  useEffect(() => {
+    if (query?.product && organizationList.length > 0) {
+      const [organizationId] = getPathId(query?.product as string);
+      if (!currentOrganization || String(currentOrganization.id) !== organizationId) {
+        const matchingOrg = organizationList.find(org => String(org.id) === organizationId);
+        if (matchingOrg) {
+          setCurrentOrganizations([matchingOrg]);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query?.product, organizationList]);
+
+  // Carrega os dados do repositório quando o query muda
   useEffect(() => {
     if (query?.repository) {
       const [organizationId, productId] = getPathId(query?.product as string);
       const [repositoryId] = getPathId(query?.repository as string);
 
+      loadProduct(organizationId, productId);
       loadRepositoryInfo(organizationId, productId, repositoryId);
       loadCompareGoalAccomplished(organizationId, productId, repositoryId).then((data) => {
         setcomparedGoalAccomplished(data);
@@ -187,6 +219,20 @@ export const useQuery = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query?.repository]);
+
+  // Re-seta o currentProduct após o ProductProvider resetá-lo (ao trocar de organização).
+  // O ProductProvider faz setCurrentProduct(null) quando currentOrganization muda,
+  // por isso precisamos re-carregar o produto correto quando ele ficar null.
+  useEffect(() => {
+    if (query?.product && currentOrganization && !currentProduct) {
+      const [organizationId, productId] = getPathId(query?.product as string);
+      // Só re-carrega se a organização no contexto já é a correta
+      if (String(currentOrganization.id) === organizationId) {
+        loadProduct(organizationId, productId);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProduct, currentOrganization, query?.product]);
 
   return {
     repositoryHistoricalCharacteristics,
