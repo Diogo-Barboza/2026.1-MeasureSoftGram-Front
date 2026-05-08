@@ -50,7 +50,7 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
       const errorData = AxiosError.response?.data as any;
 
       if (status === 400 && (errorData?.email || errorData?.username || JSON.stringify(errorData).includes('already exists'))) {
-        toast.error("Esse usuário já existe no banco, use um email diferente.");
+        toast.error("Esse usuário já existe, tente usar um email diferente.");
       } else {
         toast.error(`Erro ao cadastrar usuário: ${AxiosError.message}`);
       }
