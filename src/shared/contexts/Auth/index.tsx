@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     if (response.type === 'success') {
       setSession(response.value);
       
-      const params = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(globalThis.location.search);
       const state = params.get('state');
 
       // Se estamos na raiz mas viemos com um "state" do GitHub, não redirecione para a home, 
@@ -173,7 +173,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   }, [logout, session, token]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(globalThis.location.search);
     const code = params.get('code');
     const state = params.get('state');
 
