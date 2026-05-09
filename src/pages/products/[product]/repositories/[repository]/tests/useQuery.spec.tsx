@@ -1,4 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { productQuery } from '@services/product';
 import { useQuery } from '../hooks/useQuery';
 
 // ---- Mocks ----
@@ -133,8 +134,6 @@ describe('useQuery', () => {
   });
 
   it('should reload product when currentProduct becomes null after org change', async () => {
-    const { productQuery } = require('@services/product');
-
     mockCurrentOrganization = { id: '1', name: 'Org 1' };
     mockCurrentProduct = null;
     mockQuery = { product: '1-2' };
@@ -147,8 +146,6 @@ describe('useQuery', () => {
   });
 
   it('should call loadProduct when repository query changes', async () => {
-    const { productQuery } = require('@services/product');
-
     mockQuery = {
       product: '10-20',
       repository: '30-test',
@@ -162,7 +159,6 @@ describe('useQuery', () => {
   });
 
   it('should handle loadProduct error gracefully', async () => {
-    const { productQuery } = require('@services/product');
     productQuery.getProductById.mockRejectedValueOnce(new Error('Network error'));
 
     mockQuery = {
