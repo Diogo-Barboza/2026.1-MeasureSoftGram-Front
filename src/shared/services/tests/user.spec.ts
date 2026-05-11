@@ -1,10 +1,11 @@
 import api from '../api';
-import { userQuery } from '../user'; // Verifique se a importação corresponde ao nome exportado no seu arquivo user.ts
-import { getAccessToken } from '@services/Auth';
+import * as userService from '../user';
+import * as authService from '@services/Auth';
 
 jest.mock('../api');
+
 jest.mock('@services/Auth', () => ({
-  getAccessToken: jest.fn(() => 'mock-token'),
+  getAccessToken: jest.fn(),
 }));
 
 describe('User Service', () => {
@@ -12,29 +13,54 @@ describe('User Service', () => {
     jest.clearAllMocks();
   });
 
-  it('deve buscar os detalhes do usuário com sucesso (GET)', async () => {
-    const mockData = { id: '1', name: 'Zafiro' };
+  it('deve buscar todos os usuários com sucesso (getAllUsers)', async () => {
+    (authService.getAccessToken as jest.Mock).mockResolvedValue({
+      type: 'success',
+      value: { key: 'mock-token' }
+    });
+
+    const mockData = { count: 1, next: null, previous: null, results: [{ id: 1, username: 'Zafiro' }] };
     (api.get as jest.Mock).mockResolvedValue({ data: mockData });
 
-    const result = await userQuery.getUser('1');
-
-    expect(api.get).toHaveBeenCalledWith('/users/1/', expect.any(Object));
-    expect(result.data).toEqual(mockData);
+    const result = await userService.getAllUsers();
+    
+    expect(api.get).toHaveBeenCalledWith('/accounts/users/', {
+      headers: { Authorization: 'Token mock-token' }
+    });
+    expect(result).toEqual({ type: 'success', value: mockData });
   });
 
-  it('deve retornar erro ao falhar na busca (GET)', async () => {
-    const mockError = new Error('Network Error');
-    (api.get as jest.Mock).mockRejectedValue(mockError);
+  it('deve retornar erro no getAllUsers se o token não for encontrado', async () => {
+    (authService.getAccessToken as jest.Mock).mockResolvedValue({
+      type: 'error',
+      error: new Error('Sem token')
+    });
 
-    await expect(userQuery.getUser('1')).rejects.toThrow('Network Error');
+    const result = await userService.getAllUsers();
+    
+    expect(result.type).toBe('error');
+    expect(api.get).not.toHaveBeenCalled();
   });
 
-  it('deve criar um usuário com sucesso (POST)', async () => {
-    const mockPayload = { name: 'Novo Usuário', email: 'test@test.com' };
-    (api.post as jest.Mock).mockResolvedValue({ data: mockPayload });
+  it('deve buscar os repositórios do usuário com sucesso (getUserRepos)', async () => {
+    const mockData = { total_count: 1, items: [{ id: 1, name: 'repo-teste' }] };
+    (api.get as jest.Mock).mockResolvedValue({ data: mockData });
 
-    const result = await userQuery.createUser(mockPayload);
-    expect(api.post).toHaveBeenCalledWith('/users/', mockPayload);
-    expect(result.data).toEqual(mockPayload);
+    const result = await userService.getUserRepos('codigo-123');
+    
+    expect(api.get).toHaveBeenCalledWith('/accounts/user-repos', { params: { code: 'codigo-123' } });
+    expect(result).toEqual({ type: 'success', value: mockData });
+  });
+
+  it('deve buscar o usuário no Github (getGithubUser)', async () => {
+    const mockData = { login: 'zafiro', id: 123 };
+    (api.get as jest.Mock).mockResolvedValue(mockData); 
+
+    const result = await userService.getGithubUser('token-github');
+    
+    expect(api.get).toHaveBeenCalledWith('https://api.github.com/user', {
+      headers: { Authorization: 'token token-github' }
+    });
+    expect(result).toEqual(mockData);
   });
 });
