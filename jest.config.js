@@ -5,7 +5,6 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
-// Suas configurações de alias dinâmicos continuam normais
 const aliases = require('./settings/alias').reduce((acc, alias) => {
   acc[`^${alias.name}(.*)$`] = `<rootDir>${alias.path}$1`;
   return acc;
@@ -14,9 +13,23 @@ const aliases = require('./settings/alias').reduce((acc, alias) => {
 /** @type {import('jest').Config} */
 const customJestConfig = {
   roots: ['<rootDir>/src'],
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.{ts,tsx}',
+    '!<rootDir>/src/**/_app.next.tsx',
+    '!<rootDir>/src/**/_document.next.tsx',
+  ],
   testRegex: '((\\.|/*.)(spec))\\.tsx?$',
+
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/tests/',
+    '\\.styles\\.(ts|tsx)$',
+    '/Theme/',
+    'index\\.(page\\.)?(ts|tsx)$'
+  ],
+
   coverageDirectory: 'coverage',
+  coverageReporters: ['lcov', 'text', 'html', 'json'],
 
   testEnvironment: 'jest-environment-jsdom',
 
