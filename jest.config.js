@@ -23,7 +23,7 @@ const customJestConfig = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/tests/',
-    '\\.styles\\.(ts|tsx)$',
+    'styles\\.(ts|tsx)$',
     '/Theme/',
     'index\\.(page\\.)?(ts|tsx)$'
   ],
