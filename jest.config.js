@@ -14,7 +14,13 @@ const aliases = require('./settings/alias').reduce((acc, alias) => {
 /** @type {import('jest').Config} */
 const customJestConfig = {
   roots: ['<rootDir>/src'],
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.{ts,tsx}',
+    '!<rootDir>/src/**/*.d.ts',
+    '!<rootDir>/src/**/styles.ts',
+    '!<rootDir>/src/**/index.{ts,tsx}', 
+    '!<rootDir>/src/**/*.page.{ts,tsx}',
+  ],
   testRegex: '((\\.|/*.)(spec))\\.tsx?$',
   coverageDirectory: 'coverage',
 
