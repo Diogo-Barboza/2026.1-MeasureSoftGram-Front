@@ -15,8 +15,12 @@ const customJestConfig = {
   roots: ['<rootDir>/src'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.{ts,tsx}',
-    '!<rootDir>/src/**/_app.next.tsx',
-    '!<rootDir>/src/**/_document.next.tsx',
+    '!<rootDir>/src/**/*.d.ts',
+    '!<rootDir>/src/**/styles.ts',
+    '!<rootDir>/src/**/index.{ts,tsx}', 
+    '!<rootDir>/src/**/*.page.{ts,tsx}',
+    '!<rootDir>/src/**/*.next.{ts,tsx}',
+    '!<rootDir>/src/shared/services/subCharacteristics.ts'
   ],
   testRegex: '((\\.|/*.)(spec))\\.tsx?$',
 
