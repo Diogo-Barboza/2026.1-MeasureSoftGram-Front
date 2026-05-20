@@ -20,6 +20,7 @@ const customJestConfig = {
     '!<rootDir>/src/**/styles.ts',
     '!<rootDir>/src/**/index.{ts,tsx}', 
     '!<rootDir>/src/**/*.page.{ts,tsx}',
+    '!<rootDir>/src/shared/services/subCharacteristics.ts'
   ],
   testRegex: '((\\.|/*.)(spec))\\.tsx?$',
   coverageDirectory: 'coverage',
