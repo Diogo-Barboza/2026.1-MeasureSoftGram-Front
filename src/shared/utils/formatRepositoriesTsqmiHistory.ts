@@ -14,7 +14,7 @@ interface Props {
 const formatRepositoriesTsqmiHistory = ({history, csvFilters, ref}: Props) => {
   const legendData: string[] = [];
 
-  const series = history.results.map((item) => {
+  const series = (history.results || []).map((item) => {
     legendData.push(item.name);
 
     return {
