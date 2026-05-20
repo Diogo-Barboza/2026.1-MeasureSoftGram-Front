@@ -183,6 +183,35 @@ describe('Auth Service', () => {
     expect(result).toEqual({ type: 'error', error });
   });
 
+  // Testes para getGithubAuthUrl
+  describe('getGithubAuthUrl', () => {
+    it('should return a GitHub OAuth URL with client_id, redirect_uri and scope', () => {
+      const { getGithubAuthUrl } = require('../index');
+      const url = getGithubAuthUrl();
+
+      expect(url).toContain('https://github.com/login/oauth/authorize');
+      expect(url).toContain('client_id=');
+      expect(url).toContain('redirect_uri=');
+      expect(url).toContain('scope=repo,read:org,user');
+    });
+  });
+
+  // Testes para getGithubAuthUrlToRepositoriesPage
+  describe('getGithubAuthUrlToRepositoriesPage', () => {
+    it('should return a GitHub OAuth URL with state parameter and scope', () => {
+      const { getGithubAuthUrlToRepositoriesPage } = require('../index');
+      const pathName = '/products/1-test/repositories/2-repo';
+      const url = getGithubAuthUrlToRepositoriesPage(pathName);
+
+      expect(url).toContain('https://github.com/login/oauth/authorize');
+      expect(url).toContain('client_id=');
+      expect(url).toContain('redirect_uri=');
+      expect(url).toContain(`state=${pathName}`);
+      expect(url).toContain('scope=repo,read:org,user');
+      expect(url).toContain('prompt=select_account');
+    });
+  });
+
   // ... Fim dos testes
 
 

@@ -31,7 +31,7 @@ const formatCharacteristicsHistory = ({ historical, title, isEmpty = false, csvF
 
   const onEvents = {
     datazoom: () => {
-      if (ref.current && csvFilters.dateRange) {
+      if (ref.current && csvFilters.dateRange && typeof ref.current.getEchartsInstance === 'function') {
         const chart = ref.current.getEchartsInstance();
         // @ts-ignore
         const { startValue, endValue } = chart.getOption().dataZoom[0];

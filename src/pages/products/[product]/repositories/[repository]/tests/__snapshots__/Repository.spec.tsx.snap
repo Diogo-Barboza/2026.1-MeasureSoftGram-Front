@@ -191,9 +191,9 @@ exports[`<Repository /> Should render correctly 1`] = `
             id="vertical-tabpanel-0"
             role="tabpanel"
           >
-            <span
-              class="MuiSkeleton-root MuiSkeleton-rectangular MuiSkeleton-pulse css-153n0d3-MuiSkeleton-root"
-              style="height: 300px;"
+            <div
+              class="MuiBox-root css-fre4n5"
+              style="opacity: 1; webkit-transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
             />
           </div>
           <div
@@ -296,9 +296,9 @@ exports[`<Repository /> Should render correctly 1`] = `
             id="vertical-tabpanel-0"
             role="tabpanel"
           >
-            <span
-              class="MuiSkeleton-root MuiSkeleton-rectangular MuiSkeleton-pulse css-153n0d3-MuiSkeleton-root"
-              style="height: 300px;"
+            <div
+              class="MuiBox-root css-13kcqfm"
+              style="opacity: 1; webkit-transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
             />
           </div>
         </div>
@@ -390,9 +390,9 @@ exports[`<Repository /> Should render correctly 1`] = `
             id="vertical-tabpanel-0"
             role="tabpanel"
           >
-            <span
-              class="MuiSkeleton-root MuiSkeleton-rectangular MuiSkeleton-pulse css-153n0d3-MuiSkeleton-root"
-              style="height: 300px;"
+            <div
+              class="MuiBox-root css-13kcqfm"
+              style="opacity: 1; webkit-transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
             />
           </div>
         </div>
@@ -405,16 +405,56 @@ exports[`<Repository /> Should render correctly 1`] = `
             repository.measure-history
           </h2>
         </div>
-        <span
-          class="MuiSkeleton-root MuiSkeleton-rectangular MuiSkeleton-pulse css-153n0d3-MuiSkeleton-root"
-          style="height: 300px;"
+        <div
+          class="MuiBox-root css-13kcqfm"
+          style="opacity: 1; webkit-transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 1500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
         />
         <div
           class="MuiBox-root css-10khgmf"
         >
-          <span
-            class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-j70xtz-MuiSkeleton-root"
-          />
+          <div
+            class="MuiBox-root css-0"
+          >
+            <div
+              class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiTableContainer-root css-18s8wze-MuiPaper-root-MuiTableContainer-root"
+              style="opacity: 1; webkit-transition: opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
+            >
+              <table
+                aria-label="simple table"
+                class="MuiTable-root MuiTable-stickyHeader css-xn82ks-MuiTable-root"
+              >
+                <thead
+                  class="MuiTableHead-root css-15wwp11-MuiTableHead-root"
+                >
+                  <tr
+                    class="MuiTableRow-root MuiTableRow-head css-1q1u3t4-MuiTableRow-root"
+                  >
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head MuiTableCell-stickyHeader MuiTableCell-sizeMedium css-y8ay40-MuiTableCell-root"
+                      scope="col"
+                    >
+                      repository.metrics
+                    </th>
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head MuiTableCell-stickyHeader MuiTableCell-alignRight MuiTableCell-sizeMedium css-i02g0k-MuiTableCell-root"
+                      scope="col"
+                    >
+                      lastValue
+                    </th>
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head MuiTableCell-stickyHeader MuiTableCell-alignRight MuiTableCell-sizeMedium css-i02g0k-MuiTableCell-root"
+                      scope="col"
+                    >
+                      lastMeasurement
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="MuiTableBody-root css-apqrd9-MuiTableBody-root"
+                />
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
