@@ -144,7 +144,7 @@ Object {
   "xAxis": Array [
     Object {
       "data": Array [
-        "28/11/2023 00:53",
+        "27/11/2023 21:53",
       ],
       "gridIndex": 0,
       "show": false,
@@ -152,7 +152,7 @@ Object {
     },
     Object {
       "data": Array [
-        "28/11/2023 00:53",
+        "27/11/2023 21:53",
       ],
       "gridIndex": 1,
       "show": true,

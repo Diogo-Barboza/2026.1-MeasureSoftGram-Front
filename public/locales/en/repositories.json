@@ -43,6 +43,15 @@
     "measure": "Measures",
     "measure-history": "Measures History",
     "measure-scenario": "Current Measures Scenario",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "badge-tooltip": "Repository quality",
+    "copy-badge": "Copy Badge",
+    "badge-copied": "Badge copied successfully!",
+    "badge-instructions": "Paste the code below in your repository's README:",
+    "badge-cancel": "Cancel",
+    "badge-copy-btn": "Copy",
+    "badge-copy-error": "Failed to copy to clipboard.",
+    "badge-stale": "The last analysis was performed more than 30 days ago. The badge may be outdated.",
+    "badge-error": "An error occurred while loading badge information."
   }
 }

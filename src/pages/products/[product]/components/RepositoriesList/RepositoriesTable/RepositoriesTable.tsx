@@ -19,6 +19,7 @@ import TsqmiBadge from '@pages/products/[product]/repositories/[repository]/comp
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@hooks/useQuery';
 import { productQuery } from '@services/product';
+import { repository as repositoryService } from '@services/repository';
 import { getPathId } from '@utils/pathDestructer';
 
 interface Props {
@@ -87,9 +88,15 @@ const RepositoriesTable: React.FC<Props> = ({ maxCount }: Props) => {
 
   const getTsqmiValue = (id: number) => repositoriesLatestTsqmi?.results.find(result => result.id === id)?.current_tsqmi
 
-  const getTsqmiUrl = (id: number) => (
-    `${repositoriesLatestTsqmi?.results.find(result => result.id === id)?.url}badge`
-  )
+  const getTsqmiUrl = (repoId: number) => {
+    const [organizationId, productId] = getPathId(router.query?.product as string);
+    return repositoryService.getTsqmiBadgeUrl({
+      organizationId,
+      productId,
+      repositoryId: String(repoId),
+      entity: 'tsqmi'
+    });
+  }
 
   function handleRepositoriesFilter(name: string) {
     if ((name == null || name === '') && repositoryList?.length) {
@@ -192,6 +199,7 @@ const RepositoriesTable: React.FC<Props> = ({ maxCount }: Props) => {
                 <TsqmiBadge
                   latestTSQMI={getTsqmiValue(repo.id)}
                   latestTSQMIBadgeUrl={getTsqmiUrl(repo.id)}
+                  showCopyButton={false}
                 />
               </TableCell>
               <TableCell align="right">
