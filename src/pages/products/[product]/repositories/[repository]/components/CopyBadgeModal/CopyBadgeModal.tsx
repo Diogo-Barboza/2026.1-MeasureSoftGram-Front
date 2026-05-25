@@ -24,9 +24,14 @@ function CopyBadgeModal() {
   const badgeMarkdown = `![MeasureSoftGram](${latestTSQMIBadgeUrl})`;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(badgeMarkdown);
-    handleCloseModal();
-    toast.success(t('repository.badge-copied', 'Badge copiada com sucesso!'));
+    navigator.clipboard.writeText(badgeMarkdown)
+      .then(() => {
+        handleCloseModal();
+        toast.success(t('repository.badge-copied', 'Badge copiada com sucesso!'));
+      })
+      .catch(() => {
+        toast.error(t('repository.badge-copy-error', 'Falha ao copiar para a área de transferência.'));
+      });
   }
 
   return (
