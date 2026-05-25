@@ -1,13 +1,15 @@
 import { useRepositoryContext } from '@contexts/RepositoryProvider';
-import { Alert, Box, Button, IconButton, Modal, Typography } from '@mui/material';
+import { Alert, Box, Button, IconButton, Modal, Tooltip, Typography } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 
 function CopyBadgeModal() {
   const { latestTSQMIBadgeUrl } = useRepositoryContext();
+  const { t } = useTranslation('repositories');
 
   const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -19,17 +21,21 @@ function CopyBadgeModal() {
     setOpenModal(false);
   };
 
+  const badgeMarkdown = `![MeasureSoftGram](${latestTSQMIBadgeUrl})`;
+
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(`![TSQMI Rating](${latestTSQMIBadgeUrl})`);
+    navigator.clipboard.writeText(badgeMarkdown);
     handleCloseModal();
-    toast.success('Copiado com sucesso!');
+    toast.success(t('repository.badge-copied', 'Badge copiada com sucesso!'));
   }
 
   return (
     <>
-      <IconButton onClick={handleOpenModal}>
-        <ContentCopyIcon />
-      </IconButton>
+      <Tooltip title={t('repository.copy-badge', 'Copiar Badge')} placement="top">
+        <IconButton onClick={handleOpenModal} size="small">
+          <ContentCopyIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
 
       <Modal
         open={openModal}
@@ -48,21 +54,29 @@ function CopyBadgeModal() {
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Copiar Badge
+            {t('repository.copy-badge', 'Copiar Badge')}
           </Typography>
           {
             latestTSQMIBadgeUrl ?
               <>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  {t('repository.badge-instructions', 'Cole o código abaixo no README do seu repositório:')}
+                </Typography>
                 <Box
                   sx={{
                     backgroundColor: '#E9E9E9',
                     borderRadius: 1,
                     p: 2,
                     wordBreak: 'break-word',
-                    marginBottom: '10px'
+                    marginBottom: '10px',
+                    fontFamily: 'monospace',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  ![TSQMI Rating]({latestTSQMIBadgeUrl})
+                  {badgeMarkdown}
+                </Box>
+                <Box display="flex" justifyContent="center" mb={2}>
+                  <img src={latestTSQMIBadgeUrl} alt="Badge Preview" style={{ height: '20px' }} />
                 </Box>
                 <Box
                   display="flex"
@@ -74,20 +88,20 @@ function CopyBadgeModal() {
                     onClick={handleCloseModal}
                     variant='outlined'
                   >
-                    Cancelar
+                    {t('repository.badge-cancel', 'Cancelar')}
                   </Button>
                   <Button
                     variant='contained'
                     onClick={copyToClipboard}
+                    startIcon={<ContentCopyIcon />}
                   >
-                    <ContentCopyIcon />
-                    Copiar
+                    {t('repository.badge-copy-btn', 'Copiar')}
                   </Button>
                 </Box>
               </>
               :
               <Alert sx={{ display: "flex", justifyContent: "center", textAlign: 'center' }} severity="error">
-                Ocorreu um erro ao tentar carregar as informações.
+                {t('repository.badge-error', 'Ocorreu um erro ao tentar carregar as informações.')}
               </Alert>
           }
 

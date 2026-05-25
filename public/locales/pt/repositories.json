@@ -43,6 +43,13 @@
     "measure": "Medidas",
     "measure-history": "Histórico de Medidas",
     "measure-scenario": "Cenário atual das Medidas",
-    "metrics": "Métricas"
+    "metrics": "Métricas",
+    "badge-tooltip": "Qualidade do repositório",
+    "copy-badge": "Copiar Badge",
+    "badge-copied": "Badge copiada com sucesso!",
+    "badge-instructions": "Cole o código abaixo no README do seu repositório:",
+    "badge-cancel": "Cancelar",
+    "badge-copy-btn": "Copiar",
+    "badge-error": "Ocorreu um erro ao tentar carregar as informações da badge."
   }
 }
