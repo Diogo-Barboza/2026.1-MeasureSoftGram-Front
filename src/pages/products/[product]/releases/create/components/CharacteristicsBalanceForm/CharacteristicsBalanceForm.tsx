@@ -17,30 +17,47 @@ interface CharacteristicsBalanceFormProps {
 export default function CharacteristicsBalanceForm({ configPageData, setConfigPageData, dinamicBalance, setDinamicBalance, characteristicRelations }: CharacteristicsBalanceFormProps) {
   const { t } = useTranslation('plan_release');
 
-  function handleCharacteristicChange(event: any, characteristicKey: string) {
-    const { value } = event.target;
-    const newGoal = Number(value);
+function handleCharacteristicChange(event: any, characteristicKey: string) {
+  const newGoal = Number(event.target.value);
 
-    setConfigPageData((prevData: { characteristics: Characteristic[] }) => {
-      let relatedCharacteristics: string[] = [];
+  setConfigPageData((prevData: { characteristics: Characteristic[] }) => {
+    const activeChars = prevData.characteristics.filter(c => c.active);
+    const targetChar = activeChars.find(c => c.key === characteristicKey);
 
-      if (!dinamicBalance)
-        relatedCharacteristics = characteristicRelations[characteristicKey]?.["+"] || [];
+    if (!targetChar) return prevData;
 
-      return {
-        ...prevData,
-        characteristics: prevData.characteristics.map((characteristic: Characteristic) => {
-          if (characteristic.key === characteristicKey || relatedCharacteristics.includes(characteristic.key)) {
-            return {
-              ...characteristic,
-              goal: newGoal,
-            };
-          }
-          return characteristic;
-        }),
-      };
-    });
-  }
+    const oldGoal = targetChar.goal;
+    const difference = newGoal - oldGoal;
+
+    if (difference === 0) return prevData;
+
+    const otherChars = activeChars.filter(c => c.key !== characteristicKey);
+    const sumOthers = otherChars.reduce((acc, c) => acc + c.goal, 0);
+
+    return {
+      ...prevData,
+      characteristics: prevData.characteristics.map((characteristic: Characteristic) => {
+        if (characteristic.key === characteristicKey) {
+          return { ...characteristic, goal: newGoal };
+        }
+
+        if (characteristic.active) {
+          const proportion = sumOthers === 0 
+            ? 1 / otherChars.length 
+            : characteristic.goal / sumOthers;
+
+          let adjustedGoal = characteristic.goal - (difference * proportion);
+
+          adjustedGoal = Math.max(0, Math.min(100, adjustedGoal));
+
+          return { ...characteristic, goal: Number(adjustedGoal.toFixed(2)) };
+        }
+
+        return characteristic;
+      }),
+    };
+  });
+}
 
   return <>
     <SectionTooltip text={t("balanceGoal")} tooltip={t("balanceGoalTooltip")} />
