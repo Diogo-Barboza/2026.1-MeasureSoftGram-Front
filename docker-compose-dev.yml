@@ -15,7 +15,7 @@ services:
 
   service:
     container_name: msgram-service
-    image: 2026measuresoftgram/measuresoftgram-service:latest
+    image: measuresoftgram/service:latest
     command: ["./start_service.sh"]
     restart: on-failure
     ports:

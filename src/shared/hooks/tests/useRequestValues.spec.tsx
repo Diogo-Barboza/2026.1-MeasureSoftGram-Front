@@ -1,20 +1,26 @@
 import React from 'react';
 import { useRequestValues } from '@hooks/useRequestValues';
 import { renderHook, waitFor } from '@testing-library/react';
-import { OrganizationProvider } from '@contexts/OrganizationProvider';
-import { RepositoryProvider } from '@contexts/RepositoryProvider';
-import { ProductProvider } from '@contexts/ProductProvider';
 import api from '@services/api';
 
-const AllTheProviders = ({ children }: any) => (
-  <OrganizationProvider>
-    <ProductProvider>
-      <RepositoryProvider>
-        <RepositoryProvider>{children}</RepositoryProvider>
-      </RepositoryProvider>
-    </ProductProvider>
-  </OrganizationProvider>
-);
+jest.mock('@contexts/OrganizationProvider', () => ({
+  useOrganizationContext: () => ({
+    currentOrganization: { id: '1', name: 'Test Org' }
+  })
+}));
+
+jest.mock('@contexts/ProductProvider', () => ({
+  useProductContext: () => ({
+    currentProduct: { id: '1', name: 'Test Product' }
+  })
+}));
+
+jest.mock('@contexts/RepositoryProvider', () => ({
+  useRepositoryContext: () => ({
+    currentRepository: { id: '1', name: 'Test Repo' },
+    historicalTSQMI: null
+  })
+}));
 
 describe('useRequestValues', () => {
   it('should return an array of historical characteristics', async () => {
@@ -53,24 +59,21 @@ describe('useRequestValues', () => {
       }
     });
 
-    const { result, rerender } = renderHook(
-      async () =>
-        useRequestValues({
-          type: 'historical-values',
-          value: 'characteristics'
-        }),
-      {
-        wrapper: AllTheProviders
-      }
+    const { result } = renderHook(() =>
+      useRequestValues({
+        type: 'historical-values',
+        value: 'characteristics'
+      })
     );
 
     expect(api.get).toHaveBeenCalled();
-    await waitFor(() => result.current.isLoading === true);
-    rerender();
-    await waitFor(() => result.current.isLoading === false);
-    rerender();
-    await waitFor(() => result.current.isLoading === false);
-    rerender();
-    await expect(result.current).resolves.toMatchSnapshot();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.data).toHaveLength(1);
+    expect(result.current.data[0].key).toBe('reliability');
+    expect(result.current.data[0].history).toHaveLength(3);
   });
 });
