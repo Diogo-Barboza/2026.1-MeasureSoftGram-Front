@@ -2,6 +2,9 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/router';
 
 import { useRepositoryContext } from '@contexts/RepositoryProvider';
+import { useProductContext } from '@contexts/ProductProvider';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
+
 import { repository } from '@services/repository';
 import { productQuery } from '@services/product';
 
@@ -11,13 +14,21 @@ import { getPathId } from '@utils/pathDestructer';
 
 import { useQuery } from '../useQuery'; // Ajuste o caminho conforme necessário
 
-// 1. Mocks do Next e Contexto
+// 1. Mocks do Next e Contextos
 jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }));
 
 jest.mock('@contexts/RepositoryProvider', () => ({
   useRepositoryContext: jest.fn()
+}));
+
+jest.mock('@contexts/ProductProvider', () => ({
+  useProductContext: jest.fn()
+}));
+
+jest.mock('@contexts/OrganizationProvider', () => ({
+  useOrganizationContext: jest.fn()
 }));
 
 // 2. Mocks dos Serviços
@@ -35,7 +46,8 @@ jest.mock('@services/product', () => ({
     getPreConfigEntitiesRelationship: jest.fn(),
     getMetricsLatestValues: jest.fn(),
     getCharacteristicsLatestValues: jest.fn(),
-    getCompareGoalAccomplished: jest.fn()
+    getCompareGoalAccomplished: jest.fn(),
+    getProductById: jest.fn() // Adicionado pois é chamado no loadProduct
   }
 }));
 
@@ -56,6 +68,17 @@ describe('useQuery Hook', () => {
     setHistoricalTSQMI: jest.fn(),
     setLatestTSQMI: jest.fn(),
     setLatestTSQMIBadgeUrl: jest.fn()
+  };
+
+  const mockProductContext = {
+    setCurrentProduct: jest.fn(),
+    currentProduct: null
+  };
+
+  const mockOrganizationContext = {
+    currentOrganization: { id: 'org' }, // 'org' para bater com o getPathId.split('-')[0]
+    organizationList: [{ id: 'org' }],
+    setCurrentOrganizations: jest.fn()
   };
 
   beforeAll(() => {
@@ -80,7 +103,11 @@ describe('useQuery Hook', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Configura os retornos de todos os hooks de contexto
     (useRepositoryContext as jest.Mock).mockReturnValue(mockSetters);
+    (useProductContext as jest.Mock).mockReturnValue(mockProductContext);
+    (useOrganizationContext as jest.Mock).mockReturnValue(mockOrganizationContext);
   });
 
   it('não deve acionar as requisições se não houver um repositório na query', () => {
@@ -97,7 +124,7 @@ describe('useQuery Hook', () => {
       query: { product: 'org-1-prod-2', repository: 'repo-3' }
     });
 
-    (getPathId as jest.Mock).mockImplementation((str) => str.split('-'));
+    (getPathId as jest.Mock).mockImplementation((str) => str ? str.split('-') : []);
     (formatEntitiesFilter as jest.Mock).mockReturnValue([['char1'], ['sub1'], ['meas1']]);
     (formatEntitiesMetrics as jest.Mock).mockReturnValue([['met1']]);
 
@@ -106,6 +133,7 @@ describe('useQuery Hook', () => {
     (productQuery.getMetricsLatestValues as jest.Mock).mockResolvedValue({ data: 'metrics' });
     (productQuery.getCharacteristicsLatestValues as jest.Mock).mockResolvedValue({ data: ['charData'] });
     (productQuery.getCompareGoalAccomplished as jest.Mock).mockResolvedValue({ data: ['goalAccomplished'] });
+    (productQuery.getProductById as jest.Mock).mockResolvedValue({ type: 'success', value: 'productData' });
 
     (repository.getHistorical as jest.Mock).mockResolvedValue({ data: { results: ['historicalData'] } });
     (repository.getLatest as jest.Mock).mockResolvedValue({ data: 'latestTsqmi' });
@@ -146,13 +174,14 @@ describe('useQuery Hook', () => {
     (useRouter as jest.Mock).mockReturnValue({
       query: { product: 'org-1-prod-2', repository: 'repo-3' }
     });
-    (getPathId as jest.Mock).mockImplementation((str) => str.split('-'));
+    (getPathId as jest.Mock).mockImplementation((str) => str ? str.split('-') : []);
 
     // Rejeições forçadas (Simulação de erro na API/Rede)
     const error = new Error('Network Error');
     (productQuery.getPreConfigEntitiesRelationship as jest.Mock).mockRejectedValue(error);
     (productQuery.getCharacteristicsLatestValues as jest.Mock).mockRejectedValue(error);
     (productQuery.getCompareGoalAccomplished as jest.Mock).mockRejectedValue(error);
+    (productQuery.getProductById as jest.Mock).mockRejectedValue(error);
     
     (repository.getHistorical as jest.Mock).mockRejectedValue(error);
     (repository.getLatest as jest.Mock).mockRejectedValue(error);
