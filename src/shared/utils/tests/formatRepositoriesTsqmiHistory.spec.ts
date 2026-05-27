@@ -1,17 +1,15 @@
-import formatCharacteristicsHistory, { FormatCharacteristicsHistoryType } from '../formatCharacteristicsHistory'; // Ajuste o caminho
-import convertToCsv from '../convertToCsv'; // Ajuste o caminho
+import formatRepositoriesTsqmiHistory from '../formatRepositoriesTsqmiHistory'; 
+import convertToCsv from '../convertToCsv';
 
-// Mock do convertToCsv
 jest.mock('../convertToCsv', () => jest.fn(() => 'csv,mock,content'));
 
-describe('formatCharacteristicsHistory', () => {
+describe('formatRepositoriesTsqmiHistory', () => {
   let mockCreateObjectURL: jest.Mock;
   let mockRevokeObjectURL: jest.Mock;
   let mockCreateElement: jest.SpyInstance;
   let mockAnchorClick: jest.Mock;
 
   beforeAll(() => {
-    // Mocks globais para funções do navegador (Blob, URL, document)
     mockCreateObjectURL = jest.fn().mockReturnValue('blob:http://localhost/mocked-url');
     mockRevokeObjectURL = jest.fn();
     window.URL.createObjectURL = mockCreateObjectURL;
@@ -38,26 +36,23 @@ describe('formatCharacteristicsHistory', () => {
     jest.clearAllMocks();
   });
 
-  // Dados mockados cobrindo cenários 'TSQMI' e não-'TSQMI'
-  const mockHistorical: any[] = [
-    {
-      id: '1',
-      name: 'Métrica TSQMI',
-      key: 'TSQMI-123',
-      history: [
-        { id: 'h1', created_at: '2026-05-20T10:00:00.000Z', value: 1.234 },
-        { id: 'h2', created_at: '2026-05-21T10:00:00.000Z', value: 2.5 }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Outra Métrica',
-      key: 'OTHER-123',
-      history: [
-        { id: 'h3', created_at: '2026-05-20T10:00:00.000Z', value: 3.0 }
-      ]
-    }
-  ];
+  const mockHistory: any = {
+    results: [
+      {
+        name: 'Repositório Backend',
+        history: [
+          { created_at: '2026-05-20T10:00:00.000Z', value: 0.123 },
+          { created_at: '2026-05-21T10:00:00.000Z', value: 0.567 }
+        ]
+      },
+      {
+        name: 'Repositório Frontend',
+        history: [
+          { created_at: '2026-05-20T10:00:00.000Z', value: 0.999 } 
+        ]
+      }
+    ]
+  };
 
   const mockCsvFilters: any = {
     dateRange: { startDate: 0, endDate: 0 }
@@ -72,83 +67,91 @@ describe('formatCharacteristicsHistory', () => {
     }
   };
 
-  it('deve formatar as séries corretamente (incluindo regra ternária da largura da linha)', () => {
-    const result = formatCharacteristicsHistory({
-      historical: mockHistorical,
-      title: 'Título Teste',
-      isEmpty: false,
-      csvFilters: mockCsvFilters,
-      ref: mockRef
-    });
-
-    expect(result.title.text).toBe('Título Teste');
-    
-    // Verifica a largura da linha: 5 para TSQMI, 2 para os demais (linha 22)
-    expect(result.series[0].lineStyle.width).toBe(5);
-    expect(result.series[1].lineStyle.width).toBe(2);
-
-    // Verifica o toFixed(2) (linha 20)
-    expect(result.series[0].data).toEqual(['1.23', '2.50']);
-    expect(result.series[1].data).toEqual(['3.00']);
-  });
-
-  it('deve lidar corretamente com o default param de isEmpty', () => {
-    // Forçamos o envio como undefined para cobrir a ramificação "isEmpty = false" (linha 10)
-    const result = formatCharacteristicsHistory({
-      historical: mockHistorical,
-      title: 'Título',
-      isEmpty: undefined as unknown as boolean, 
-      csvFilters: mockCsvFilters,
-      ref: mockRef
-    });
-
-    expect(result.tooltip.show).toBe(true); // O inverte de `isEmpty` falso
-  });
-
-  it('deve ocultar elementos visuais quando isEmpty for verdadeiro', () => {
-    const result = formatCharacteristicsHistory({
-      historical: mockHistorical,
-      title: 'Chart Vazio',
-      isEmpty: true,
-      csvFilters: mockCsvFilters,
-      ref: mockRef
-    });
-
-    // Se isEmpty for true, esses componentes não devem aparecer
-    expect(result.tooltip.show).toBe(false);
-    expect(result.legend.show).toBe(false);
-    expect(result.grid.show).toBe(false);
-    expect(result.xAxis.show).toBe(false);
-    expect(result.yAxis.show).toBe(false);
-    expect(result.dataZoom[0].show).toBe(false);
-    expect(result.series[0].show).toBe(false);
-  });
-
-  describe('onEvents.datazoom', () => {
-    it('deve atualizar o csvFilters com startDate e endDate baseados no indexToTime', () => {
-      mockGetOption.mockReturnValue({
-        dataZoom: [{ startValue: 0, endValue: 1 }]
+  describe('Formatação de Options e Series', () => {
+    it('deve formatar as séries corretamente, incluindo arredondamento matemático e conversão de data', () => {
+      const result = formatRepositoriesTsqmiHistory({
+        history: mockHistory,
+        csvFilters: mockCsvFilters,
+        ref: mockRef
       });
 
-      const result = formatCharacteristicsHistory({
-        historical: mockHistorical,
-        title: 'Zoom',
-        isEmpty: false,
+      expect(result.options.title.text).toBe('Comportamento observado do produto');
+      expect(result.options.series).toHaveLength(2);
+
+      expect(result.options.series[0].name).toBe('Repositório Backend');
+      expect(result.options.series[0].data[0][0]).toBe(new Date('2026-05-20T10:00:00.000Z').getTime());
+      expect(result.options.series[0].data[0][1]).toBe(0.12); 
+      expect(result.options.series[0].data[1][1]).toBe(0.57); 
+
+      expect(result.options.series[1].name).toBe('Repositório Frontend');
+      expect(result.options.series[1].data[0][1]).toBe(1); 
+    });
+
+    it('deve formatar corretamente a legenda duplicando os itens', () => {
+      const result = formatRepositoriesTsqmiHistory({
+        history: mockHistory,
+        csvFilters: mockCsvFilters,
+        ref: mockRef
+      });
+
+      expect(result.options.legend.data).toEqual([
+        'Repositório Backend', 'Repositório Backend',
+        'Repositório Frontend', 'Repositório Frontend'
+      ]);
+    });
+
+    it('não deve quebrar se history.results for undefined', () => {
+      const result = formatRepositoriesTsqmiHistory({
+        history: {} as any, 
+        csvFilters: mockCsvFilters,
+        ref: mockRef
+      });
+
+      expect(result.options.series).toEqual([]);
+      expect(result.options.legend.data).toEqual([]);
+    });
+  });
+
+  describe('Eventos (onEvents.datazoom)', () => {
+    it('deve atualizar o csvFilters com startValue e endValue vindos do gráfico', () => {
+      mockGetOption.mockReturnValue({
+        dataZoom: [{ startValue: 1620000000, endValue: 1621000000 }]
+      });
+
+      const result = formatRepositoriesTsqmiHistory({
+        history: mockHistory,
         csvFilters: mockCsvFilters,
         ref: mockRef
       });
 
       result.onEvents.datazoom();
 
-      expect(mockCsvFilters.dateRange.startDate).toBeDefined();
-      expect(mockCsvFilters.dateRange.endDate).toBeDefined();
+      expect(mockCsvFilters.dateRange.startDate).toBe(1620000000);
+      expect(mockCsvFilters.dateRange.endDate).toBe(1621000000);
     });
 
-    it('não deve quebrar ou atualizar se ref.current for nulo', () => {
-      const result = formatCharacteristicsHistory({
-        historical: mockHistorical,
-        title: 'Sem ref',
-        isEmpty: false,
+    it('não deve atualizar os filtros se startValue ou endValue não existirem', () => {
+      mockGetOption.mockReturnValue({
+        dataZoom: [{}] 
+      });
+
+      mockCsvFilters.dateRange = { startDate: 0, endDate: 0 };
+
+      const result = formatRepositoriesTsqmiHistory({
+        history: mockHistory,
+        csvFilters: mockCsvFilters,
+        ref: mockRef
+      });
+
+      result.onEvents.datazoom();
+
+      expect(mockCsvFilters.dateRange.startDate).toBe(0);
+      expect(mockCsvFilters.dateRange.endDate).toBe(0);
+    });
+
+    it('não deve quebrar se a ref (ref.current) for nula', () => {
+      const result = formatRepositoriesTsqmiHistory({
+        history: mockHistory,
         csvFilters: mockCsvFilters,
         ref: { current: null }
       });
@@ -157,11 +160,9 @@ describe('formatCharacteristicsHistory', () => {
     });
 
     it('não deve quebrar se csvFilters.dateRange for undefined', () => {
-      const result = formatCharacteristicsHistory({
-        historical: mockHistorical,
-        title: 'Sem filtros',
-        isEmpty: false,
-        csvFilters: {} as any, // Ausência do dateRange
+      const result = formatRepositoriesTsqmiHistory({
+        history: mockHistory,
+        csvFilters: {} as any, 
         ref: mockRef
       });
 
@@ -169,36 +170,31 @@ describe('formatCharacteristicsHistory', () => {
     });
   });
 
-  describe('Export CSV toolbox', () => {
-    it('deve gerar e baixar o CSV ao clicar na ferramenta customizada', () => {
-      const result = formatCharacteristicsHistory({
-        historical: mockHistorical,
-        title: 'Exportando Dados',
-        isEmpty: false,
+  describe('Exportação de CSV (Toolbox customTool)', () => {
+    it('deve gerar e baixar o CSV ao clicar no ícone de exportação', () => {
+      const result = formatRepositoriesTsqmiHistory({
+        history: mockHistory,
         csvFilters: mockCsvFilters,
         ref: mockRef
       });
 
-      // Simula o clique
-      result.toolbox.feature.myCustomTool.onclick();
+      result.options.toolbox.feature.myCustomTool.onclick();
 
-      expect(convertToCsv).toHaveBeenCalledWith(mockHistorical, mockCsvFilters);
+      expect(convertToCsv).toHaveBeenCalledWith(mockHistory.results, mockCsvFilters);
       expect(mockCreateObjectURL).toHaveBeenCalled();
       expect(mockCreateElement).toHaveBeenCalledWith('a');
       expect(mockAnchorClick).toHaveBeenCalled();
       expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/mocked-url');
     });
 
-    it('não deve executar fluxo de CSV se historical for falsy', () => {
-      const result = formatCharacteristicsHistory({
-        historical: undefined as any,
-        title: 'Sem Histórico',
-        isEmpty: false,
+    it('não deve executar o fluxo de CSV se history.results for falsy', () => {
+      const result = formatRepositoriesTsqmiHistory({
+        history: { results: undefined } as any,
         csvFilters: mockCsvFilters,
         ref: mockRef
       });
 
-      result.toolbox.feature.myCustomTool.onclick();
+      result.options.toolbox.feature.myCustomTool.onclick();
 
       expect(convertToCsv).not.toHaveBeenCalled();
     });
