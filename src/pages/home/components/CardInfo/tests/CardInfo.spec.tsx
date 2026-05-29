@@ -7,10 +7,14 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('CardInfo Component', () => {
+  const CARD_TITLE = 'Título Principal do Card';
+  const CARD_DESCRIPTION = 'Descrição do primeiro elemento';
+  const CARD_DESCRIPTION_ALT = 'Desc';
+
   it('deve renderizar o título principal e as descrições básicas', () => {
     const mockData = {
       id: 'card-1',
-      title: 'Título Principal do Card',
+      title: CARD_TITLE,
       elements: [
         {
           title: 'Subtítulo 1',
@@ -22,9 +26,9 @@ describe('CardInfo Component', () => {
 
     render(<CardInfo cardData={mockData} />);
 
-    expect(screen.getByText('Título Principal do Card')).toBeInTheDocument();
-    expect(screen.getByText('Subtítulo 1')).toBeInTheDocument();
-    expect(screen.getByText('Descrição do primeiro elemento')).toBeInTheDocument();
+expect(screen.getByText(CARD_TITLE)).toBeInTheDocument();
+      expect(screen.getByText('Subtítulo 1')).toBeInTheDocument();
+      expect(screen.getByText(CARD_DESCRIPTION)).toBeInTheDocument();
     
     const image = screen.getByAltText('green iguana');
     expect(image).toBeInTheDocument();

@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import Organizations from '../Organizations';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { getAllUsers } from '@services/user';
+import Organizations from '../Organizations';
 import { useOrganizationQuery } from '../hooks/useOrganizationQuery';
 
 jest.mock('next/router', () => ({
@@ -30,6 +30,20 @@ jest.mock('../hooks/useOrganizationQuery', () => ({
 }));
 
 describe('Organizations Component', () => {
+  const INPUT_SELECTOR = 'input';
+  const TEXTAREA_SELECTOR = 'textarea';
+  const INPUT_NAME_TEST_ID = 'input-nome';
+  const INPUT_DESCRIPTION_TEST_ID = 'input-descricao';
+  const ORG_EDITED_NAME = 'Org Editada';
+  const ORG_EXISTING_NAME = 'Org Existente';
+  const NAME_EXISTS_MESSAGE = 'toast.name-exists';
+  const KEY_EXISTS_MESSAGE = 'toast.key-exists';
+  const SERVER_ERROR_MESSAGE = 'server_down';
+  const CREATE_SUCCESS_MESSAGE = 'toast.sucess';
+  const EDIT_SUCCESS_MESSAGE = 'toast.sucess-edit';
+  const GENERIC_ERROR_MESSAGE = 'toast.error';
+  const GENERIC_ERROR_EDIT_MESSAGE = 'toast.error-edit';
+
   const mockCreateOrganization = jest.fn();
   const mockGetOrganizationById = jest.fn();
   const mockUpdateOrganization = jest.fn();
@@ -85,14 +99,14 @@ describe('Organizations Component', () => {
     
     mockGetOrganizationById.mockResolvedValue({
       type: 'success',
-      value: { name: 'Org Editada', key: 'ORG', description: 'Desc', members: ['dev_ninja'] },
+      value: { name: ORG_EDITED_NAME, key: 'ORG', description: 'Desc', members: ['dev_ninja'] },
     });
 
     render(<Organizations />);
 
     await waitFor(() => {
-      const nomeInput = screen.getByTestId('input-nome').querySelector('input');
-      expect(nomeInput?.value).toBe('Org Editada');
+      const nomeInput = screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELECTOR);
+      expect(nomeInput?.value).toBe(ORG_EDITED_NAME);
     });
 
     expect(screen.getByText('title-edit')).toBeInTheDocument();
@@ -126,8 +140,8 @@ describe('Organizations Component', () => {
     mockCreateOrganization.mockResolvedValue({ type: 'success' });
     render(<Organizations />);
 
-    fireEvent.change(screen.getByTestId('input-nome').querySelector('input')!, { target: { value: 'Nova Org' } });
-    fireEvent.change(screen.getByTestId('input-descricao').querySelector('textarea')!, { target: { value: 'Descrição teste' } });
+fireEvent.change(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELECTOR)!, { target: { value: 'Nova Org' } });
+      fireEvent.change(screen.getByTestId(INPUT_DESCRIPTION_TEST_ID).querySelector(TEXTAREA_SELECTOR)!, { target: { value: 'Descrição teste' } });
 
     fireEvent.click(screen.getByText('create'));
 
@@ -135,7 +149,7 @@ describe('Organizations Component', () => {
       expect(mockCreateOrganization).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Nova Org', description: 'Descrição teste', members: [] })
       );
-      expect(toast.success).toHaveBeenCalledWith('toast.sucess');
+      expect(toast.success).toHaveBeenCalledWith(CREATE_SUCCESS_MESSAGE);
     });
 
     act(() => { jest.runAllTimers(); });
@@ -145,40 +159,40 @@ describe('Organizations Component', () => {
   it('deve exibir erros corretos ao falhar a CRIAÇÃO', async () => {
     render(<Organizations />);
 
-    const nomeInput = screen.getByTestId('input-nome').querySelector('input')!;
+    const nomeInput = screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELECTOR)!;
     fireEvent.change(nomeInput, { target: { value: 'Org Falha' } });
 
-    mockCreateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: 'toast.name-exists' } });
+    mockCreateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: NAME_EXISTS_MESSAGE } });
     fireEvent.click(screen.getByText('create'));
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('toast.name-exists'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(NAME_EXISTS_MESSAGE));
 
-    mockCreateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: 'toast.key-exists' } });
+    mockCreateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: KEY_EXISTS_MESSAGE } });
     fireEvent.click(screen.getByText('create'));
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('toast.key-exists'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(KEY_EXISTS_MESSAGE));
 
-    mockCreateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: 'server_down' } });
+    mockCreateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: SERVER_ERROR_MESSAGE } });
     fireEvent.click(screen.getByText('create'));
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('toast.error'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(GENERIC_ERROR_MESSAGE));
   });
 
   it('deve submeter o formulário de EDIÇÃO com sucesso', async () => {
     jest.useFakeTimers();
     (useRouter as jest.Mock).mockReturnValue({ query: { edit: 'org-123' } });
     
-    mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: 'Org Existente' } });
+    mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: ORG_EXISTING_NAME } });
     mockUpdateOrganization.mockResolvedValue({ type: 'success' });
 
     render(<Organizations />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('input-nome').querySelector('input')?.value).toBe('Org Existente');
+      expect(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELECTOR)?.value).toBe(ORG_EXISTING_NAME);
     });
 
     fireEvent.click(screen.getByText('save'));
 
     await waitFor(() => {
       expect(mockUpdateOrganization).toHaveBeenCalled();
-      expect(toast.success).toHaveBeenCalledWith('toast.sucess-edit');
+      expect(toast.success).toHaveBeenCalledWith(EDIT_SUCCESS_MESSAGE);
     });
 
     act(() => { jest.runAllTimers(); });
@@ -188,25 +202,25 @@ describe('Organizations Component', () => {
   it('deve exibir erros corretos ao falhar a EDIÇÃO', async () => {
     (useRouter as jest.Mock).mockReturnValue({ query: { edit: 'org-123' } });
     
-    mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: 'Org Existente' } });
+    mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: ORG_EXISTING_NAME } });
 
     render(<Organizations />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('input-nome').querySelector('input')?.value).toBe('Org Existente');
+      expect(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELECTOR)?.value).toBe(ORG_EXISTING_NAME);
     });
 
-    mockUpdateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: 'toast.name-exists' } });
+    mockUpdateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: NAME_EXISTS_MESSAGE } });
     fireEvent.click(screen.getByText('save'));
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('toast.name-exists'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(NAME_EXISTS_MESSAGE));
 
-    mockUpdateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: 'toast.key-exists' } });
+    mockUpdateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: KEY_EXISTS_MESSAGE } });
     fireEvent.click(screen.getByText('save'));
     
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('toast.key-exists'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(KEY_EXISTS_MESSAGE));
 
-    mockUpdateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: 'server_down' } });
+    mockUpdateOrganization.mockResolvedValueOnce({ type: 'error', error: { message: SERVER_ERROR_MESSAGE } });
     fireEvent.click(screen.getByText('save'));
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('toast.error-edit'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(GENERIC_ERROR_EDIT_MESSAGE));
   });
 });

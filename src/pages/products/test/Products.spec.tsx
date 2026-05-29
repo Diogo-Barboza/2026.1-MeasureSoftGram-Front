@@ -1,9 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { ProductProvider } from '@contexts/ProductProvider';
-import { OrganizationProvider } from '@contexts/OrganizationProvider';
-import Products from '../Products';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import { useProductContext } from '@contexts/ProductProvider';
+import Products from '../Products';
 
 jest.mock('next/router', () => ({
   useRouter: () => ({ push: jest.fn() }),
@@ -11,18 +11,15 @@ jest.mock('next/router', () => ({
 
 jest.mock('@contexts/OrganizationProvider', () => ({
   useOrganizationContext: jest.fn(),
-  OrganizationProvider: ({ children }: any) => <>{children}</>
+  OrganizationProvider: ({ children }: any) => children
 }));
 
 jest.mock('@contexts/ProductProvider', () => ({
   useProductContext: jest.fn(),
-  ProductProvider: ({ children }: any) => <>{children}</>
+  ProductProvider: ({ children }: any) => children
 }));
 
 jest.mock('@hooks/useRequireAuth', () => jest.fn());
-
-import { useOrganizationContext } from '@contexts/OrganizationProvider';
-import { useProductContext } from '@contexts/ProductProvider';
 
 describe('Products Component', () => {
   const mockProducts = [

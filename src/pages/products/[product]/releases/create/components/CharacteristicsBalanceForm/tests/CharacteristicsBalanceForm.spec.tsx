@@ -6,10 +6,8 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }));
 
-jest.mock('../../SectionTooltip/SectionTooltip', () => {
-  return function MockSectionTooltip() {
-    return <div data-testid="section-tooltip" />;
-  };
+jest.mock('../../SectionTooltip/SectionTooltip', () => function MockSectionTooltip() {
+  return <div data-testid="section-tooltip" />;
 });
 
 jest.mock('@components/Equalizer/EqualizerSlider/styles', () => ({
@@ -17,6 +15,8 @@ jest.mock('@components/Equalizer/EqualizerSlider/styles', () => ({
 }));
 
 describe('CharacteristicsBalanceForm', () => {
+  const CHARACTERISTIC_RELIABILITY = 'characteristic-reliability';
+  const CHARACTERISTIC_PERFORMANCE = 'characteristic-performance';
   const mockSetDinamicBalance = jest.fn();
   const mockSetConfigPageData = jest.fn();
 
@@ -41,7 +41,7 @@ describe('CharacteristicsBalanceForm', () => {
   it('deve renderizar os sliders apenas para as características ativas', () => {
     render(
       <CharacteristicsBalanceForm
-        dinamicBalance={true}
+        dinamicBalance
         setDinamicBalance={mockSetDinamicBalance}
         configPageData={mockConfigPageData as any}
         setConfigPageData={mockSetConfigPageData}
@@ -49,8 +49,8 @@ describe('CharacteristicsBalanceForm', () => {
       />
     );
 
-    expect(screen.getByTestId('characteristic-reliability')).toBeInTheDocument();
-    expect(screen.getByTestId('characteristic-performance')).toBeInTheDocument();
+expect(screen.getByTestId(CHARACTERISTIC_RELIABILITY)).toBeInTheDocument();
+      expect(screen.getByTestId(CHARACTERISTIC_PERFORMANCE)).toBeInTheDocument();
     
     expect(screen.queryByTestId('characteristic-maintainability')).not.toBeInTheDocument();
   });
@@ -58,7 +58,7 @@ describe('CharacteristicsBalanceForm', () => {
   it('deve alternar o switch de dinamicBalance corretamente', () => {
     render(
       <CharacteristicsBalanceForm
-        dinamicBalance={true}
+        dinamicBalance
         setDinamicBalance={mockSetDinamicBalance}
         configPageData={mockConfigPageData as any}
         setConfigPageData={mockSetConfigPageData}
@@ -75,7 +75,7 @@ describe('CharacteristicsBalanceForm', () => {
   it('deve alterar a meta apenas da característica alvo quando dinamicBalance for TRUE', () => {
     render(
       <CharacteristicsBalanceForm
-        dinamicBalance={true}
+        dinamicBalance
         setDinamicBalance={mockSetDinamicBalance}
         configPageData={mockConfigPageData as any}
         setConfigPageData={mockSetConfigPageData}
@@ -83,7 +83,7 @@ describe('CharacteristicsBalanceForm', () => {
       />
     );
 
-    const reliabilitySlider = screen.getByTestId('characteristic-reliability');
+    const reliabilitySlider = screen.getByTestId(CHARACTERISTIC_RELIABILITY);
     
     fireEvent.change(reliabilitySlider, { target: { value: 80 } });
 
@@ -111,7 +111,7 @@ describe('CharacteristicsBalanceForm', () => {
       />
     );
 
-    const reliabilitySlider = screen.getByTestId('characteristic-reliability');
+    const reliabilitySlider = screen.getByTestId(CHARACTERISTIC_RELIABILITY);
     
     fireEvent.change(reliabilitySlider, { target: { value: 70 } });
 

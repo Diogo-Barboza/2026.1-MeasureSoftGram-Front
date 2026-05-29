@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, createEvent } from '@testing-library/react';
-import { SignUpForm } from '../SignUpForm'; // Ajuste o caminho
-import { signUp } from '@services/Auth';
 import { toast } from 'react-toastify';
+import { signUp } from '@services/Auth';
+import { SignUpForm } from '../SignUpForm';
 
 jest.mock('@services/Auth', () => ({
   signUp: jest.fn(),

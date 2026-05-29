@@ -1,9 +1,9 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useOrganizationQuery } from '../useOrganizationQuery';
-import { organizationQuery } from '@services/organization';
 import { toast } from 'react-toastify';
+import { organizationQuery } from '@services/organization';
+import { useOrganizationQuery } from '../useOrganizationQuery';
 
-let mockCurrentOrganizations: any[] | undefined = undefined;
+let mockCurrentOrganizations: any[] | undefined;
 const mockSetCurrentOrganizations = jest.fn();
 
 jest.mock('@contexts/OrganizationProvider', () => ({

@@ -86,8 +86,9 @@ describe('useQuery Hook', () => {
     Object.defineProperty(window, 'crypto', {
       value: {
         getRandomValues: jest.fn((arr) => {
-          arr[0] = 12345; // Simula o retorno de um valor randômico
-          return arr;
+          const randomValues = new Uint32Array(arr);
+          randomValues[0] = 12345;
+          return randomValues;
         })
       }
     });
