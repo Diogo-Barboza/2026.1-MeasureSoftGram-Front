@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor, act, fireEvent, renderHook } from '@testing-library/react';
 import { AuthProvider, useAuth } from '../Auth.context';
 import { getUserInfo, signInCredentials, signOut } from '@services/Auth';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
+
+const localStorageMock: Record<string, any> = {};
 
 // 1. Mock das dependências externas
 jest.mock('@services/Auth', () => ({
@@ -42,14 +43,13 @@ jest.mock('@components/ConfirmModal/ConfirmModal', () => {
 
 // Mock do hook useLocalStorage para controlar os estados internos facilmente
 jest.mock('@hooks/useLocalStorage', () => ({
-  useLocalStorage: jest.fn((key, initialValue) => {
-    let value = initialValue;
-    return {
-      storedValue: value,
-      setValue: jest.fn((val) => { value = val; }),
-      removeValue: jest.fn(),
-    };
-  }),
+  useLocalStorage: jest.fn((key, initialValue) => ({
+    storedValue: Object.prototype.hasOwnProperty.call(localStorageMock, key)
+      ? localStorageMock[key]
+      : initialValue,
+    setValue: jest.fn((val) => { localStorageMock[key] = val; }),
+    removeValue: jest.fn(() => { delete localStorageMock[key]; }),
+  })),
 }));
 
 // 2. Componente de Teste para consumir o Contexto
@@ -60,15 +60,15 @@ const TestComponent = () => {
     <div>
       <span data-testid="loading-state">{loading}</span>
       <span data-testid="session-state">{session ? 'Logado' : 'Deslogado'}</span>
-      
-      <button 
+
+      <button
         onClick={() => signInWithCredentials({ email: 'test@test.com', password: '123' })}
         data-testid="btn-login"
       >
         Login Credentials
       </button>
-      
-      <button 
+
+      <button
         onClick={() => logout()}
         data-testid="btn-logout"
       >
@@ -84,24 +84,21 @@ describe('AuthContext', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+    Object.keys(localStorageMock).forEach((key) => delete localStorageMock[key]);
+    localStorage.clear();
+
     // Configuração padrão do useRouter
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
       pathname: '/',
     });
-
-    // Limpa o localStorage real antes de cada teste
-    Storage.prototype.getItem = jest.fn();
-    Storage.prototype.setItem = jest.fn();
-    Storage.prototype.removeItem = jest.fn();
   });
 
   afterEach(() => {
     jest.useRealTimers();
   });
 
-it('deve renderizar os children corretamente e iniciar com estado loaded', async () => {
+  it('deve renderizar os children corretamente e iniciar com estado loaded', async () => {
     render(
       <AuthProvider>
         <TestComponent />
@@ -115,7 +112,118 @@ it('deve renderizar os children corretamente e iniciar com estado loaded', async
     expect(screen.getByTestId('session-state')).toHaveTextContent('Deslogado');
   });
 
-it('deve realizar login com credenciais e redirecionar para /home', async () => {
+  it('deve expor o hook useAuth com API correta', () => {
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    expect(result.current.session).toBeNull();
+    expect(result.current.provider).toBe('credentials');
+    expect(result.current.loading).toBe('loaded');
+    expect(typeof result.current.setProvider).toBe('function');
+    expect(typeof result.current.signInWithCredentials).toBe('function');
+    expect(typeof result.current.signInWithGithub).toBe('function');
+    expect(typeof result.current.logout).toBe('function');
+  });
+
+  it('deve redirecionar para o state com code quando ambos estiverem presentes', async () => {
+    Object.defineProperty(globalThis, 'location', {
+      value: {
+        search: '?code=abc123&state=/products/1-test/repositories/2-repo',
+        href: 'http://localhost/?code=abc123&state=/products/1-test/repositories/2-repo',
+        pathname: '/',
+      },
+      writable: true,
+    });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/products/1-test/repositories/2-repo?code=abc123');
+    });
+  });
+
+  it('deve adicionar & ao code quando o state já tiver query params', async () => {
+    Object.defineProperty(globalThis, 'location', {
+      value: {
+        search: '?code=abc123&state=/products/1-test?tab=details',
+        href: 'http://localhost/?code=abc123&state=/products/1-test?tab=details',
+        pathname: '/',
+      },
+      writable: true,
+    });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/products/1-test?tab=details&code=abc123');
+    });
+  });
+
+  it('não deve redirecionar para /home quando state estiver presente após login', async () => {
+    (getUserInfo as jest.Mock).mockResolvedValueOnce({
+      type: 'success',
+      value: { username: 'testuser', email: 'test@test.com' },
+    });
+
+    localStorageMock['token'] = 'fake-token';
+
+    Object.defineProperty(globalThis, 'location', {
+      value: {
+        search: '?state=/some/path',
+        href: 'http://localhost/?state=/some/path',
+        pathname: '/',
+      },
+      writable: true,
+    });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(mockPush).not.toHaveBeenCalledWith('/home');
+    });
+  });
+
+  it('deve chamar signInWithGithub quando code estiver presente e provider for github', async () => {
+    const { signInGithub } = require('@services/Auth');
+    signInGithub.mockResolvedValueOnce({
+      type: 'success',
+      value: { key: 'fake-key' },
+    });
+
+    localStorageMock['provider'] = 'github';
+
+    Object.defineProperty(globalThis, 'location', {
+      value: {
+        search: '?code=github_code_123',
+        href: 'http://localhost/?code=github_code_123',
+        pathname: '/',
+      },
+      writable: true,
+    });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(signInGithub).toHaveBeenCalledWith('github_code_123');
+    });
+  });
+
+  it('deve realizar login com credenciais e redirecionar para /home', async () => {
     const mockUserResponse = {
       type: 'success',
       value: { key: 'fake-token', username: 'Davi' },
@@ -129,7 +237,7 @@ it('deve realizar login com credenciais e redirecionar para /home', async () => 
     );
 
     const loginBtn = screen.getByTestId('btn-login');
-    
+
     // Substitua userEvent + act por fireEvent
     fireEvent.click(loginBtn);
 
@@ -153,7 +261,7 @@ it('deve realizar login com credenciais e redirecionar para /home', async () => 
     );
 
     const loginBtn = screen.getByTestId('btn-login');
-    
+
     fireEvent.click(loginBtn);
 
     await waitFor(() => {
@@ -172,7 +280,7 @@ it('deve realizar login com credenciais e redirecionar para /home', async () => 
     );
 
     const logoutBtn = screen.getByTestId('btn-logout');
-    
+
     fireEvent.click(logoutBtn);
 
     await waitFor(() => {
@@ -182,12 +290,12 @@ it('deve realizar login com credenciais e redirecionar para /home', async () => 
     });
   });
 
-describe('Temporizador de Sessão (Timers)', () => {
+  describe('Temporizador de Sessão (Timers)', () => {
     let initialTime: number;
 
     beforeEach(() => {
       jest.useFakeTimers();
-      
+
       // Fixamos o horário inicial
       initialTime = Date.now();
 
@@ -199,9 +307,9 @@ describe('Temporizador de Sessão (Timers)', () => {
         if (key === 'login_timestamp') return initialTime.toString();
         return null;
       });
-      
+
       require('@hooks/useLocalStorage').useLocalStorage.mockImplementation((key: string) => ({
-        storedValue: 'fake-data', 
+        storedValue: 'fake-data',
         setValue: jest.fn(),
         removeValue: jest.fn(),
       }));
@@ -216,7 +324,7 @@ describe('Temporizador de Sessão (Timers)', () => {
 
       act(() => {
         // Avança o tempo em 1 hora e 51 minutos
-        jest.advanceTimersByTime(111 * 60 * 1000); 
+        jest.advanceTimersByTime(111 * 60 * 1000);
       });
 
       await waitFor(() => {
