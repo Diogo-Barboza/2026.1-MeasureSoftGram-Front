@@ -17,10 +17,9 @@ const customJestConfig = {
     '<rootDir>/src/**/*.{ts,tsx}',
     '!<rootDir>/src/**/*.d.ts',
     '!<rootDir>/src/**/styles.ts',
-    '!<rootDir>/src/**/index.{ts,tsx}', 
+    '!<rootDir>/src/**/index.{ts,tsx}',
     '!<rootDir>/src/**/*.page.{ts,tsx}',
     '!<rootDir>/src/**/*.next.{ts,tsx}',
-    '!<rootDir>/src/shared/services/subCharacteristics.ts'
   ],
   testRegex: '((\\.|/*.)(spec))\\.tsx?$',
 
@@ -29,7 +28,9 @@ const customJestConfig = {
     '/tests/',
     'styles\\.(ts|tsx)$',
     '/Theme/',
-    'index\\.(page\\.)?(ts|tsx)$'
+    'index\\.(page\\.)?(ts|tsx)$',
+    '/_app\\.tsx$',
+    '/_document\\.tsx$'
   ],
 
   coverageDirectory: 'coverage',
