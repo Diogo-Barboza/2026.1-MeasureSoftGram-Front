@@ -7,7 +7,7 @@ exports[`SideMenuItem should render the SideMenuItem component 1`] = `
   >
     <div
       aria-label="Tooltip Text"
-      class="sc-aXZVg iCpfhn"
+      class="sc-aXZVg inDZmj"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -58,7 +58,7 @@ exports[`SideMenuItem should render the SideMenuItem component with disable 1`] 
   >
     <div
       aria-label="Tooltip Text"
-      class="sc-aXZVg iCpfhn"
+      class="sc-aXZVg inDZmj"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -109,7 +109,7 @@ exports[`SideMenuItem should render the SideMenuItem component with endIcon 1`] 
   >
     <div
       aria-label="Tooltip Text"
-      class="sc-aXZVg iCpfhn"
+      class="sc-aXZVg inDZmj"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -191,7 +191,7 @@ exports[`SideMenuItem should render the SideMenuItem component with onClick 1`] 
   >
     <div
       aria-label="Tooltip Text"
-      class="sc-aXZVg iCpfhn"
+      class="sc-aXZVg inDZmj"
       data-mui-internal-clone-element="true"
     >
       <div
@@ -242,7 +242,7 @@ exports[`SideMenuItem should render the SideMenuItem component with selected 1`]
   >
     <div
       aria-label="Tooltip Text"
-      class="sc-aXZVg kwMgYT"
+      class="sc-aXZVg eQhjbr"
       data-mui-internal-clone-element="true"
     >
       <div
