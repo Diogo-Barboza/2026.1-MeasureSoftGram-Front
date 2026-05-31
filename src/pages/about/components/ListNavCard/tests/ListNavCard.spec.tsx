@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ListNavCard from '../ListNavCard'; 
+import ListNavCard from '../ListNavCard';
 
 describe('ListNavCard Component', () => {
   const mockNavListData = ['Section 1', 'Section 2', 'Section 3'];
@@ -23,7 +23,7 @@ describe('ListNavCard Component', () => {
   it('deve alterar o item selecionado e chamar scrollIntoView ao clicar', () => {
     const mockScrollIntoView = jest.fn();
     const originalGetElementById = document.getElementById;
-    
+
     document.getElementById = jest.fn().mockReturnValue({
       scrollIntoView: mockScrollIntoView,
     } as unknown as HTMLElement);

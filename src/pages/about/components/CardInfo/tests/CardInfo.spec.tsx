@@ -26,10 +26,10 @@ describe('CardInfo Component', () => {
 
     render(<CardInfo cardData={mockData} />);
 
-expect(screen.getByText(CARD_TITLE)).toBeInTheDocument();
-      expect(screen.getByText('Subtítulo 1')).toBeInTheDocument();
-      expect(screen.getByText(CARD_DESCRIPTION)).toBeInTheDocument();
-    
+    expect(screen.getByText(CARD_TITLE)).toBeInTheDocument();
+    expect(screen.getByText('Subtítulo 1')).toBeInTheDocument();
+    expect(screen.getByText(CARD_DESCRIPTION)).toBeInTheDocument();
+
     const image = screen.getByAltText('green iguana');
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute('src', 'https://site.com/imagem.png');
@@ -60,6 +60,7 @@ expect(screen.getByText(CARD_TITLE)).toBeInTheDocument();
         {
           title: 'Rota de Produtos',
           description: 'Desc',
+          imageSrc: 'https://site.com/imagem.png',
           routeTo: 'products'
         }
       ]
@@ -78,6 +79,7 @@ expect(screen.getByText(CARD_TITLE)).toBeInTheDocument();
         {
           title: 'Rota de Criação',
           description: 'Desc',
+          imageSrc: 'https://site.com/imagem.png',
           routeTo: 'products/create'
         }
       ]
@@ -87,5 +89,24 @@ expect(screen.getByText(CARD_TITLE)).toBeInTheDocument();
 
     expect(screen.getByText('product.create-product')).toBeInTheDocument();
     expect(screen.queryByText('organization.view-organization')).not.toBeInTheDocument();
+  });
+
+  it('não deve renderizar botões quando não há rota de ação', () => {
+    const mockData = {
+      id: 'card-5',
+      elements: [
+        {
+          title: 'Sem Rota',
+          description: 'Sem ação',
+          imageSrc: 'https://site.com/imagem.png'
+        }
+      ]
+    };
+
+    render(<CardInfo cardData={mockData} />);
+
+    expect(screen.queryByText('organization.view-organization')).not.toBeInTheDocument();
+    expect(screen.queryByText('organization.create-organization')).not.toBeInTheDocument();
+    expect(screen.queryByText('product.create-product')).not.toBeInTheDocument();
   });
 });

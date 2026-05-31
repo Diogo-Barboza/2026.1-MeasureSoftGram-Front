@@ -131,6 +131,53 @@ const CardInfo: React.FC<Props> = ({ cardData }) => {
             >
               {data.description}
             </Typography>
+            {data.routeTo && (
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+              >
+                {data.routeTo === 'products' && (
+                  <Box>
+                    <Box
+                      display="flex"
+                      margin="1rem"
+                      justifyContent="start"
+                    >
+                      <Link href="/products">
+                        <Button variant="contained" fullWidth>
+                          {t("organization.view-organization")}
+                        </Button>
+                      </Link>
+                    </Box>
+                    <Box
+                      display="flex"
+                      margin="1rem 1rem 0 1rem"
+                      justifyContent="start"
+                    >
+                      <Link href="/organizations">
+                        <Button variant="contained" fullWidth>
+                          {t("organization.create-organization")}
+                        </Button>
+                      </Link>
+                    </Box>
+                  </Box>
+                )}
+                {data.routeTo === 'products/create' && (
+                  <Box
+                    display="flex"
+                    margin="1rem"
+                    justifyContent="start"
+                  >
+                    <Link href="/products/create">
+                      <Button variant="contained" fullWidth>
+                        {t("product.create-product")}
+                      </Button>
+                    </Link>
+                  </Box>
+                )}
+              </Box>
+            )}
           </Box>
         </Box>
 
