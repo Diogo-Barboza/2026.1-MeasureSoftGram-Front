@@ -189,8 +189,8 @@ export interface Change {
 }
 
 export interface ReleaseGoal {
-  changes: Change[],
-  allow_dynamic: boolean
+  changes: Change[];
+  allow_dynamic: boolean;
 }
 
 export interface IReleases {

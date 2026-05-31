@@ -11,7 +11,7 @@ interface Props {
   ref: React.MutableRefObject<ComponentRef<typeof ReactEcharts> | null>;
 }
 
-const formatRepositoriesTsqmiHistory = ({history, csvFilters, ref}: Props) => {
+const formatRepositoriesTsqmiHistory = ({ history, csvFilters, ref }: Props) => {
   const legendData: string[] = [];
 
   const series = (history.results || []).map((item) => {

@@ -197,7 +197,7 @@ export const useQuery = () => {
     if (query?.product && organizationList.length > 0) {
       const [organizationId] = getPathId(query?.product as string);
       if (!currentOrganization || String(currentOrganization.id) !== organizationId) {
-        const matchingOrg = organizationList.find(org => String(org.id) === organizationId);
+        const matchingOrg = organizationList.find((org) => String(org.id) === organizationId);
         if (matchingOrg) {
           setCurrentOrganizations([matchingOrg]);
         }

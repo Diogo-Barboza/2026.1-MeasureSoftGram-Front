@@ -16,26 +16,25 @@ interface OrganizationWithId extends OrganizationFormData {
 export const useOrganizationQuery = () => {
   const { currentOrganizations, setCurrentOrganizations } = useOrganizationContext();
 
-const loadCurrentOrganizations = async () => {
-  try {
-    const result = await organizationQuery.getAllOrganization();
+  const loadCurrentOrganizations = async () => {
+    try {
+      const result = await organizationQuery.getAllOrganization();
 
-    if (result.type === 'success') {
-      const organizations = result.value.map((item: OrganizationWithId) => ({
-        ...item,
-        id: item.id || 'fake-id'
-      })) as CurrentOrganizationType[];
+      if (result.type === 'success') {
+        const organizations = result.value.map((item: OrganizationWithId) => ({
+          ...item,
+          id: item.id || 'fake-id'
+        })) as CurrentOrganizationType[];
 
-      setCurrentOrganizations(organizations);
-    } else {
-      toast.error(`Erro ao carregar organizações: ${result.error.message || 'Erro desconhecido'}`);
+        setCurrentOrganizations(organizations);
+      } else {
+        toast.error(`Erro ao carregar organizações: ${result.error.message || 'Erro desconhecido'}`);
+      }
+    } catch (error: any) {
+      console.error('Erro detalhado:', error);
+      toast.error(`Erro ao carregar organizações: ${error.message || 'Erro desconhecido'}`);
     }
-  } catch (error: any) {
-    console.error("Erro detalhado:", error);
-    toast.error(`Erro ao carregar organizações: ${error.message || 'Erro desconhecido'}`);
-  }
-};
-
+  };
 
   const [update, setUpdate] = useState<number>(0);
 
@@ -48,19 +47,18 @@ const loadCurrentOrganizations = async () => {
   };
 
   const getOrganizationById = async (id: string): Promise<Result<OrganizationFormData>> =>
-  organizationQuery.getOrganizationById(id);
+    organizationQuery.getOrganizationById(id);
 
   const updateOrganization = async (id: string, data: OrganizationFormData): Promise<Result<void>> =>
-  organizationQuery.updateOrganization(id, data);
+    organizationQuery.updateOrganization(id, data);
 
-const deleteOrganization = async (id: string): Promise<Result<void>> => {
+  const deleteOrganization = async (id: string): Promise<Result<void>> => {
     const result = await organizationQuery.deleteOrganization(id);
     if (result.type === 'success') {
-        setUpdate((prev: number) => prev + 1);
+      setUpdate((prev: number) => prev + 1);
     }
     return result;
-};
-
+  };
 
   useEffect(() => {
     if (!currentOrganizations || currentOrganizations.length === 0 || update > 0) {

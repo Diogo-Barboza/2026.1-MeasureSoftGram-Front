@@ -220,9 +220,7 @@ describe('ProductQuery', () => {
     const organizationId = '1';
     const productId = '2';
     await productQuery.getProductDefaultPreConfig(organizationId, productId);
-    expect(api.get).toHaveBeenCalledWith(
-      `organizations/${organizationId}/products/${productId}/default/pre-config/`
-    );
+    expect(api.get).toHaveBeenCalledWith(`organizations/${organizationId}/products/${productId}/default/pre-config/`);
   });
 
   it('getCurrentGoal should call api.get with the right URL', async () => {

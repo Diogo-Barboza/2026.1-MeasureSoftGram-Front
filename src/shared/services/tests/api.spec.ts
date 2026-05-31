@@ -57,7 +57,7 @@ describe('API Interceptors', () => {
       const config = {};
       const result = await requestSuccess(config);
 
-      expect(result.headers).toBeUndefined(); 
+      expect(result.headers).toBeUndefined();
     });
 
     it('não deve tentar acessar localStorage se o window for undefined (ambiente de servidor)', async () => {
@@ -100,7 +100,7 @@ describe('API Interceptors', () => {
     });
 
     it('não deve limpar o localStorage nem redirecionar se o status do erro não for 401', async () => {
-      const mockError = { response: { status: 500 } }; 
+      const mockError = { response: { status: 500 } };
 
       await expect(responseError(mockError)).rejects.toEqual(mockError);
 

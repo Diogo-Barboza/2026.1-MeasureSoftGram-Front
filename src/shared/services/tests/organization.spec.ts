@@ -4,10 +4,10 @@ import { getAccessToken } from '@services/Auth';
 
 jest.mock('../api');
 
-// Precisamos mockar o Auth dessa forma para conseguir alterar 
+// Precisamos mockar o Auth dessa forma para conseguir alterar
 // o retorno dele nos testes de erro.
 jest.mock('@services/Auth', () => ({
-  getAccessToken: jest.fn(),
+  getAccessToken: jest.fn()
 }));
 
 describe('Organization Service', () => {
@@ -15,7 +15,7 @@ describe('Organization Service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Configuração padrão de sucesso para o token na maioria dos testes
     (getAccessToken as jest.Mock).mockResolvedValue({
       type: 'success',
@@ -32,7 +32,7 @@ describe('Organization Service', () => {
     (api.get as jest.Mock).mockResolvedValue({ data: mockOrgs });
 
     const result = await organizationQuery.getAllOrganization();
-    
+
     expect(api.get).toHaveBeenCalled();
     expect(result.type).toEqual('success');
     if (result.type === 'success') {
@@ -45,7 +45,7 @@ describe('Organization Service', () => {
     (api.get as jest.Mock).mockResolvedValue({ data: mockOrg });
 
     const result = await organizationQuery.getOrganizationById('1');
-    
+
     expect(api.get).toHaveBeenCalledWith('/organizations/1/', expect.any(Object));
     expect(result.type).toEqual('success');
   });
@@ -83,7 +83,7 @@ describe('Organization Service', () => {
     (getAccessToken as jest.Mock).mockResolvedValue({ type: 'error' });
 
     const result = await organizationQuery.getAllOrganization();
-    
+
     expect(result.type).toEqual('error');
     if (result.type === 'error') {
       expect(result.error.message).toBe('Token de acesso não encontrado.');
@@ -109,18 +109,18 @@ describe('Organization Service', () => {
   });
 
   // Testes de Status 400 (Tratamento de Bad Request da API)
-  
+
   it('deve retornar erro de nome duplicado ao criar organização', async () => {
     const errorResponse = {
       response: {
         status: 400,
-        data: { name: ["Organization with this name already exists."] }
+        data: { name: ['Organization with this name already exists.'] }
       }
     };
     (api.post as jest.Mock).mockRejectedValue(errorResponse);
 
     const result = await organizationQuery.createOrganization(mockPayload);
-    
+
     expect(result.type).toEqual('error');
     if (result.type === 'error') {
       expect(result.error.message).toBe('Já existe uma organização com este nome.');
@@ -131,13 +131,13 @@ describe('Organization Service', () => {
     const errorResponse = {
       response: {
         status: 400,
-        data: { key: ["Organization with this key already exists."] }
+        data: { key: ['Organization with this key already exists.'] }
       }
     };
     (api.post as jest.Mock).mockRejectedValue(errorResponse);
 
     const result = await organizationQuery.createOrganization(mockPayload);
-    
+
     expect(result.type).toEqual('error');
     if (result.type === 'error') {
       expect(result.error.message).toBe('Já existe uma organização com esta chave.');
@@ -148,7 +148,7 @@ describe('Organization Service', () => {
     (api.post as jest.Mock).mockRejectedValue(new Error('Erro interno'));
 
     const result = await organizationQuery.createOrganization(mockPayload);
-    
+
     expect(result.type).toEqual('error');
     if (result.type === 'error') {
       expect(result.error.message).toBe('Ocorreu um erro ao criar organização.');
@@ -159,13 +159,13 @@ describe('Organization Service', () => {
     const errorResponse = {
       response: {
         status: 400,
-        data: { name: ["Organization with this name already exists."] }
+        data: { name: ['Organization with this name already exists.'] }
       }
     };
     (api.put as jest.Mock).mockRejectedValue(errorResponse);
 
     const result = await organizationQuery.updateOrganization('1', mockPayload);
-    
+
     expect(result.type).toEqual('error');
     if (result.type === 'error') {
       expect(result.error.message).toBe('Já existe uma organização com este nome.');
@@ -176,13 +176,13 @@ describe('Organization Service', () => {
     const errorResponse = {
       response: {
         status: 400,
-        data: { key: ["Organization with this key already exists."] }
+        data: { key: ['Organization with this key already exists.'] }
       }
     };
     (api.put as jest.Mock).mockRejectedValue(errorResponse);
 
     const result = await organizationQuery.updateOrganization('1', mockPayload);
-    
+
     expect(result.type).toEqual('error');
     if (result.type === 'error') {
       expect(result.error.message).toBe('Já existe uma organização com esta chave.');
@@ -193,7 +193,7 @@ describe('Organization Service', () => {
     (api.put as jest.Mock).mockRejectedValue(new Error('Erro interno'));
 
     const result = await organizationQuery.updateOrganization('1', mockPayload);
-    
+
     expect(result.type).toEqual('error');
     if (result.type === 'error') {
       expect(result.error.message).toBe('Ocorreu um erro ao atualizar organização.');

@@ -23,15 +23,13 @@ describe('Auth Services', () => {
       username: 'testUser',
       first_name: 'Test',
       last_name: 'User',
-      confirmPassword: 'test',
+      confirmPassword: 'test'
     };
 
     await services.signUp(data);
 
     expect(api.post).toHaveBeenCalledWith('accounts/signin/', data);
   });
-
-
 
   it('should signOut with the right URL', async () => {
     await services.signOut();

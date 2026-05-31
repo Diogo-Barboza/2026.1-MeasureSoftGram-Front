@@ -1,4 +1,4 @@
-import formatRepositoriesTsqmiHistory from '../formatRepositoriesTsqmiHistory'; 
+import formatRepositoriesTsqmiHistory from '../formatRepositoriesTsqmiHistory';
 import convertToCsv from '../convertToCsv';
 
 jest.mock('../convertToCsv', () => jest.fn(() => 'csv,mock,content'));
@@ -21,7 +21,7 @@ describe('formatRepositoriesTsqmiHistory', () => {
         return {
           href: '',
           download: '',
-          click: mockAnchorClick,
+          click: mockAnchorClick
         } as unknown as HTMLElement;
       }
       return document.createElement.getMockImplementation()!(tagName);
@@ -47,9 +47,7 @@ describe('formatRepositoriesTsqmiHistory', () => {
       },
       {
         name: 'Repositório Frontend',
-        history: [
-          { created_at: '2026-05-20T10:00:00.000Z', value: 0.999 } 
-        ]
+        history: [{ created_at: '2026-05-20T10:00:00.000Z', value: 0.999 }]
       }
     ]
   };
@@ -80,11 +78,11 @@ describe('formatRepositoriesTsqmiHistory', () => {
 
       expect(result.options.series[0].name).toBe('Repositório Backend');
       expect(result.options.series[0].data[0][0]).toBe(new Date('2026-05-20T10:00:00.000Z').getTime());
-      expect(result.options.series[0].data[0][1]).toBe(0.12); 
-      expect(result.options.series[0].data[1][1]).toBe(0.57); 
+      expect(result.options.series[0].data[0][1]).toBe(0.12);
+      expect(result.options.series[0].data[1][1]).toBe(0.57);
 
       expect(result.options.series[1].name).toBe('Repositório Frontend');
-      expect(result.options.series[1].data[0][1]).toBe(1); 
+      expect(result.options.series[1].data[0][1]).toBe(1);
     });
 
     it('deve formatar corretamente a legenda duplicando os itens', () => {
@@ -95,14 +93,16 @@ describe('formatRepositoriesTsqmiHistory', () => {
       });
 
       expect(result.options.legend.data).toEqual([
-        'Repositório Backend', 'Repositório Backend',
-        'Repositório Frontend', 'Repositório Frontend'
+        'Repositório Backend',
+        'Repositório Backend',
+        'Repositório Frontend',
+        'Repositório Frontend'
       ]);
     });
 
     it('não deve quebrar se history.results for undefined', () => {
       const result = formatRepositoriesTsqmiHistory({
-        history: {} as any, 
+        history: {} as any,
         csvFilters: mockCsvFilters,
         ref: mockRef
       });
@@ -132,7 +132,7 @@ describe('formatRepositoriesTsqmiHistory', () => {
 
     it('não deve atualizar os filtros se startValue ou endValue não existirem', () => {
       mockGetOption.mockReturnValue({
-        dataZoom: [{}] 
+        dataZoom: [{}]
       });
 
       mockCsvFilters.dateRange = { startDate: 0, endDate: 0 };
@@ -162,7 +162,7 @@ describe('formatRepositoriesTsqmiHistory', () => {
     it('não deve quebrar se csvFilters.dateRange for undefined', () => {
       const result = formatRepositoriesTsqmiHistory({
         history: mockHistory,
-        csvFilters: {} as any, 
+        csvFilters: {} as any,
         ref: mockRef
       });
 
