@@ -38,11 +38,9 @@ const customJestConfig = {
 
   testEnvironment: 'jest-environment-jsdom',
 
-  // Carrega os arquivos de setup
-  setupFiles: ['<rootDir>/tests/jestSetup.ts'],
 
-  // Mais tipos de expect para testes
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  // Carrega os arquivos de setup
+  setupFilesAfterEnv: ['<rootDir>/tests/jestSetup.ts'],
 
   // Mapeia os aliases para os caminhos dos arquivos
   moduleNameMapper: {
