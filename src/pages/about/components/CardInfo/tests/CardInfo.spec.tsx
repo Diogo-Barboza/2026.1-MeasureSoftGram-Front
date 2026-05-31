@@ -8,8 +8,13 @@ jest.mock('react-i18next', () => ({
 
 describe('CardInfo Component', () => {
   const CARD_TITLE = 'Título Principal do Card';
+  const CARD_SUBTITLE = 'Subtítulo do Card';
   const CARD_DESCRIPTION = 'Descrição do primeiro elemento';
-  const CARD_DESCRIPTION_ALT = 'Desc';
+  const CARD_IMAGE_SRC = 'https://site.com/imagem.png';
+
+  const ORGANIZATION_VIEW_TEXT = 'organization.view-organization';
+  const ORGANIZATION_CREATE_TEXT = 'organization.create-organization';
+  const PRODUCT_CREATE_TEXT = 'product.create-product';
 
   it('deve renderizar o título principal e as descrições básicas', () => {
     const mockData = {
@@ -17,9 +22,9 @@ describe('CardInfo Component', () => {
       title: CARD_TITLE,
       elements: [
         {
-          title: 'Subtítulo 1',
-          description: 'Descrição do primeiro elemento',
-          imageSrc: 'https://site.com/imagem.png',
+          title: CARD_SUBTITLE,
+          description: CARD_DESCRIPTION,
+          imageSrc: CARD_IMAGE_SRC,
         }
       ]
     };
@@ -27,12 +32,12 @@ describe('CardInfo Component', () => {
     render(<CardInfo cardData={mockData} />);
 
     expect(screen.getByText(CARD_TITLE)).toBeInTheDocument();
-    expect(screen.getByText('Subtítulo 1')).toBeInTheDocument();
+    expect(screen.getByText(CARD_SUBTITLE)).toBeInTheDocument();
     expect(screen.getByText(CARD_DESCRIPTION)).toBeInTheDocument();
 
     const image = screen.getByAltText('green iguana');
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', 'https://site.com/imagem.png');
+    expect(image).toHaveAttribute('src', CARD_IMAGE_SRC);
   });
 
   it('deve renderizar ícones React (não-string) e sem título principal', () => {
@@ -40,8 +45,8 @@ describe('CardInfo Component', () => {
       id: 'card-2',
       elements: [
         {
-          title: 'Subtítulo Ícone',
-          description: 'Teste com ícone',
+          title: CARD_SUBTITLE,
+          description: CARD_DESCRIPTION,
           imageSrc: <svg data-testid="mock-icon" />,
         }
       ]
@@ -49,7 +54,7 @@ describe('CardInfo Component', () => {
 
     render(<CardInfo cardData={mockData} />);
 
-    expect(screen.queryByText('Título Principal do Card')).not.toBeInTheDocument();
+    expect(screen.queryByText(CARD_TITLE)).not.toBeInTheDocument();
     expect(screen.getByTestId('mock-icon')).toBeInTheDocument();
   });
 
@@ -60,7 +65,7 @@ describe('CardInfo Component', () => {
         {
           title: 'Rota de Produtos',
           description: 'Desc',
-          imageSrc: 'https://site.com/imagem.png',
+          imageSrc: CARD_IMAGE_SRC,
           routeTo: 'products'
         }
       ]
@@ -68,8 +73,8 @@ describe('CardInfo Component', () => {
 
     render(<CardInfo cardData={mockData} />);
 
-    expect(screen.getByText('organization.view-organization')).toBeInTheDocument();
-    expect(screen.getByText('organization.create-organization')).toBeInTheDocument();
+    expect(screen.getByText(ORGANIZATION_VIEW_TEXT)).toBeInTheDocument();
+    expect(screen.getByText(ORGANIZATION_CREATE_TEXT)).toBeInTheDocument();
   });
 
   it('deve renderizar o botão quando a rota for "products/create"', () => {
@@ -79,7 +84,7 @@ describe('CardInfo Component', () => {
         {
           title: 'Rota de Criação',
           description: 'Desc',
-          imageSrc: 'https://site.com/imagem.png',
+          imageSrc: CARD_IMAGE_SRC,
           routeTo: 'products/create'
         }
       ]
@@ -87,8 +92,8 @@ describe('CardInfo Component', () => {
 
     render(<CardInfo cardData={mockData} />);
 
-    expect(screen.getByText('product.create-product')).toBeInTheDocument();
-    expect(screen.queryByText('organization.view-organization')).not.toBeInTheDocument();
+    expect(screen.getByText(PRODUCT_CREATE_TEXT)).toBeInTheDocument();
+    expect(screen.queryByText(ORGANIZATION_VIEW_TEXT)).not.toBeInTheDocument();
   });
 
   it('não deve renderizar botões quando não há rota de ação', () => {
@@ -98,15 +103,15 @@ describe('CardInfo Component', () => {
         {
           title: 'Sem Rota',
           description: 'Sem ação',
-          imageSrc: 'https://site.com/imagem.png'
+          imageSrc: CARD_IMAGE_SRC
         }
       ]
     };
 
     render(<CardInfo cardData={mockData} />);
 
-    expect(screen.queryByText('organization.view-organization')).not.toBeInTheDocument();
-    expect(screen.queryByText('organization.create-organization')).not.toBeInTheDocument();
-    expect(screen.queryByText('product.create-product')).not.toBeInTheDocument();
+    expect(screen.queryByText(ORGANIZATION_VIEW_TEXT)).not.toBeInTheDocument();
+    expect(screen.queryByText(ORGANIZATION_CREATE_TEXT)).not.toBeInTheDocument();
+    expect(screen.queryByText(PRODUCT_CREATE_TEXT)).not.toBeInTheDocument();
   });
 });

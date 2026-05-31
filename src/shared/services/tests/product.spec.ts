@@ -207,6 +207,24 @@ describe('ProductQuery', () => {
     );
   });
 
+  it('getProductRepositoriesLatestTsqmi should call api.get with the right URL', async () => {
+    const organizationId = '1';
+    const productId = '2';
+    await productQuery.getProductRepositoriesLatestTsqmi(organizationId, productId);
+    expect(api.get).toHaveBeenCalledWith(
+      `organizations/${organizationId}/products/${productId}/repositories-tsqmi-latest-values/`
+    );
+  });
+
+  it('getProductDefaultPreConfig should call api.get with the right URL', async () => {
+    const organizationId = '1';
+    const productId = '2';
+    await productQuery.getProductDefaultPreConfig(organizationId, productId);
+    expect(api.get).toHaveBeenCalledWith(
+      `organizations/${organizationId}/products/${productId}/default/pre-config/`
+    );
+  });
+
   it('getCurrentGoal should call api.get with the right URL', async () => {
     const organizationId = '1';
     const id = '2';
@@ -217,7 +235,7 @@ describe('ProductQuery', () => {
     });
   });
 
-  it('createProduct should call api.get with the right URL', async () => {
+  it('createProduct should call api.post with the right URL', async () => {
     const organizationId = 1;
     await productQuery.createProduct({ name: 'teste', organizationId });
     expect(api.post).toHaveBeenCalledWith(`/organizations/${organizationId}/products/`, {
@@ -226,11 +244,56 @@ describe('ProductQuery', () => {
     });
   });
 
-  it('deleteProduct should call api.get with the right URL', async () => {
+  it('createProduct should return duplicate name error when API responds with HTTP 400 for product name', async () => {
+    const organizationId = 1;
+    const errorResponse = {
+      response: {
+        status: 400,
+        data: { name: ['Product with this name already exists.'] }
+      }
+    };
+
+    (api.post as jest.Mock).mockRejectedValueOnce(errorResponse);
+
+    const result = await productQuery.createProduct({ name: 'teste', organizationId });
+
+    expect(api.post).toHaveBeenCalledWith(`/organizations/${organizationId}/products/`, {
+      name: 'teste',
+      organizationId
+    });
+    expect(result.type).toBe('error');
+    expect((result as any).error.message).toBe('Já existe um produto com este nome.');
+  });
+
+  it('createProduct should return generic error when API fails for another reason', async () => {
+    const organizationId = 1;
+    const errorResponse = {
+      response: {
+        status: 500,
+        data: { message: 'Server error' }
+      }
+    };
+
+    (api.post as jest.Mock).mockRejectedValueOnce(errorResponse);
+
+    const result = await productQuery.createProduct({ name: 'teste', organizationId });
+
+    expect(result.type).toBe('error');
+    expect((result as any).error.message).toBe('Erro ao criar o produto.');
+  });
+
+  it('deleteProduct should return error result when api.delete rejects', async () => {
     const organizationId = '1';
     const id = '2';
-    await productQuery.deleteProduct(id, organizationId);
+    const error = new Error('delete failed');
+
+    (api.delete as jest.Mock).mockRejectedValueOnce(error);
+
+    const result = await productQuery.deleteProduct(id, organizationId);
+
     expect(api.delete).toHaveBeenCalledWith(`/organizations/${organizationId}/products/${id}/`);
+    expect(result.type).toBe('error');
+    expect((result as any).error).toBe(error);
   });
 
   it('Should call analysis_data endpoint', async () => {
