@@ -47,21 +47,20 @@ export const getAllUsers = async (): Promise<Result<UserResult>> => {
 };
 
 export type Repo = {
-  id: number
-  name: string
-  html_url: string
-  description: string
-}
+  id: number;
+  name: string;
+  html_url: string;
+  description: string;
+};
 
 type GetUserRepoResponse = {
-  total_count: number
-  items: Repo[]
-}
+  total_count: number;
+  items: Repo[];
+};
 
 export async function getUserRepos(code: string): Promise<Result<GetUserRepoResponse>> {
   try {
-
-    const response = await api.get('/accounts/user-repos', {params: {code}})
+    const response = await api.get('/accounts/user-repos', { params: { code } });
     return { type: 'success', value: response.data };
   } catch (err) {
     const error = err as AxiosError;

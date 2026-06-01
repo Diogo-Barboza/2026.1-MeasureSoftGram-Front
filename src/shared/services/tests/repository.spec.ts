@@ -5,14 +5,14 @@ jest.mock('../api', () => ({
   api: {
     interceptors: {
       request: {
-        use: jest.fn(),
+        use: jest.fn()
       },
       response: {
-        use: jest.fn(),
-      },
-    },
+        use: jest.fn()
+      }
+    }
     // Adicione outros métodos conforme necessário
-  },
+  }
 }));
 
 // Mock Axios
@@ -39,7 +39,10 @@ describe('Repository', () => {
       mockedAxios.put.mockRejectedValue(new Error('Failed to update repository'));
 
       // Execute o método
-      const result = await repository.updateRepository('org1', 'prod1', 'repo1', { name: 'Updated Repo', platform: 'GitLab' });
+      const result = await repository.updateRepository('org1', 'prod1', 'repo1', {
+        name: 'Updated Repo',
+        platform: 'GitLab'
+      });
 
       // Verifique o resultado
       expect(result.type).toEqual('error');
@@ -60,16 +63,20 @@ describe('Repository', () => {
   });
 
   describe('getHistoricalData', () => {
-      it('should handle an error when fetching historical data', async () => {
+    it('should handle an error when fetching historical data', async () => {
       // Simule uma falha na API
       mockedAxios.get.mockRejectedValue(new Error('Failed to fetch historical data'));
 
       // Execute o método
-      const result = await repository.getHistoricalData({ organizationId: 'org1', productId: 'prod1', repositoryId: 'repo1', entity: 'commits' });
+      const result = await repository.getHistoricalData({
+        organizationId: 'org1',
+        productId: 'prod1',
+        repositoryId: 'repo1',
+        entity: 'commits'
+      });
 
       // Verifique o resultado
       expect(result.type).toEqual('error');
     });
   });
-
 });

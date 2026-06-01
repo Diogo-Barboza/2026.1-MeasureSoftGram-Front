@@ -65,27 +65,24 @@ export function useQuery() {
     }
   };
 
-  // Comentei esse código para tentar resolver um problema de rechamadas ao /repositories
-  // e a uns flashes na tela.
-  //
-  // useEffect(() => {
-  //   console.log(query);
-  //   const fetchData = async () => {
-  //     if (typeof query?.product === 'string') {
-  //       try {
-  //         const [organizationId, productId] = getPathId(query?.product);
-  //         await loadProduct(organizationId, productId);
-  //         await loadRepositories(organizationId, productId);
-  //       } catch (error) {
-  //         console.error(error);
-  //       }
-  //     }
-  //   };
+  useEffect(() => {
+    console.log(query);
+    const fetchData = async () => {
+      if (typeof query?.product === 'string') {
+        try {
+          const [organizationId, productId] = getPathId(query?.product);
+          await loadProduct(organizationId, productId);
+          await loadRepositories(organizationId, productId);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
 
-  //   console.log('eu ein');
+    console.log('eu ein');
 
-  //   fetchData().catch((error) => console.error(error));
-  // }, [query?.product]);
+    fetchData().catch((error) => console.error(error));
+  }, [query?.product]);
 
   return { handleRepositoryAction, loadRepositoriesNoContext, loadProduct };
 }

@@ -17,7 +17,7 @@ export const Wrapper = styled.div<{ $collapsed?: boolean | null; $selected?: boo
   cursor: pointer;
 
   &:hover {
-    background-color: #38618A;
+    background-color: #38618a;
   }
 
   background-color: ${(props) => (props.$selected ? '#38618A' : 'none')};

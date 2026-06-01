@@ -5,7 +5,6 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
-// Suas configurações de alias dinâmicos continuam normais
 const aliases = require('./settings/alias').reduce((acc, alias) => {
   acc[`^${alias.name}(.*)$`] = `<rootDir>${alias.path}$1`;
   return acc;
@@ -14,17 +13,34 @@ const aliases = require('./settings/alias').reduce((acc, alias) => {
 /** @type {import('jest').Config} */
 const customJestConfig = {
   roots: ['<rootDir>/src'],
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.{ts,tsx}',
+    '!<rootDir>/src/**/*.d.ts',
+    '!<rootDir>/src/**/styles.ts',
+    '!<rootDir>/src/**/index.{ts,tsx}',
+    '!<rootDir>/src/**/*.page.{ts,tsx}',
+    '!<rootDir>/src/**/*.next.{ts,tsx}',
+  ],
   testRegex: '((\\.|/*.)(spec))\\.tsx?$',
+
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/tests/',
+    'styles\\.(ts|tsx)$',
+    '/Theme/',
+    'index\\.(page\\.)?(ts|tsx)$',
+    '/_app\\.tsx$',
+    '/_document\\.tsx$'
+  ],
+
   coverageDirectory: 'coverage',
+  coverageReporters: ['lcov', 'text', 'html', 'json'],
 
   testEnvironment: 'jest-environment-jsdom',
 
-  // Carrega os arquivos de setup
-  setupFiles: ['<rootDir>/tests/jestSetup.ts'],
 
-  // Mais tipos de expect para testes
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  // Carrega os arquivos de setup
+  setupFilesAfterEnv: ['<rootDir>/tests/jestSetup.ts'],
 
   // Mapeia os aliases para os caminhos dos arquivos
   moduleNameMapper: {

@@ -48,7 +48,7 @@ exports[`Header should render correctly 1`] = `
         />
       </button>
       <button
-        aria-label="Copiar Badge"
+        aria-label="repository.copy-badge"
         class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
         data-mui-internal-clone-element="true"
         tabindex="0"

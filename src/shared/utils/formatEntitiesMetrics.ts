@@ -1,5 +1,4 @@
 const formatEntitiesMetrics = (result: []) => {
-
   const metrics = [];
   const metricsInvalid = ['reliability_rating', 'security_rating', 'test_success_density'];
 

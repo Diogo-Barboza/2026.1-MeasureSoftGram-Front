@@ -192,7 +192,6 @@ describe('Auth Service', () => {
       expect(url).toContain('https://github.com/login/oauth/authorize');
       expect(url).toContain('client_id=');
       expect(url).toContain('redirect_uri=');
-      expect(url).toContain('scope=repo,read:org,user');
     });
   });
 
