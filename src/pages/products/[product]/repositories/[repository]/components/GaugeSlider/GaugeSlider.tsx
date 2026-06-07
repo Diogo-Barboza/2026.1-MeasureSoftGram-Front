@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Slider } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface GaugeSliderProps {
   initialValues: number[];
@@ -20,6 +21,8 @@ function GaugeSlider(props: GaugeSliderProps) {
     step
   } = props;
 
+  const { t } = useTranslation("header");
+
   const [perc, setPerc] = useState(
     initialValues.map((val: number) => (val / max) * 100)
   );
@@ -27,12 +30,18 @@ function GaugeSlider(props: GaugeSliderProps) {
   const onChange = (e: Event, tValues: number | number[]) => {
     if (Array.isArray(tValues)) {
       const [minVal, maxVal] = tValues;
-      if (maxVal > minVal && maxVal !== minVal && minVal > 0 && maxVal < 1) {
+      // Os limites devem respeitar vermelho < amarelo e ficar dentro do
+      // intervalo [min, max], inclusive nos extremos (vermelho em min,
+      // amarelo em max).
+      if (maxVal > minVal && minVal >= min && maxVal <= max) {
         setValues(tValues);
         setPerc(tValues.map((val: number) => (val / max) * 100));
       }
     }
   };
+
+  const getAriaLabel = (index: number) =>
+    index === 0 ? t("red_limit_label") : t("yellow_limit_label");
 
   return (
     <Box
@@ -46,6 +55,8 @@ function GaugeSlider(props: GaugeSliderProps) {
       <Slider
         data-testid="gauge-slider-id"
         disableSwap
+        getAriaLabel={getAriaLabel}
+        getAriaValueText={(value, index) => `${getAriaLabel(index)}: ${value}`}
         sx={{
           width: '90%',
           "& .MuiSlider-track": {
@@ -69,7 +80,11 @@ function GaugeSlider(props: GaugeSliderProps) {
             }
           },
           "& .MuiSlider-mark": {
-            background: "none"
+            width: '2px',
+            height: '12px',
+            borderRadius: '1px',
+            background: "#ffffff",
+            opacity: 0.9
           },
           "& .MuiSlider-rail": {
             opacity: 100,
@@ -84,17 +99,9 @@ function GaugeSlider(props: GaugeSliderProps) {
         scale={(x) => (x)}
         marks={[
           { value: min, label: min },
-          ...perc.map((val: any) => {
-            let label;
-            if (val === 0) {
-              label = min;
-            } else if (val === 1) {
-              label = max;
-            } else {
-              label = undefined;
-            }
-            return { value: val, label };
-          }),
+          // Marca a posicao atual de cada limite (vermelho e amarelo) no
+          // trilho, usando o proprio valor na escala [min, max].
+          ...values.map((val: number) => ({ value: val, label: undefined })),
           { value: max, label: max }
         ]}
         onChange={onChange}
