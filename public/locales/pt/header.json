@@ -8,5 +8,8 @@
   "update_success": "Intervalos atualizados com sucesso!",
   "update_error": "Erro ao atualizar intervalos!",
   "red_limit_label": "Limite vermelho",
-  "yellow_limit_label": "Limite amarelo"
+  "yellow_limit_label": "Limite amarelo",
+  "legend_bad": "Ruim",
+  "legend_regular": "Regular",
+  "legend_good": "Bom"
 }

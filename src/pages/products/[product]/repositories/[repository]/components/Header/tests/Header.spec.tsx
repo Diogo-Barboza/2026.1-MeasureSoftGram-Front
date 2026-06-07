@@ -45,7 +45,7 @@ describe('Header', () => {
   it('opens and closes the modal correctly', () => {
     const { getByText, queryByText, getByTestId } = render(<Header />, { wrapper: AllTheProviders });
 
-    const testString = 'Editar Intervalos';
+    const testString = 'edit_intervals';
 
     expect(queryByText(testString)).toBeFalsy();
 
@@ -55,7 +55,7 @@ describe('Header', () => {
     fireEvent.click(settingsButton);
     expect(queryByText(testString)).toBeTruthy();
 
-    const cancelButton = getByText('Cancelar');
+    const cancelButton = getByText('cancel');
     expect(cancelButton).toBeTruthy();
     fireEvent.click(cancelButton);
     expect(queryByText(testString)).toBeFalsy();
