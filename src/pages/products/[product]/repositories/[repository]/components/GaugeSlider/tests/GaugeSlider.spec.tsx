@@ -3,6 +3,8 @@ import { fireEvent, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import GaugeSlider from '../GaugeSlider';
 
+const SLIDER_TESTID = 'gauge-slider-id';
+const RANGE_INPUT = 'input[type="range"]';
 
 describe('GaugeSlider', () => {
   it('should update values and percentage on change', async () => {
@@ -21,10 +23,10 @@ describe('GaugeSlider', () => {
       />
     );
 
-    const sliderContainer = getByTestId('gauge-slider-id');
+    const sliderContainer = getByTestId(SLIDER_TESTID);
     expect(sliderContainer).toBeTruthy()
 
-    const sliderInput = await sliderContainer.querySelector('input[type="range"]');
+    const sliderInput = await sliderContainer.querySelector(RANGE_INPUT);
     fireEvent.change(sliderInput!, { target: { value: [0.5] } });
 
     expect(setValuesMock).toHaveBeenCalledWith([0.5, 0.66]);
@@ -45,7 +47,7 @@ describe('GaugeSlider', () => {
       />
     );
 
-    const sliderInput = getByTestId('gauge-slider-id').querySelector('input[type="range"]');
+    const sliderInput = getByTestId(SLIDER_TESTID).querySelector(RANGE_INPUT);
     fireEvent.change(sliderInput!, { target: { value: 0 } });
 
     expect(setValuesMock).toHaveBeenCalledWith([0, 0.66]);
@@ -66,7 +68,7 @@ describe('GaugeSlider', () => {
     );
 
     const lefts = Array.from(
-      getByTestId('gauge-slider-id').querySelectorAll('.MuiSlider-mark')
+      getByTestId(SLIDER_TESTID).querySelectorAll('.MuiSlider-mark')
     ).map((mark) => parseFloat((mark as HTMLElement).style.left));
 
     // Os limites vermelho (0.33) e amarelo (0.66) devem aparecer como marcas
@@ -90,7 +92,7 @@ describe('GaugeSlider', () => {
     );
 
     const inputs = Array.from(
-      getByTestId('gauge-slider-id').querySelectorAll('input[type="range"]')
+      getByTestId(SLIDER_TESTID).querySelectorAll(RANGE_INPUT)
     );
     expect(inputs.length).toBeGreaterThan(0);
 
