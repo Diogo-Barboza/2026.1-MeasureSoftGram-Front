@@ -6,19 +6,19 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="sc-jXbUNg fzDCPM"
+        class="sc-475bac3d-0 iKVuCA"
       >
         <div
-          class="sc-dhKdcB jbKGak"
+          class="sc-475bac3d-1 eRLXrr"
         >
           <div
-            class="sc-eqUAAy kCDRLS"
+            class="sc-63dcaa60-0 gNIybT"
           >
             <div
               class="MuiBox-root css-nb2z2f"
             >
               <img
-                class="sc-iGgWBj chccMS"
+                class="sc-63dcaa60-3 dYlGQG"
                 height="50"
                 src="/images/svg/logo_white.svg"
               />
@@ -70,7 +70,7 @@ Object {
                 organization.placeholder
               </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl sc-kAyceB clWvmT css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl sc-779df817-0 fsOGtg css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
               >
                 <div
                   aria-controls=":r0:"
@@ -121,7 +121,7 @@ Object {
               </div>
             </div>
             <div
-              class="sc-dcJsrY jnotXu"
+              class="sc-63dcaa60-2 cZDHjs"
             >
               <svg
                 aria-hidden="true"
@@ -139,7 +139,7 @@ Object {
               class="MuiDivider-root MuiDivider-fullWidth css-qrim74-MuiDivider-root"
             />
             <div
-              class="sc-fqkvVR aYBmB"
+              class="sc-63dcaa60-1 fAmqBr"
             />
             <hr
               class="MuiDivider-root MuiDivider-fullWidth css-fan870-MuiDivider-root"
@@ -149,11 +149,11 @@ Object {
             >
               <div
                 aria-label="tooltip.user-menu"
-                class="sc-aXZVg inDZmj"
+                class="sc-ad80db87-0 dwUUfE"
                 data-mui-internal-clone-element="true"
               >
                 <div
-                  class="sc-gEvEer Ydgym"
+                  class="sc-ad80db87-1 bba-DyI"
                 >
                   <div
                     class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-128rogb-MuiAvatar-root"
@@ -201,10 +201,10 @@ Object {
           </div>
         </div>
         <div
-          class="sc-kpDqfm kkwtWg"
+          class="sc-475bac3d-2 fKBgOT"
         >
           <div
-            class="sc-imWYAI HEnJP"
+            class="sc-6674b5e5-0 gSYjiE"
           >
             <div
               class="MuiContainer-root MuiContainer-maxWidthLg css-1oqqzyl-MuiContainer-root"
@@ -326,26 +326,26 @@ Object {
           </div>
         </div>
         <div
-          class="sc-dAlyuH kmUtgo"
+          class="sc-475bac3d-3 eryBrG"
         />
       </div>
     </div>
   </body>,
   "container": <div>
     <div
-      class="sc-jXbUNg fzDCPM"
+      class="sc-475bac3d-0 iKVuCA"
     >
       <div
-        class="sc-dhKdcB jbKGak"
+        class="sc-475bac3d-1 eRLXrr"
       >
         <div
-          class="sc-eqUAAy kCDRLS"
+          class="sc-63dcaa60-0 gNIybT"
         >
           <div
             class="MuiBox-root css-nb2z2f"
           >
             <img
-              class="sc-iGgWBj chccMS"
+              class="sc-63dcaa60-3 dYlGQG"
               height="50"
               src="/images/svg/logo_white.svg"
             />
@@ -397,7 +397,7 @@ Object {
               organization.placeholder
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl sc-kAyceB clWvmT css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl sc-779df817-0 fsOGtg css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
             >
               <div
                 aria-controls=":r0:"
@@ -448,7 +448,7 @@ Object {
             </div>
           </div>
           <div
-            class="sc-dcJsrY jnotXu"
+            class="sc-63dcaa60-2 cZDHjs"
           >
             <svg
               aria-hidden="true"
@@ -466,7 +466,7 @@ Object {
             class="MuiDivider-root MuiDivider-fullWidth css-qrim74-MuiDivider-root"
           />
           <div
-            class="sc-fqkvVR aYBmB"
+            class="sc-63dcaa60-1 fAmqBr"
           />
           <hr
             class="MuiDivider-root MuiDivider-fullWidth css-fan870-MuiDivider-root"
@@ -476,11 +476,11 @@ Object {
           >
             <div
               aria-label="tooltip.user-menu"
-              class="sc-aXZVg inDZmj"
+              class="sc-ad80db87-0 dwUUfE"
               data-mui-internal-clone-element="true"
             >
               <div
-                class="sc-gEvEer Ydgym"
+                class="sc-ad80db87-1 bba-DyI"
               >
                 <div
                   class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-128rogb-MuiAvatar-root"
@@ -528,10 +528,10 @@ Object {
         </div>
       </div>
       <div
-        class="sc-kpDqfm kkwtWg"
+        class="sc-475bac3d-2 fKBgOT"
       >
         <div
-          class="sc-imWYAI HEnJP"
+          class="sc-6674b5e5-0 gSYjiE"
         >
           <div
             class="MuiContainer-root MuiContainer-maxWidthLg css-1oqqzyl-MuiContainer-root"
@@ -653,7 +653,7 @@ Object {
         </div>
       </div>
       <div
-        class="sc-dAlyuH kmUtgo"
+        class="sc-475bac3d-3 eryBrG"
       />
     </div>
   </div>,
