@@ -14,6 +14,7 @@ interface IOrganizationContext {
   setCurrentOrganizations: (organizations: Organization[]) => void;
   organizationList: Organization[];
   isLoading: boolean;
+  hasFetched: boolean;
   fetchOrganizations: (forceFetch?: boolean) => void;
 }
 
@@ -25,6 +26,7 @@ export function OrganizationProvider({ children }: Props) {
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [organizationList, setOrganizationList] = useState<Organization[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const fetchOrganizations = async (forceFetch?: boolean) => {
     if (!session && !forceFetch) return;
@@ -41,6 +43,7 @@ export function OrganizationProvider({ children }: Props) {
           key: org.key ?? ''
         }));
         setOrganizationList(organizations);
+        setHasFetched(true);
       } else {
         toast.error("Erro ao carregar organizações.");
       }
@@ -53,8 +56,13 @@ export function OrganizationProvider({ children }: Props) {
   };
 
   useEffect(() => {
-    fetchOrganizations();
-  }, []);
+    if (session) {
+      fetchOrganizations();
+    } else {
+      setOrganizationList([]);
+      setHasFetched(false);
+    }
+  }, [session]);
 
   useEffect(() => {
     if (organizationList.length > 0 && currentOrganizations.length === 0) {
@@ -76,8 +84,9 @@ export function OrganizationProvider({ children }: Props) {
     setCurrentOrganizations,
     organizationList,
     isLoading,
+    hasFetched,
     fetchOrganizations
-  }), [currentOrganization, currentOrganizations, organizationList, isLoading]);
+  }), [currentOrganization, currentOrganizations, organizationList, isLoading, hasFetched]);
 
   return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>;
 }

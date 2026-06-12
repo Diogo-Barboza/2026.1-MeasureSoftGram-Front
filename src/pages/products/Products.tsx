@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
+import React, { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import Head from "next/head";
 import {
   Container,
   Box,
@@ -17,272 +17,272 @@ import {
   Button,
   Chip,
   Paper,
-  InputAdornment
-} from '@mui/material';
-import { Search, CheckCircle, AddCircle, GitHub, FolderSpecial } from '@mui/icons-material';
-import getLayout from '@components/Layout';
-import { NextPageWithLayout } from '@pages/_app.next';
-import useRequireAuth from '@hooks/useRequireAuth';
-import { useQuery } from '@hooks/useQuery';
-import { useOrganizationContext } from '@contexts/OrganizationProvider';
-import { useProductContext } from '@contexts/ProductProvider';
-import { productQuery } from '@services/product';
-import { toast } from 'react-toastify';
+  InputAdornment,
+  CircularProgress
+} from "@mui/material";
+import { Search, CheckCircle, AddCircle, GitHub, FolderSpecial } from "@mui/icons-material";
+import { NextPageWithLayout } from "@pages/_app.next";
+import getLayout from "@components/Layout";
+import useRequireAuth from "@hooks/useRequireAuth";
+import { toast } from "react-toastify";
+import { organizationQuery, GitHubOrganization, GitHubRepo } from "@services/organization";
+import { useRouter } from "next/router";
+import { productQuery } from "@services/product";
+import { repository } from "@services/repository";
+import { useOrganizationContext } from "@contexts/OrganizationProvider";
 
-interface RepositoryMock {
+interface ProductType {
   id: string | number;
   name: string;
-  description: string;
-  language: string;
-  updatedAt: string;
-  imported: boolean;
-  html_url?: string;
 }
-
-const INITIAL_REPOS: RepositoryMock[] = [
-  {
-    id: 1,
-    name: '2023.2-MeasureSoftGram-Analytics',
-    description: 'Dashboard de análise de qualidade e métricas de software.',
-    language: 'JavaScript',
-    updatedAt: '2 horas atrás',
-    imported: false,
-    html_url: 'https://github.com/fga-eps-mds/2023.2-MeasureSoftGram-Analytics'
-  },
-  {
-    id: 2,
-    name: 'fga-eps-mds/Docs',
-    description: 'Documentação do projeto e artefatos de EPS/MDS.',
-    language: 'LaTeX',
-    updatedAt: '1 dia atrás',
-    imported: false,
-    html_url: 'https://github.com/fga-eps-mds/Docs'
-  },
-  {
-    id: 3,
-    name: 'Core-API',
-    description: 'API principal de backend desenvolvida com Django Rest Framework.',
-    language: 'Python',
-    updatedAt: '4 horas atrás',
-    imported: false,
-    html_url: 'https://github.com/fga-eps-mds/Core-API'
-  },
-  {
-    id: 4,
-    name: 'MeasureSoftGram-Frontend',
-    description: 'Interface de usuário construída utilizando Next.js e TypeScript.',
-    language: 'TypeScript',
-    updatedAt: '6 horas atrás',
-    imported: false,
-    html_url: 'https://github.com/fga-eps-mds/MeasureSoftGram-Frontend'
-  },
-  {
-    id: 5,
-    name: 'Data-Pipeline',
-    description: 'Pipeline de processamento e pipelines de ETL para análise.',
-    language: 'Go',
-    updatedAt: '3 dias atrás',
-    imported: false,
-    html_url: 'https://github.com/fga-eps-mds/Data-Pipeline'
-  },
-  {
-    id: 6,
-    name: 'CI-CD-Templates',
-    description: 'Templates e configurações reutilizáveis de integração contínua.',
-    language: 'YAML',
-    updatedAt: '5 dias atrás',
-    imported: false,
-    html_url: 'https://github.com/fga-eps-mds/CI-CD-Templates'
-  }
-];
 
 const Products: NextPageWithLayout = () => {
   useRequireAuth();
+  const { t: tp } = useTranslation('product');
+  const { t: to } = useTranslation('organization');
   const router = useRouter();
-  const { handleRepositoryAction } = useQuery();
 
-  const {
-    organizationList,
-    currentOrganization,
-    setCurrentOrganizations
-  } = useOrganizationContext();
-  
-  const { productsList, currentProduct, setCurrentProduct } = useProductContext();
+  const { fetchOrganizations } = useOrganizationContext();
 
-  const [selectedOrgId, setSelectedOrgId] = useState<string>('');
-  const [selectedProdId, setSelectedProdId] = useState<string>('');
+  const [gitHubOrgs, setGitHubOrgs] = useState<GitHubOrganization[]>([]);
+  const [selectedOrgName, setSelectedOrgName] = useState<string>('');
+  const [selectedOrgDbId, setSelectedOrgDbId] = useState<string>('');
+
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string>('');
+
+  const [gitHubRepos, setGitHubRepos] = useState<GitHubRepo[]>([]);
+  const [importedRepoUrls, setImportedRepoUrls] = useState<string[]>([]);
+  const [importedRepos, setImportedRepos] = useState<any[]>([]);
+
+  const [loadingOrgs, setLoadingOrgs] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingRepos, setLoadingRepos] = useState(false);
+
   const [search, setSearch] = useState('');
   const [tabValue, setTabValue] = useState(0);
-  const [repos, setRepos] = useState<RepositoryMock[]>(INITIAL_REPOS);
 
-  // Sync selected organization with context
-  useEffect(() => {
-    if (currentOrganization) {
-      setSelectedOrgId(String(currentOrganization.id));
-    } else if (organizationList && organizationList.length > 0) {
-      const firstOrg = organizationList[0];
-      setSelectedOrgId(String(firstOrg.id));
-      setCurrentOrganizations([firstOrg]);
-    }
-  }, [currentOrganization, organizationList]);
 
-  // Sync selected product with context
-  useEffect(() => {
-    if (currentProduct) {
-      setSelectedProdId(String(currentProduct.id));
-    } else if (productsList && productsList.length > 0) {
-      const firstProd = productsList[0];
-      setSelectedProdId(String(firstProd.id));
-      setCurrentProduct(firstProd);
-    }
-  }, [currentProduct, productsList]);
 
-  const fetchImportedRepos = async (orgId: string, prodId: string) => {
+  const loadGitHubOrgs = async () => {
+    setLoadingOrgs(true);
     try {
-      const result = await productQuery.getAllRepositories(orgId, prodId);
-      if (result.data && Array.isArray(result.data.results)) {
-        const importedNames = result.data.results.map((r: any) => r.name.toLowerCase());
-        setRepos(prev =>
-          prev.map(repo => ({
-            ...repo,
-            imported: importedNames.includes(repo.name.toLowerCase())
-          }))
-        );
-      }
-    } catch (err) {
-      console.error('Error fetching imported repos:', err);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedOrgId && selectedProdId) {
-      fetchImportedRepos(selectedOrgId, selectedProdId);
-    }
-  }, [selectedOrgId, selectedProdId]);
-
-  const handleOrgChange = (orgId: string) => {
-    setSelectedOrgId(orgId);
-    const selectedOrg = organizationList?.find(o => String(o.id) === orgId);
-    if (selectedOrg) {
-      setCurrentOrganizations([selectedOrg]);
-      // Reset selected product
-      setSelectedProdId('');
-      setCurrentProduct(undefined);
-    }
-  };
-
-  const handleProdChange = (prodId: string) => {
-    setSelectedProdId(prodId);
-    const selectedProd = productsList?.find(p => String(p.id) === prodId);
-    if (selectedProd) {
-      setCurrentProduct(selectedProd);
-    }
-  };
-
-  const handleImport = async (repo: RepositoryMock) => {
-    if (!selectedOrgId || !selectedProdId) {
-      toast.error('Selecione uma organização e um produto primeiro.');
-      return;
-    }
-
-    try {
-      const result = await handleRepositoryAction(
-        'create',
-        selectedOrgId,
-        selectedProdId,
-        undefined,
-        {
-          name: repo.name,
-          description: repo.description,
-          url: repo.html_url || `https://github.com/fga-eps-mds/${repo.name}`,
-          platform: 'github',
-          imported: true
+      const res = await organizationQuery.getGithubOrganizations();
+      if (res.type === 'success') {
+        setGitHubOrgs(res.value);
+        if (res.value.length > 0) {
+          setSelectedOrgName(res.value[0].github_org_name);
         }
-      );
-
-      if (result.type === 'success') {
-        toast.success('Repositório importado com sucesso!');
-        setRepos(prev =>
-          prev.map(r => (r.id === repo.id ? { ...r, imported: true } : r))
-        );
+      } else {
+        toast.error("Erro ao buscar organizações do GitHub.");
       }
     } catch (error) {
-      toast.error('Erro ao importar repositório.');
       console.error(error);
+      toast.error("Erro ao carregar organizações.");
+    } finally {
+      setLoadingOrgs(false);
     }
   };
 
-  const filteredRepos = repos.filter((repo) => {
-    const matchesSearch = repo.name.toLowerCase().includes(search.toLowerCase());
-    if (tabValue === 1) return matchesSearch && repo.imported;
-    if (tabValue === 2) return matchesSearch && !repo.imported;
-    return matchesSearch;
-  });
+  const handleSelectOrganization = async (orgName: string) => {
+    if (!orgName) return;
+    setLoadingProducts(true);
+    setLoadingRepos(true);
+    setProducts([]);
+    setGitHubRepos([]);
+    setImportedRepoUrls([]);
+    setImportedRepos([]);
+    try {
+      // 1. Fetch backend organizations to check if it's already imported
+      const backendOrgsResult = await organizationQuery.getAllOrganization();
+      let orgDbId = '';
+
+      if (backendOrgsResult.type === 'success') {
+        const matchingOrg = backendOrgsResult.value.find(
+          (o: any) => o.name.toLowerCase() === orgName.toLowerCase() || (o.key && o.key.toLowerCase() === orgName.toLowerCase())
+        );
+        if (matchingOrg && matchingOrg.id) {
+          orgDbId = matchingOrg.id;
+        }
+      }
+
+      // 2. If organization is not yet in the backend, import it
+      if (!orgDbId) {
+        const importResult = await organizationQuery.importOrganization(orgName);
+        if (importResult.type === 'success' && importResult.value.id) {
+          orgDbId = importResult.value.id;
+          // Trigger reload of context organizations so components like sidebar stay updated
+          fetchOrganizations(true);
+        } else {
+          toast.error(`Erro ao importar organização no MeasureSoftGram.`);
+          setLoadingProducts(false);
+          setLoadingRepos(false);
+          return;
+        }
+      }
+
+      setSelectedOrgDbId(orgDbId);
+
+      // 3. Load products for this database organization ID
+      const productsRes = await productQuery.getAllProducts(orgDbId);
+      const productList = (productsRes.data?.results || productsRes.data || []) as ProductType[];
+      setProducts(productList);
+      if (productList.length > 0) {
+        setSelectedProductId(String(productList[0].id));
+      } else {
+        setSelectedProductId('');
+      }
+
+      // 4. Load available GitHub repositories for this organization
+      const reposRes = await organizationQuery.getGithubRepos(orgDbId);
+      if (reposRes.type === 'success') {
+        setGitHubRepos(reposRes.value);
+      } else {
+        toast.error(`Erro ao buscar repositórios do GitHub.`);
+      }
+
+    } catch (error: any) {
+      console.error(error);
+      toast.error(`Erro de comunicação com o servidor.`);
+    } finally {
+      setLoadingProducts(false);
+      setLoadingRepos(false);
+    }
+  };
+
+  const loadProductRepositories = async (orgDbId: string, productId: string) => {
+    if (!orgDbId || !productId) return;
+    try {
+      const res = await productQuery.getAllRepositories(orgDbId, productId);
+      const repoList = res?.data?.results || res?.data || [];
+      setImportedRepos(repoList);
+      const urls = repoList.map((r: any) => r.url);
+      setImportedRepoUrls(urls);
+    } catch (error) {
+      console.error("Erro ao carregar repositórios importados:", error);
+    }
+  };
+
+  const handleImport = async (repo: GitHubRepo) => {
+    if (!selectedOrgDbId || !selectedProductId) return;
+    try {
+      const response = await repository.createRepository(selectedOrgDbId, selectedProductId, {
+        name: repo.name,
+        url: repo.url,
+        description: repo.description || '',
+        platform: 'github',
+        imported: true
+      });
+      if (response.type === 'success') {
+        toast.success(`Repositório ${repo.name} importado com sucesso!`);
+        loadProductRepositories(selectedOrgDbId, selectedProductId);
+      } else {
+        toast.error(`Erro ao importar repositório: ${response.error.message || 'Erro desconhecido'}`);
+      }
+    } catch (error: any) {
+      toast.error(`Erro ao importar repositório: ${error.message || 'Erro desconhecido'}`);
+    }
+  };
+
+  useEffect(() => {
+    loadGitHubOrgs();
+  }, []);
+
+  useEffect(() => {
+    if (selectedOrgName) {
+      handleSelectOrganization(selectedOrgName);
+    }
+  }, [selectedOrgName]);
+
+  useEffect(() => {
+    if (selectedOrgDbId && selectedProductId) {
+      loadProductRepositories(selectedOrgDbId, selectedProductId);
+    }
+  }, [selectedOrgDbId, selectedProductId]);
+
+  const filteredRepos = useMemo(() => {
+    return gitHubRepos.filter((repo) => {
+      const isAlreadyImported = importedRepoUrls.some(
+        url => url === repo.url || url.toLowerCase() === repo.url.toLowerCase()
+      );
+      const matchesSearch = repo.name.toLowerCase().includes(search.toLowerCase());
+      const matchesTab =
+        tabValue === 0 || (tabValue === 1 && isAlreadyImported) || (tabValue === 2 && !isAlreadyImported);
+      return matchesSearch && matchesTab;
+    });
+  }, [gitHubRepos, importedRepoUrls, search, tabValue]);
+
+
 
   return (
     <>
       <Head>
-        <title>Importar Repositórios - MeasureSoftGram</title>
+        <title>{tp('title')} - MeasureSoftGram</title>
       </Head>
-      <Container maxWidth="md">
-        <Box display="flex" flexDirection="column" gap="2rem" paddingY="3rem">
+      <Container>
+        <Box display="flex" flexDirection="column" gap="2rem" paddingY="2rem">
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box sx={{ textAlign: 'left' }}>
+            <Box>
               <Typography variant="h4" fontWeight="bold" gutterBottom color="text.primary">
-                Importar Repositórios do GitHub
+                Importação de Repositórios e Planejamento
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Selecione uma organização, um produto correspondente e vincule repositórios reais.
+                Selecione sua organização e o produto correspondente para gerenciar seus repositórios e planejar releases.
               </Typography>
             </Box>
             <GitHub color="action" sx={{ fontSize: '2.5rem' }} />
           </Box>
 
           <Paper variant="outlined" sx={{ padding: '1.5rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <FormControl fullWidth size="medium">
-              <InputLabel id="org-select-label">Organizações do GitHub</InputLabel>
+            <FormControl fullWidth size="medium" disabled={loadingOrgs}>
+              <InputLabel id="org-select-label">
+                {loadingOrgs ? "Carregando organizações..." : "Organizações do GitHub"}
+              </InputLabel>
               <Select
                 labelId="org-select-label"
-                value={selectedOrgId}
+                value={selectedOrgName}
                 label="Organizações do GitHub"
-                onChange={(e) => handleOrgChange(e.target.value as string)}
-                sx={{ textAlign: 'left' }}
+                onChange={(e) => setSelectedOrgName(e.target.value)}
               >
-                {organizationList?.map((orgItem) => (
-                  <MenuItem key={orgItem.id} value={String(orgItem.id)}>
-                    <strong>{orgItem.name}</strong>
+                {gitHubOrgs.map((o) => (
+                  <MenuItem key={o.github_org_id} value={o.github_org_name}>
+                    <strong>{o.github_org_name}</strong> {o.description ? `(${o.description})` : ''}
                   </MenuItem>
-                )) || (
-                  <MenuItem value="fga-eps-mds">
-                    <strong>fga-eps-mds</strong> (FGA-EPS-MDS Organization)
-                  </MenuItem>
-                )}
+                ))}
               </Select>
             </FormControl>
 
-            <FormControl fullWidth size="medium" disabled={!selectedOrgId}>
-              <InputLabel id="product-select-label">Produtos</InputLabel>
-              <Select
-                labelId="product-select-label"
-                value={selectedProdId}
-                label="Produtos"
-                onChange={(e) => handleProdChange(e.target.value as string)}
-                sx={{ textAlign: 'left' }}
+            <Box display="flex" gap="1rem" alignItems="center" width="100%">
+              <FormControl fullWidth size="medium" disabled={loadingProducts || products.length === 0}>
+                <InputLabel id="product-select-label">
+                  {loadingProducts ? "Carregando produtos..." : "Produtos do MeasureSoftGram"}
+                </InputLabel>
+                <Select
+                  labelId="product-select-label"
+                  value={selectedProductId}
+                  label="Produtos do MeasureSoftGram"
+                  onChange={(e) => setSelectedProductId(e.target.value)}
+                >
+                  {products.map((product) => (
+                    <MenuItem key={product.id} value={product.id}>
+                      {product.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => router.push(`/products/create?id_organization=${selectedOrgDbId}`)}
+                disabled={!selectedOrgDbId}
+                sx={{ height: '56px', textTransform: 'none', fontWeight: 'bold', whiteSpace: 'nowrap', borderRadius: '8px' }}
               >
-                {productsList?.map((prodItem) => (
-                  <MenuItem key={prodItem.id} value={String(prodItem.id)}>
-                    <strong>{prodItem.name}</strong>
-                  </MenuItem>
-                )) || (
-                  <MenuItem value="">
-                    <em>Nenhum produto cadastrado nesta organização</em>
-                  </MenuItem>
-                )}
-              </Select>
-            </FormControl>
+                Criar Produto
+              </Button>
+            </Box>
           </Paper>
 
-          {selectedOrgId && selectedProdId ? (
+          {selectedProductId ? (
             <Paper variant="outlined" sx={{ borderRadius: '12px', overflow: 'hidden' }}>
               <Box
                 display="flex"
@@ -295,7 +295,7 @@ const Products: NextPageWithLayout = () => {
                 gap="1rem"
               >
                 <TextField
-                  placeholder="Buscar repositórios..."
+                  placeholder="Buscar repositórios do produto..."
                   size="small"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -303,99 +303,128 @@ const Products: NextPageWithLayout = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Search />
+                        <Search size={20} />
                       </InputAdornment>
                     )
                   }}
                 />
-                <Tabs
-                  value={tabValue}
-                  onChange={(_, newValue) => setTabValue(newValue)}
-                  indicatorColor="primary"
-                  textColor="primary"
-                >
-                  <Tab label="Todos" />
-                  <Tab label="Importados" />
-                  <Tab label="A Importar" />
-                </Tabs>
+                
+                <Box display="flex" alignItems="center" gap="1rem">
+                  <Tabs
+                    value={tabValue}
+                    onChange={(_, newValue) => setTabValue(newValue)}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    sx={{ marginRight: '1rem' }}
+                  >
+                    <Tab label="Todos" />
+                    <Tab label="Importados" />
+                    <Tab label="A Importar" />
+                  </Tabs>
+                </Box>
               </Box>
 
-              <List sx={{ padding: 0 }}>
-                {filteredRepos.length > 0 ? (
-                  filteredRepos.map((repo) => (
-                    <ListItem
-                      key={repo.id}
-                      sx={{
-                        padding: '1.5rem',
-                        borderBottom: '1px solid',
-                        borderColor: 'divider',
-                        '&:last-child': { borderBottom: 'none' },
-                        transition: 'background-color 0.2s',
-                        '&:hover': {
-                          backgroundColor: 'action.hover'
-                        }
-                      }}
-                    >
-                      <Box display="flex" flexDirection="column" gap="0.5rem" flexGrow={1} sx={{ textAlign: 'left' }}>
-                        <Box display="flex" alignItems="center" gap="1rem">
-                          <Typography variant="subtitle1" fontWeight="bold">
-                            {repo.name}
-                          </Typography>
-                          <Chip
-                            label={repo.language}
-                            size="small"
-                            variant="outlined"
-                            sx={{ fontSize: '0.75rem' }}
-                          />
-                        </Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {repo.description}
-                        </Typography>
-                        <Typography variant="caption" color="text.disabled">
-                          Atualizado {repo.updatedAt}
-                        </Typography>
-                      </Box>
+              {loadingRepos ? (
+                <Box display="flex" justifyContent="center" alignItems="center" padding="4rem">
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <List sx={{ padding: 0 }}>
+                  {filteredRepos.length > 0 ? (
+                    filteredRepos.map((repo) => {
+                      const isAlreadyImported = importedRepoUrls.some(
+                        url => url === repo.url || url.toLowerCase() === repo.url.toLowerCase()
+                      );
+                      return (
+                        <ListItem
+                          key={repo.github_repo_id}
+                          sx={{
+                            padding: '1.5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            borderBottom: '1px solid',
+                            borderColor: 'divider',
+                            '&:last-child': { borderBottom: 'none' },
+                            transition: 'background-color 0.2s',
+                            '&:hover': {
+                              backgroundColor: 'action.hover'
+                            }
+                          }}
+                        >
+                          <Box display="flex" flexDirection="column" gap="0.5rem" flexGrow={1}>
+                            <Box display="flex" alignItems="center" gap="1rem">
+                              <Typography variant="subtitle1" fontWeight="bold">
+                                {repo.github_full_name || repo.name}
+                              </Typography>
+                            </Box>
+                            <Typography variant="body2" color="text.secondary">
+                              {repo.description}
+                            </Typography>
+                          </Box>
 
-                      <Box marginLeft="2rem">
-                        {repo.imported ? (
-                          <Chip
-                            icon={<CheckCircle color="success" />}
-                            label="Importado"
-                            variant="outlined"
-                            color="success"
-                            sx={{ fontWeight: '500', minWidth: '110px' }}
-                          />
-                        ) : (
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AddCircle />}
-                            onClick={() => handleImport(repo)}
-                            sx={{ textTransform: 'none', fontWeight: 'bold', minWidth: '110px' }}
-                          >
-                            Importar
-                          </Button>
-                        )}
-                      </Box>
-                    </ListItem>
-                  ))
-                ) : (
-                  <Box padding="3rem" textAlign="center">
-                    <Typography variant="body1" color="text.secondary">
-                      Nenhum repositório encontrado.
-                    </Typography>
-                  </Box>
-                )}
-              </List>
+                          <Box display="flex" alignItems="center" gap="1rem" marginLeft="2rem">
+                            {isAlreadyImported ? (
+                              <Chip
+                                icon={<CheckCircle color="success" />}
+                                label="Importado"
+                                variant="outlined"
+                                color="success"
+                                sx={{ fontWeight: '500', minWidth: '110px' }}
+                              />
+                            ) : (
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddCircle />}
+                                onClick={() => handleImport(repo)}
+                                sx={{
+                                  textTransform: 'none',
+                                  fontWeight: 'bold',
+                                  minWidth: '110px',
+                                  borderRadius: '8px'
+                                }}
+                              >
+                                Importar
+                              </Button>
+                            )}
+                          </Box>
+                        </ListItem>
+                      );
+                    })
+                  ) : (
+                    <Box padding="3rem" textAlign="center">
+                      <Typography variant="body1" color="text.secondary">
+                        Nenhum repositório associado a este produto foi encontrado.
+                      </Typography>
+                    </Box>
+                  )}
+                </List>
+              )}
             </Paper>
           ) : (
             <Paper variant="outlined" sx={{ padding: '3rem', textAlign: 'center', borderRadius: '12px' }}>
               <FolderSpecial color="disabled" sx={{ fontSize: '3rem', marginBottom: '1rem' }} />
-              <Typography variant="body1" color="text.secondary">
-                Selecione uma organização e um produto para carregar os repositórios correspondentes.
+              <Typography variant="body1" color="text.secondary" gutterBottom>
+                {selectedOrgDbId && products.length === 0 
+                  ? "Esta organização ainda não possui nenhum produto cadastrado." 
+                  : "Selecione uma organização e um produto para carregar os repositórios correspondentes."
+                }
               </Typography>
+              {selectedOrgDbId && products.length === 0 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => router.push(`/products/create?id_organization=${selectedOrgDbId}`)}
+                  sx={{ marginTop: '1.5rem', textTransform: 'none', fontWeight: 'bold', borderRadius: '8px' }}
+                >
+                  Cadastrar Primeiro Produto
+                </Button>
+              )}
             </Paper>
           )}
+
+
         </Box>
       </Container>
     </>

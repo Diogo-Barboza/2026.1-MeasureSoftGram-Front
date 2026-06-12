@@ -36,7 +36,7 @@ export function ProductProvider({ children }: Props) {
 
       const result = await productQuery.getAllProducts(currentOrganization.id);
       if (result.status === 200) {
-        updateProductList(result.data.results);
+        updateProductList(result.data?.results || result.data || []);
       }
     } catch (error) {
       console.error(error);

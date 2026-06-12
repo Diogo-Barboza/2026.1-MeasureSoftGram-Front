@@ -69,7 +69,7 @@ const ProductsCreation: OrganizationsType = () => {
       if (result.type === 'success') {
         toast.success(t('toast.success-edit'));
         window.location.reload();
-        window.location.href = '/home';
+        window.location.href = '/products';
       } else if (result.error.message === nameExist) {
         toast.error(nameExist);
       } else {
@@ -82,7 +82,7 @@ const ProductsCreation: OrganizationsType = () => {
         if (result.type === 'success') {
           toast.success(t('toast.sucess'));
           window.location.reload();
-          window.location.href = '/home';
+          window.location.href = '/products';
         } else if (result.error.message === nameExist) {
           toast.error(nameExist);
         } else {
@@ -148,7 +148,7 @@ const ProductsCreation: OrganizationsType = () => {
               data-testid="description-input"
             />
             <Botoes>
-              <MSGButton width="200px" variant='secondary' onClick={() => router.push('/home')}  >{t('back')}</MSGButton>
+              <MSGButton width="200px" variant='secondary' onClick={() => router.push('/products')}  >{t('back')}</MSGButton>
 
               <MSGButton width="200px" type='submit' >{isEditMode ? t('save') : t('create')}</MSGButton>
             </Botoes>
