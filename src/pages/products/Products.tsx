@@ -1,274 +1,403 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import {
-  Box,
-  Button,
   Container,
-  Grid,
+  Box,
   Typography,
-  IconButton,
-  Link,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
   TextField,
+  Tabs,
+  Tab,
+  List,
+  ListItem,
+  Button,
+  Chip,
+  Paper,
+  InputAdornment
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import { NextPageWithLayout } from '@pages/_app.next';
-import { useProductContext } from '@contexts/ProductProvider';
-import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import { Search, CheckCircle, AddCircle, GitHub, FolderSpecial } from '@mui/icons-material';
 import getLayout from '@components/Layout';
-import CardNavigation from '@components/CardNavigation';
-import { Product } from '@customTypes/product';
+import { NextPageWithLayout } from '@pages/_app.next';
 import useRequireAuth from '@hooks/useRequireAuth';
-import { Organization } from '@customTypes/organization';
-import WarningIcon from '@mui/icons-material/Warning';
-import { useTranslation } from 'react-i18next';
-import Skeleton from './components/Skeleton';
-import ScrollableList from './components/ScrollableList/index';
+import { useQuery } from '@hooks/useQuery';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import { useProductContext } from '@contexts/ProductProvider';
+import { productQuery } from '@services/product';
+import { toast } from 'react-toastify';
+
+interface RepositoryMock {
+  id: string | number;
+  name: string;
+  description: string;
+  language: string;
+  updatedAt: string;
+  imported: boolean;
+  html_url?: string;
+}
+
+const INITIAL_REPOS: RepositoryMock[] = [
+  {
+    id: 1,
+    name: '2023.2-MeasureSoftGram-Analytics',
+    description: 'Dashboard de análise de qualidade e métricas de software.',
+    language: 'JavaScript',
+    updatedAt: '2 horas atrás',
+    imported: false,
+    html_url: 'https://github.com/fga-eps-mds/2023.2-MeasureSoftGram-Analytics'
+  },
+  {
+    id: 2,
+    name: 'fga-eps-mds/Docs',
+    description: 'Documentação do projeto e artefatos de EPS/MDS.',
+    language: 'LaTeX',
+    updatedAt: '1 dia atrás',
+    imported: false,
+    html_url: 'https://github.com/fga-eps-mds/Docs'
+  },
+  {
+    id: 3,
+    name: 'Core-API',
+    description: 'API principal de backend desenvolvida com Django Rest Framework.',
+    language: 'Python',
+    updatedAt: '4 horas atrás',
+    imported: false,
+    html_url: 'https://github.com/fga-eps-mds/Core-API'
+  },
+  {
+    id: 4,
+    name: 'MeasureSoftGram-Frontend',
+    description: 'Interface de usuário construída utilizando Next.js e TypeScript.',
+    language: 'TypeScript',
+    updatedAt: '6 horas atrás',
+    imported: false,
+    html_url: 'https://github.com/fga-eps-mds/MeasureSoftGram-Frontend'
+  },
+  {
+    id: 5,
+    name: 'Data-Pipeline',
+    description: 'Pipeline de processamento e pipelines de ETL para análise.',
+    language: 'Go',
+    updatedAt: '3 dias atrás',
+    imported: false,
+    html_url: 'https://github.com/fga-eps-mds/Data-Pipeline'
+  },
+  {
+    id: 6,
+    name: 'CI-CD-Templates',
+    description: 'Templates e configurações reutilizáveis de integração contínua.',
+    language: 'YAML',
+    updatedAt: '5 dias atrás',
+    imported: false,
+    html_url: 'https://github.com/fga-eps-mds/CI-CD-Templates'
+  }
+];
 
 const Products: NextPageWithLayout = () => {
-  const { t: tp } = useTranslation('product');
-  const { t: to } = useTranslation('organization');
-
   useRequireAuth();
+  const router = useRouter();
+  const { handleRepositoryAction } = useQuery();
 
   const {
     organizationList,
     currentOrganization,
-    setCurrentOrganizations,
-    isLoading: isLoadingOrganizations
+    setCurrentOrganizations
   } = useOrganizationContext();
-  const { productsList } = useProductContext();
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(
-    productsList ?? []
-  );
+  
+  const { productsList, currentProduct, setCurrentProduct } = useProductContext();
 
+  const [selectedOrgId, setSelectedOrgId] = useState<string>('');
+  const [selectedProdId, setSelectedProdId] = useState<string>('');
+  const [search, setSearch] = useState('');
+  const [tabValue, setTabValue] = useState(0);
+  const [repos, setRepos] = useState<RepositoryMock[]>(INITIAL_REPOS);
+
+  // Sync selected organization with context
   useEffect(() => {
-  }, [currentOrganization]);
+    if (currentOrganization) {
+      setSelectedOrgId(String(currentOrganization.id));
+    } else if (organizationList && organizationList.length > 0) {
+      const firstOrg = organizationList[0];
+      setSelectedOrgId(String(firstOrg.id));
+      setCurrentOrganizations([firstOrg]);
+    }
+  }, [currentOrganization, organizationList]);
 
+  // Sync selected product with context
   useEffect(() => {
-    if (productsList !== undefined) setFilteredProducts(productsList);
-  }, [productsList]);
+    if (currentProduct) {
+      setSelectedProdId(String(currentProduct.id));
+    } else if (productsList && productsList.length > 0) {
+      const firstProd = productsList[0];
+      setSelectedProdId(String(firstProd.id));
+      setCurrentProduct(firstProd);
+    }
+  }, [currentProduct, productsList]);
 
-  const handleSelectedOrganization = (organization: Organization) => {
-    const organizationId = organization.id
-    if (currentOrganization?.id === organizationId) {
-      setCurrentOrganizations([]);
-    } else if (organizationList?.length) {
-      const selectedOrganization = organizationList.find(
-        (org) => org.id === organizationId
-      );
-      if (selectedOrganization) {
-        setCurrentOrganizations([selectedOrganization]);
+  const fetchImportedRepos = async (orgId: string, prodId: string) => {
+    try {
+      const result = await productQuery.getAllRepositories(orgId, prodId);
+      if (result.data && Array.isArray(result.data.results)) {
+        const importedNames = result.data.results.map((r: any) => r.name.toLowerCase());
+        setRepos(prev =>
+          prev.map(repo => ({
+            ...repo,
+            imported: importedNames.includes(repo.name.toLowerCase())
+          }))
+        );
       }
+    } catch (err) {
+      console.error('Error fetching imported repos:', err);
     }
   };
 
-  const handleProductFilter = (name: string) => {
-    if (name == null || name === '') {
-      setFilteredProducts(productsList!);
+  useEffect(() => {
+    if (selectedOrgId && selectedProdId) {
+      fetchImportedRepos(selectedOrgId, selectedProdId);
+    }
+  }, [selectedOrgId, selectedProdId]);
+
+  const handleOrgChange = (orgId: string) => {
+    setSelectedOrgId(orgId);
+    const selectedOrg = organizationList?.find(o => String(o.id) === orgId);
+    if (selectedOrg) {
+      setCurrentOrganizations([selectedOrg]);
+      // Reset selected product
+      setSelectedProdId('');
+      setCurrentProduct(undefined);
+    }
+  };
+
+  const handleProdChange = (prodId: string) => {
+    setSelectedProdId(prodId);
+    const selectedProd = productsList?.find(p => String(p.id) === prodId);
+    if (selectedProd) {
+      setCurrentProduct(selectedProd);
+    }
+  };
+
+  const handleImport = async (repo: RepositoryMock) => {
+    if (!selectedOrgId || !selectedProdId) {
+      toast.error('Selecione uma organização e um produto primeiro.');
       return;
     }
-    const filtered =
-      productsList?.filter((product) =>
-        product.name.toLowerCase().includes(name.toLowerCase())
-      ) ?? [];
-    setFilteredProducts(filtered);
+
+    try {
+      const result = await handleRepositoryAction(
+        'create',
+        selectedOrgId,
+        selectedProdId,
+        undefined,
+        {
+          name: repo.name,
+          description: repo.description,
+          url: repo.html_url || `https://github.com/fga-eps-mds/${repo.name}`,
+          platform: 'github',
+          imported: true
+        }
+      );
+
+      if (result.type === 'success') {
+        toast.success('Repositório importado com sucesso!');
+        setRepos(prev =>
+          prev.map(r => (r.id === repo.id ? { ...r, imported: true } : r))
+        );
+      }
+    } catch (error) {
+      toast.error('Erro ao importar repositório.');
+      console.error(error);
+    }
   };
 
-  if (!productsList) {
-    return (
-      <Container>
-        <Skeleton />
-      </Container>
-    );
-  }
-  const boxSizing = 'border-box'
+  const filteredRepos = repos.filter((repo) => {
+    const matchesSearch = repo.name.toLowerCase().includes(search.toLowerCase());
+    if (tabValue === 1) return matchesSearch && repo.imported;
+    if (tabValue === 2) return matchesSearch && !repo.imported;
+    return matchesSearch;
+  });
+
   return (
     <>
       <Head>
-        <title> {tp('title')} </title>
+        <title>Importar Repositórios - MeasureSoftGram</title>
       </Head>
-
-      <Container maxWidth="lg" style={{ width: '100%' }}>
-        <Box display="flex" flexDirection="column"
-          height="60%"
-        >
-
-          <Box
-            data-testid="organization-box"
-            sx={{
-              marginTop: '40px',
-              padding: '20px 36px',
-              overflowX: 'auto',
-              overflowY: 'hidden',
-              position: 'relative',
-            }}
-            style={{
-              maxHeight: '120px',
-            }}
-          >
-            <Box
-              display="flex"
-              flexDirection="row"
-              style={{
-                gap: '1rem',
-                padding: '0',
-                marginLeft: '-36px',
-                boxSizing,
-              }}
-              sx={{
-                '&::-webkit-scrollbar': {
-                  height: '8px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: '#f0f0f0',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: '#b0b0b0',
-                  borderRadius: '4px',
-                },
-                scrollbarColor: '#b0b0b0 #f0f0f0',
-                scrollbarWidth: 'thin',
-              }}
-            />
+      <Container maxWidth="md">
+        <Box display="flex" flexDirection="column" gap="2rem" paddingY="3rem">
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box sx={{ textAlign: 'left' }}>
+              <Typography variant="h4" fontWeight="bold" gutterBottom color="text.primary">
+                Importar Repositórios do GitHub
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Selecione uma organização, um produto correspondente e vincule repositórios reais.
+              </Typography>
+            </Box>
+            <GitHub color="action" sx={{ fontSize: '2.5rem' }} />
           </Box>
 
-          {isLoadingOrganizations ? <Box
-            style={{
-              border: '1px solid #2B4D6F',
-              borderRadius: '10px',
-              boxSizing,
-            }}> <Skeleton /> </Box> :
-
-            <Box
-              display="flex"
-              flexDirection="row"
-              marginTop="20px"
-              style={{
-                border: '1px solid #2B4D6F',
-                borderRadius: '10px',
-                boxSizing,
-              }}
-              height="73vh"
-              justifyContent="space-between"
-            >
-
-              <Box
-                style={{
-                  padding: "20px",
-                  backgroundColor: '#F4F5F6',
-                  borderRadius: '10px',
-                  boxSizing,
-                }}>
-                <Link href="/organizations">
-                  <Button
-                    style={{
-                      minWidth: '40px',
-                      height: '45px',
-
-                    }}
-                    size="medium"
-                    variant="contained"
-                  >
-                    {to('title-create')}
-                  </Button>
-                </Link>
-
-                <Box
-                  paddingTop='2em'
-                  paddingBottom='2em'
-                  height="100%"
-                >
-                  <ScrollableList organizationList={organizationList} onSelect={handleSelectedOrganization} />
-                </Box>
-
-              </Box>
-
-              <Box
-                width="70%"
-                margin="20px"
-                sx={{ overflow: 'auto' }}
-                paddingRight="1em"
-                position="relative"
+          <Paper variant="outlined" sx={{ padding: '1.5rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <FormControl fullWidth size="medium">
+              <InputLabel id="org-select-label">Organizações do GitHub</InputLabel>
+              <Select
+                labelId="org-select-label"
+                value={selectedOrgId}
+                label="Organizações do GitHub"
+                onChange={(e) => handleOrgChange(e.target.value as string)}
+                sx={{ textAlign: 'left' }}
               >
+                {organizationList?.map((orgItem) => (
+                  <MenuItem key={orgItem.id} value={String(orgItem.id)}>
+                    <strong>{orgItem.name}</strong>
+                  </MenuItem>
+                )) || (
+                  <MenuItem value="fga-eps-mds">
+                    <strong>fga-eps-mds</strong> (FGA-EPS-MDS Organization)
+                  </MenuItem>
+                )}
+              </Select>
+            </FormControl>
 
-                <Box
-                  width="100%"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="end"
-                  marginBottom='20px'
-                >
-                  <Link href="/products/create">
-                    <Button
-                      style={{
-                        minWidth: '40px',
-                        height: '45px',
+            <FormControl fullWidth size="medium" disabled={!selectedOrgId}>
+              <InputLabel id="product-select-label">Produtos</InputLabel>
+              <Select
+                labelId="product-select-label"
+                value={selectedProdId}
+                label="Produtos"
+                onChange={(e) => handleProdChange(e.target.value as string)}
+                sx={{ textAlign: 'left' }}
+              >
+                {productsList?.map((prodItem) => (
+                  <MenuItem key={prodItem.id} value={String(prodItem.id)}>
+                    <strong>{prodItem.name}</strong>
+                  </MenuItem>
+                )) || (
+                  <MenuItem value="">
+                    <em>Nenhum produto cadastrado nesta organização</em>
+                  </MenuItem>
+                )}
+              </Select>
+            </FormControl>
+          </Paper>
 
-                      }}
-                      size="large"
-                      variant="contained"
-                    >
-                      {tp('title-create')}
-                    </Button>
-                  </Link>
-                </Box>
-
+          {selectedOrgId && selectedProdId ? (
+            <Paper variant="outlined" sx={{ borderRadius: '12px', overflow: 'hidden' }}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                padding="1rem"
+                borderBottom="1px solid"
+                borderColor="divider"
+                flexWrap="wrap"
+                gap="1rem"
+              >
                 <TextField
-                  fullWidth
-                  label={tp('search')}
-                  variant="outlined"
-                  onChange={(e) => handleProductFilter(e.target.value)}
-                  sx={{ mb: 2 }}
-                  data-testid="search-input"
+                  placeholder="Buscar repositórios..."
+                  size="small"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  sx={{ minWidth: '250px' }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    )
+                  }}
                 />
-
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  marginTop="20px"
-                  justifyContent="space-around"
-                  width="100%"
-                  alignContent="center"
+                <Tabs
+                  value={tabValue}
+                  onChange={(_, newValue) => setTabValue(newValue)}
+                  indicatorColor="primary"
+                  textColor="primary"
                 >
-                  {filteredProducts?.map((product) => (
-                    <Box
-                      paddingBottom="2em"
-                    >
-                      <CardNavigation
-                        key={product.id}
-                        id={product.id}
-                        name={product.name}
-                        description={product.description}
-                        url={`/products/${currentOrganization?.id}-${product?.id}-${product?.name}`}
-                      />
-                    </Box>
-
-                  ))}
-                  {
-                    filteredProducts?.length === 0 &&
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      bgcolor="rgba(223, 142, 22, 0.22)"
-                      color="#DF8E16"
-                      padding={2}
-                      borderRadius={2}
-                      width="fit-content"
-                      marginTop="15%"
-                      alignSelf="center"
-                    >
-                      <WarningIcon sx={{ color: '#e08c14', marginRight: 1 }} />
-                      <Typography color="black">{tp('not-found')}</Typography>
-                    </Box>
-                  }
-                </Box>
+                  <Tab label="Todos" />
+                  <Tab label="Importados" />
+                  <Tab label="A Importar" />
+                </Tabs>
               </Box>
-            </Box>
 
-          }
+              <List sx={{ padding: 0 }}>
+                {filteredRepos.length > 0 ? (
+                  filteredRepos.map((repo) => (
+                    <ListItem
+                      key={repo.id}
+                      sx={{
+                        padding: '1.5rem',
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        '&:last-child': { borderBottom: 'none' },
+                        transition: 'background-color 0.2s',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        }
+                      }}
+                    >
+                      <Box display="flex" flexDirection="column" gap="0.5rem" flexGrow={1} sx={{ textAlign: 'left' }}>
+                        <Box display="flex" alignItems="center" gap="1rem">
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {repo.name}
+                          </Typography>
+                          <Chip
+                            label={repo.language}
+                            size="small"
+                            variant="outlined"
+                            sx={{ fontSize: '0.75rem' }}
+                          />
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {repo.description}
+                        </Typography>
+                        <Typography variant="caption" color="text.disabled">
+                          Atualizado {repo.updatedAt}
+                        </Typography>
+                      </Box>
+
+                      <Box marginLeft="2rem">
+                        {repo.imported ? (
+                          <Chip
+                            icon={<CheckCircle color="success" />}
+                            label="Importado"
+                            variant="outlined"
+                            color="success"
+                            sx={{ fontWeight: '500', minWidth: '110px' }}
+                          />
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddCircle />}
+                            onClick={() => handleImport(repo)}
+                            sx={{ textTransform: 'none', fontWeight: 'bold', minWidth: '110px' }}
+                          >
+                            Importar
+                          </Button>
+                        )}
+                      </Box>
+                    </ListItem>
+                  ))
+                ) : (
+                  <Box padding="3rem" textAlign="center">
+                    <Typography variant="body1" color="text.secondary">
+                      Nenhum repositório encontrado.
+                    </Typography>
+                  </Box>
+                )}
+              </List>
+            </Paper>
+          ) : (
+            <Paper variant="outlined" sx={{ padding: '3rem', textAlign: 'center', borderRadius: '12px' }}>
+              <FolderSpecial color="disabled" sx={{ fontSize: '3rem', marginBottom: '1rem' }} />
+              <Typography variant="body1" color="text.secondary">
+                Selecione uma organização e um produto para carregar os repositórios correspondentes.
+              </Typography>
+            </Paper>
+          )}
         </Box>
-      </Container >
+      </Container>
     </>
   );
 };

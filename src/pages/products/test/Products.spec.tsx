@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import { useProductContext } from '@contexts/ProductProvider';
+import { useRepositoryContext } from '@contexts/RepositoryProvider';
 import Products from '../Products';
 
 jest.mock('next/router', () => ({
@@ -19,12 +20,17 @@ jest.mock('@contexts/ProductProvider', () => ({
   ProductProvider: ({ children }: any) => children
 }));
 
+jest.mock('@contexts/RepositoryProvider', () => ({
+  useRepositoryContext: jest.fn(),
+  RepositoryProvider: ({ children }: any) => children
+}));
+
 jest.mock('@hooks/useRequireAuth', () => jest.fn());
 
 describe('Products Component', () => {
   const mockProducts = [
-    { id: '1', name: 'Alpha', description: 'Desc 1' },
-    { id: '2', name: 'Beta', description: 'Desc 2' }
+    { id: 'prod1', name: 'Alpha', description: 'Desc 1' },
+    { id: 'prod2', name: 'Beta', description: 'Desc 2' }
   ];
 
   const mockOrgs = [
@@ -40,37 +46,20 @@ describe('Products Component', () => {
       isLoading: false
     });
     (useProductContext as jest.Mock).mockReturnValue({
-      productsList: mockProducts
+      productsList: mockProducts,
+      currentProduct: mockProducts[0],
+      setCurrentProduct: jest.fn()
+    });
+    (useRepositoryContext as jest.Mock).mockReturnValue({
+      repositoriesLatestTsqmi: []
     });
   });
 
-  it('deve filtrar produtos ao digitar no input de busca', () => {
+  it('deve renderizar a tela de importação de repositórios com campos corretos', () => {
     render(<Products />);
     
-    const searchInput = screen.getByTestId('search-input').querySelector('input')!;
-    
-    fireEvent.change(searchInput, { target: { value: 'Alpha' } });
-    expect(screen.getByText('Alpha')).toBeInTheDocument();
-    expect(screen.queryByText('Beta')).not.toBeInTheDocument();
-
-    fireEvent.change(searchInput, { target: { value: '' } });
-    expect(screen.getByText('Alpha')).toBeInTheDocument();
-    expect(screen.getByText('Beta')).toBeInTheDocument();
-  });
-
-  it('deve exibir mensagem de "não encontrado" quando o filtro não retorna resultados', () => {
-    render(<Products />);
-    
-    const searchInput = screen.getByTestId('search-input').querySelector('input')!;
-    fireEvent.change(searchInput, { target: { value: 'Inexistente' } });
-    
-    expect(screen.getByText(/not-found/i)).toBeInTheDocument();
-  });
-
-  it('deve exibir o Skeleton enquanto produtos não são carregados', () => {
-    (useProductContext as jest.Mock).mockReturnValue({ productsList: undefined });
-    render(<Products />);
-    
-    expect(screen.getByTestId('skeleton-container')).toBeInTheDocument(); 
+    expect(screen.getByText('Importar Repositórios do GitHub')).toBeInTheDocument();
+    expect(screen.getByLabelText('Organizações do GitHub')).toBeInTheDocument();
+    expect(screen.getByLabelText('Produtos')).toBeInTheDocument();
   });
 });
