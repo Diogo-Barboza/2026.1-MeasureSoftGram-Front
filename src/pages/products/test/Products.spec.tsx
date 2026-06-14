@@ -7,7 +7,11 @@ import { useRepositoryContext } from '@contexts/RepositoryProvider';
 import Products from '../Products';
 
 jest.mock('next/router', () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    query: {}
+  }),
 }));
 
 jest.mock('@contexts/OrganizationProvider', () => ({
@@ -23,6 +27,26 @@ jest.mock('@contexts/ProductProvider', () => ({
 jest.mock('@contexts/RepositoryProvider', () => ({
   useRepositoryContext: jest.fn(),
   RepositoryProvider: ({ children }: any) => children
+}));
+
+jest.mock('@contexts/Auth', () => ({
+  useAuth: () => ({
+    signInWithGithub: jest.fn().mockResolvedValue({ type: 'success' })
+  }),
+  AuthProvider: ({ children }: any) => children
+}));
+
+jest.mock('@services/Auth', () => ({
+  getGithubAuthUrlToRepositoriesPage: jest.fn().mockReturnValue('https://github.com/login/oauth/authorize'),
+}));
+
+jest.mock('@services/organization', () => ({
+  organizationQuery: {
+    getGithubOrganizations: jest.fn().mockResolvedValue({ type: 'success', value: [] }),
+    getAllOrganization: jest.fn().mockResolvedValue({ type: 'success', value: [] }),
+    importOrganization: jest.fn().mockResolvedValue({ type: 'success', value: { id: 'org-id' } }),
+    getGithubRepos: jest.fn().mockResolvedValue({ type: 'success', value: [] }),
+  }
 }));
 
 jest.mock('@hooks/useRequireAuth', () => jest.fn());
@@ -58,8 +82,8 @@ describe('Products Component', () => {
   it('deve renderizar a tela de importação de repositórios com campos corretos', () => {
     render(<Products />);
     
-    expect(screen.getByText('Importar Repositórios do GitHub')).toBeInTheDocument();
-    expect(screen.getByLabelText('Organizações do GitHub')).toBeInTheDocument();
-    expect(screen.getByLabelText('Produtos')).toBeInTheDocument();
+    expect(screen.getByText('Importação de Repositórios e Planejamento')).toBeInTheDocument();
+    expect(screen.getAllByText('Organizações do GitHub')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Produtos do MeasureSoftGram')[0]).toBeInTheDocument();
   });
 });

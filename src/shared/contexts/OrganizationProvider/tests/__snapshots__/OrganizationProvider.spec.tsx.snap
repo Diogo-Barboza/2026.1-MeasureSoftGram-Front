@@ -6,6 +6,7 @@ Object {
     "currentOrganization": null,
     "currentOrganizations": Array [],
     "fetchOrganizations": [Function],
+    "hasFetched": false,
     "isLoading": true,
     "organizationList": Array [],
     "setCurrentOrganizations": [Function],

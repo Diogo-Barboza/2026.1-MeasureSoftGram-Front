@@ -18,7 +18,8 @@ import {
   Chip,
   Paper,
   InputAdornment,
-  CircularProgress
+  CircularProgress,
+  Link
 } from "@mui/material";
 import { Search, CheckCircle, AddCircle, GitHub, FolderSpecial } from "@mui/icons-material";
 import { NextPageWithLayout } from "@pages/_app.next";
@@ -30,6 +31,7 @@ import { useRouter } from "next/router";
 import { productQuery } from "@services/product";
 import { repository } from "@services/repository";
 import { useOrganizationContext } from "@contexts/OrganizationProvider";
+import { useAuth } from "@contexts/Auth";
 
 interface ProductType {
   id: string | number;
@@ -43,6 +45,7 @@ const Products: NextPageWithLayout = () => {
   const router = useRouter();
 
   const { fetchOrganizations } = useOrganizationContext();
+  const { signInWithGithub } = useAuth();
 
   const [gitHubOrgs, setGitHubOrgs] = useState<GitHubOrganization[]>([]);
   const [selectedOrgName, setSelectedOrgName] = useState<string>('');
@@ -189,6 +192,35 @@ const Products: NextPageWithLayout = () => {
   }, []);
 
   useEffect(() => {
+    const code = router.query.code as string;
+    if (code) {
+      const exchangeCode = async () => {
+        setLoadingOrgs(true);
+        try {
+          const res = await signInWithGithub(code);
+          if (res.type === 'success') {
+            toast.success("Organizações do GitHub vinculadas com sucesso!");
+            await loadGitHubOrgs();
+            fetchOrganizations(true);
+          } else {
+            toast.error("Erro ao vincular organizações do GitHub.");
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("Ocorreu um erro ao vincular.");
+        } finally {
+          setLoadingOrgs(false);
+          const { code: _, ...query } = router.query;
+          router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+        }
+      };
+      exchangeCode();
+    }
+  }, [router.query.code]);
+
+
+
+  useEffect(() => {
     if (selectedOrgName) {
       handleSelectOrganization(selectedOrgName);
     }
@@ -207,7 +239,7 @@ const Products: NextPageWithLayout = () => {
       );
       const matchesSearch = repo.name.toLowerCase().includes(search.toLowerCase());
       const matchesTab =
-        tabValue === 0 || (tabValue === 1 && isAlreadyImported) || (tabValue === 2 && !isAlreadyImported);
+        (tabValue === 0 && isAlreadyImported) || tabValue === 1 || (tabValue === 2 && !isAlreadyImported);
       return matchesSearch && matchesTab;
     });
   }, [gitHubRepos, importedRepoUrls, search, tabValue]);
@@ -234,23 +266,37 @@ const Products: NextPageWithLayout = () => {
           </Box>
 
           <Paper variant="outlined" sx={{ padding: '1.5rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <FormControl fullWidth size="medium" disabled={loadingOrgs}>
-              <InputLabel id="org-select-label">
-                {loadingOrgs ? "Carregando organizações..." : "Organizações do GitHub"}
-              </InputLabel>
-              <Select
-                labelId="org-select-label"
-                value={selectedOrgName}
-                label="Organizações do GitHub"
-                onChange={(e) => setSelectedOrgName(e.target.value)}
-              >
-                {gitHubOrgs.map((o) => (
-                  <MenuItem key={o.github_org_id} value={o.github_org_name}>
-                    <strong>{o.github_org_name}</strong> {o.description ? `(${o.description})` : ''}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Box display="flex" flexDirection="column" gap="0.5rem">
+              <FormControl fullWidth size="medium" disabled={loadingOrgs}>
+                <InputLabel id="org-select-label">
+                  {loadingOrgs ? "Carregando organizações..." : "Organizações do GitHub"}
+                </InputLabel>
+                <Select
+                  labelId="org-select-label"
+                  value={selectedOrgName}
+                  label="Organizações do GitHub"
+                  onChange={(e) => setSelectedOrgName(e.target.value)}
+                >
+                  {gitHubOrgs.map((o) => (
+                    <MenuItem key={o.github_org_id} value={o.github_org_name}>
+                      <strong>{o.github_org_name}</strong> {o.description ? `(${o.description})` : ''}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Typography variant="caption" color="text.secondary">
+                Não está vendo sua organização?{" "}
+                <Link
+                  href={`https://github.com/settings/connections/applications/${process.env.GITHUB_CLIENT_ID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  underline="hover"
+                  sx={{ fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Conceder acesso ou gerenciar permissões no GitHub
+                </Link>
+              </Typography>
+            </Box>
 
             <Box display="flex" gap="1rem" alignItems="center" width="100%">
               <FormControl fullWidth size="medium" disabled={loadingProducts || products.length === 0}>
@@ -317,8 +363,8 @@ const Products: NextPageWithLayout = () => {
                     textColor="primary"
                     sx={{ marginRight: '1rem' }}
                   >
-                    <Tab label="Todos" />
                     <Tab label="Importados" />
+                    <Tab label="Todos" />
                     <Tab label="A Importar" />
                   </Tabs>
                 </Box>
