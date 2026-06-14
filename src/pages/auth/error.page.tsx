@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { NextPageWithLayout } from '@pages/_app.next';
 import { Button, Box, Typography } from '@mui/material';
-import { ErrorOutline } from '@mui/icons-material';
+import { SentimentDissatisfied } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { AuthLayout } from '@layouts/auth';
 import Image from 'next/image';
@@ -18,25 +18,35 @@ const AuthError: NextPageWithLayout = () => {
         </Box>
 
         <Box display="flex" flexDirection="column" alignItems="center" gap="0.5rem">
-          <ErrorOutline color="error" sx={{ fontSize: '3rem' }} />
-          <Typography variant="h5" fontWeight="bold" color="error" gutterBottom>
-            Erro de Conexão com o GitHub
+          {/* Ícone menos agressivo que o ErrorOutline em vermelho */}
+          <SentimentDissatisfied sx={{ fontSize: '3rem', color: 'text.secondary' }} />
+
+          <Typography variant="h5" fontWeight="bold" color="text.primary" gutterBottom>
+            Ops! Problema no redirecionamento
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Não foi possível iniciar a autenticação pelo GitHub porque a chave de API (Client ID) está incorreta ou não configurada no ambiente.
+
+          <Typography variant="body1" color="text.secondary">
+            Não conseguimos concluir o seu login com o GitHub neste momento. Isso geralmente acontece devido a uma falha temporária de comunicação.
           </Typography>
         </Box>
 
-        <Box sx={{ backgroundColor: '#fff8f8', border: '1px solid #ffcccc', borderRadius: '8px', padding: '1rem', width: '100%' }}>
-          <Typography variant="body2" color="error.main" fontWeight="bold" textAlign="left" gutterBottom>
-            Como resolver:
+        {/* Caixa de dicas amigável com tons neutros */}
+        <Box sx={{ backgroundColor: '#f5f5f5', border: '1px solid #e0e0e0', borderRadius: '8px', padding: '1.5rem', width: '100%' }}>
+          <Typography variant="body2" color="text.primary" fontWeight="bold" textAlign="left" gutterBottom>
+            O que você pode tentar:
           </Typography>
-          <Typography variant="caption" color="text.secondary" component="div" textAlign="left">
-            1. Configure a variável <strong>GITHUB_CLIENT_ID</strong> no arquivo <strong>.env</strong> do frontend.<br />
-            2. Configure as variáveis <strong>GITHUB_CLIENT_ID</strong> e <strong>GITHUB_SECRET</strong> no arquivo <strong>env-vars/.service.env</strong> do backend.<br />
-            3. Verifique se o Client ID é idêntico em ambos os arquivos e se as credenciais no GitHub estão corretas.<br />
-            4. Reinicie os servidores de desenvolvimento.
-          </Typography>
+
+          <Box display="flex" flexDirection="column" gap="0.75rem" mt={1}>
+            <Typography variant="body2" color="text.secondary" textAlign="left">
+              <strong>1. Tente novamente:</strong> Volte para a tela inicial e repita o login. Na maioria das vezes, isso resolve o problema.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" textAlign="left">
+              <strong>2. Verifique seu navegador:</strong> Extensões que bloqueiam pop-ups ou rastreadores podem interromper o redirecionamento do GitHub.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" textAlign="left">
+              <strong>3. Aguarde um momento:</strong> Os serviços de autenticação podem estar passando por uma breve instabilidade.
+            </Typography>
+          </Box>
         </Box>
 
         <Button

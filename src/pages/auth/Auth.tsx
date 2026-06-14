@@ -54,10 +54,10 @@ const Auth: NextPageWithLayout = () => {
                 router.push('/auth/error');
                 return;
               }
-              void router.push(getGithubAuthUrl(), undefined, { shallow: true });
+              window.location.href = getGithubAuthUrl();
               setProvider('github');
             } catch (err) {
-              void router.push(getGithubAuthUrl(), undefined, { shallow: true });
+              window.location.href = getGithubAuthUrl();
               setProvider('github');
             } finally {
               setLoading(false);
