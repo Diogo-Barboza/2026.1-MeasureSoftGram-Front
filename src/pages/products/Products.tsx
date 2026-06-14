@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Head from "next/head";
 import {
@@ -31,6 +31,7 @@ import { useRouter } from "next/router";
 import { productQuery } from "@services/product";
 import { repository } from "@services/repository";
 import { useOrganizationContext } from "@contexts/OrganizationProvider";
+import { useProductContext } from "@contexts/ProductProvider";
 import { useAuth } from "@contexts/Auth";
 
 interface ProductType {
@@ -44,7 +45,8 @@ const Products: NextPageWithLayout = () => {
   const { t: to } = useTranslation('organization');
   const router = useRouter();
 
-  const { fetchOrganizations } = useOrganizationContext();
+  const { organizationList, setCurrentOrganizations, fetchOrganizations } = useOrganizationContext();
+  const { setCurrentProduct, updateProductList } = useProductContext();
   const { signInWithGithub } = useAuth();
 
   const [gitHubOrgs, setGitHubOrgs] = useState<GitHubOrganization[]>([]);
@@ -64,6 +66,7 @@ const Products: NextPageWithLayout = () => {
 
   const [search, setSearch] = useState('');
   const [tabValue, setTabValue] = useState(0);
+  const lastLoadedProductIdRef = useRef<string>('');
 
 
 
@@ -130,6 +133,7 @@ const Products: NextPageWithLayout = () => {
       const productsRes = await productQuery.getAllProducts(orgDbId);
       const productList = (productsRes.data?.results || productsRes.data || []) as ProductType[];
       setProducts(productList);
+      updateProductList(productList as any);
       if (productList.length > 0) {
         setSelectedProductId(String(productList[0].id));
       } else {
@@ -161,6 +165,14 @@ const Products: NextPageWithLayout = () => {
       setImportedRepos(repoList);
       const urls = repoList.map((r: any) => r.url);
       setImportedRepoUrls(urls);
+      if (lastLoadedProductIdRef.current !== productId) {
+        lastLoadedProductIdRef.current = productId;
+        if (urls.length === 0) {
+          setTabValue(2); // "A Importar"
+        } else {
+          setTabValue(0); // "Importados"
+        }
+      }
     } catch (error) {
       console.error("Erro ao carregar repositórios importados:", error);
     }
@@ -231,6 +243,26 @@ const Products: NextPageWithLayout = () => {
       loadProductRepositories(selectedOrgDbId, selectedProductId);
     }
   }, [selectedOrgDbId, selectedProductId]);
+
+  useEffect(() => {
+    if (selectedOrgDbId && organizationList.length > 0) {
+      const match = organizationList.find(o => String(o.id) === String(selectedOrgDbId));
+      if (match) {
+        setCurrentOrganizations([match]);
+      }
+    }
+  }, [selectedOrgDbId, organizationList]);
+
+  useEffect(() => {
+    if (selectedProductId && products.length > 0) {
+      const match = products.find(p => String(p.id) === String(selectedProductId));
+      if (match) {
+        setCurrentProduct(match as any);
+      }
+    } else {
+      setCurrentProduct(null);
+    }
+  }, [selectedProductId, products]);
 
   const filteredRepos = useMemo(() => {
     return gitHubRepos.filter((repo) => {

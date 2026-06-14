@@ -35,9 +35,8 @@ export function ProductProvider({ children }: Props) {
       }
 
       const result = await productQuery.getAllProducts(currentOrganization.id);
-      if (result.status === 200) {
-        updateProductList(result.data?.results || result.data || []);
-      }
+      const products = result.data?.results || result.data || [];
+      updateProductList(products);
     } catch (error) {
       console.error(error);
     }
