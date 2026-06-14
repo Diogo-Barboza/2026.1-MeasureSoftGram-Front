@@ -288,10 +288,10 @@ const Products: NextPageWithLayout = () => {
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box>
               <Typography variant="h4" fontWeight="bold" gutterBottom color="text.primary">
-                Importação de Repositórios e Planejamento
+                Importação de Repositórios
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Selecione sua organização e o produto correspondente para gerenciar seus repositórios e planejar releases.
+                Selecione sua organização e o produto correspondente para gerenciar seus repositórios.
               </Typography>
             </Box>
             <GitHub color="action" sx={{ fontSize: '2.5rem' }} />
@@ -386,7 +386,7 @@ const Products: NextPageWithLayout = () => {
                     )
                   }}
                 />
-                
+
                 <Box display="flex" alignItems="center" gap="1rem">
                   <Tabs
                     value={tabValue}
@@ -484,8 +484,8 @@ const Products: NextPageWithLayout = () => {
             <Paper variant="outlined" sx={{ padding: '3rem', textAlign: 'center', borderRadius: '12px' }}>
               <FolderSpecial color="disabled" sx={{ fontSize: '3rem', marginBottom: '1rem' }} />
               <Typography variant="body1" color="text.secondary" gutterBottom>
-                {selectedOrgDbId && products.length === 0 
-                  ? "Esta organização ainda não possui nenhum produto cadastrado." 
+                {selectedOrgDbId && products.length === 0
+                  ? "Esta organização ainda não possui nenhum produto cadastrado."
                   : "Selecione uma organização e um produto para carregar os repositórios correspondentes."
                 }
               </Typography>
