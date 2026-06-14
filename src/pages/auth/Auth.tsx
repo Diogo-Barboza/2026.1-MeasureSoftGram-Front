@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { NextPageWithLayout } from '@pages/_app.next';
-import { Button, Box, Typography } from '@mui/material';
+import { Button, Box, Typography, CircularProgress } from '@mui/material';
 import { GitHub } from '@mui/icons-material';
 import { getGithubAuthUrl } from '@services/Auth';
 import { useRouter } from 'next/router';
@@ -12,6 +12,7 @@ import logoImage from '@public/images/svg/logo.svg';
 const Auth: NextPageWithLayout = () => {
   const router = useRouter();
   const { setProvider } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   return (
     <AuthLayout>
@@ -33,10 +34,34 @@ const Auth: NextPageWithLayout = () => {
           fullWidth
           variant="contained"
           size="large"
-          startIcon={<GitHub />}
-          onClick={() => {
-            void router.push(getGithubAuthUrl(), undefined, { shallow: true });
-            setProvider('github');
+          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <GitHub />}
+          disabled={loading}
+          onClick={async () => {
+            setLoading(true);
+            try {
+              const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/accounts/github/validate/`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ client_id: process.env.GITHUB_CLIENT_ID }),
+                }
+              );
+              const data = await response.json();
+              if (data && data.valid === false) {
+                router.push('/auth/error');
+                return;
+              }
+              void router.push(getGithubAuthUrl(), undefined, { shallow: true });
+              setProvider('github');
+            } catch (err) {
+              void router.push(getGithubAuthUrl(), undefined, { shallow: true });
+              setProvider('github');
+            } finally {
+              setLoading(false);
+            }
           }}
           sx={{
             py: 1.5,
@@ -50,7 +75,7 @@ const Auth: NextPageWithLayout = () => {
             },
           }}
         >
-          Entrar com o GitHub
+          {loading ? 'Validando...' : 'Entrar com o GitHub'}
         </Button>
       </Box>
     </AuthLayout>
