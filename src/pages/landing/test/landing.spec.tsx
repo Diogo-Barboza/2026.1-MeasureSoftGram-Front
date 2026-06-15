@@ -1,7 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { loadTranslations } from 'ni18n';
 import Landing, { getStaticProps } from '../Landing';
 import { EXTERNAL_LINKS } from '../constants';
+
+const mockedLoadTranslations = loadTranslations as jest.MockedFunction<typeof loadTranslations>;
 
 const mockPush = jest.fn();
 
@@ -172,6 +175,26 @@ describe('Landing', () => {
     expect(resolvedMeta.heroTitle).not.toContain(HERO_KEY_PREFIX);
 
     // og:image precisa ser uma URL absoluta para o crawler buscar a imagem.
+    expect(resolvedMeta.ogImage).toBe(meta.ogImage);
+  });
+
+  it('getStaticProps usa os defaults quando o namespace landing nao traz as strings', async () => {
+    // Simula um server state sem o namespace landing resolvido (build sem as
+    // traducoes carregadas). Cada `??` do meta deve cair no valor default.
+    mockedLoadTranslations.mockResolvedValueOnce({
+      __ni18n_server__: { resources: {}, ns: ['landing'], lng: 'pt' },
+    } as any);
+
+    const result: any = await getStaticProps({});
+
+    const resolvedMeta = result.props.meta;
+
+    expect(resolvedMeta.metaTitle).toBe('MeasureSoftGram');
+    expect(resolvedMeta.metaDescription).toBe(
+      'Meca a qualidade do seu software de forma objetiva, com base em metricas coletadas do seu proprio pipeline.'
+    );
+    // heroTitle nao existe nas traducoes: usa o metaTitle como fallback.
+    expect(resolvedMeta.heroTitle).toBe('MeasureSoftGram');
     expect(resolvedMeta.ogImage).toBe(meta.ogImage);
   });
 });
