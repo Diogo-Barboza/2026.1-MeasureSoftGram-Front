@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { SnackbarProvider } from '@components/snackbar';
 import { ni18nConfig } from "../../n18n.config";
 
-export type NextPageWithLayout = NextPage & {
+export type NextPageWithLayout<P = {}> = NextPage<P> & {
   getLayout?: (page: ReactElement, disableBreadcrumb?: boolean) => typeof page;
   disableBreadcrumb?: boolean;
 };
@@ -34,10 +34,14 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const disableBreadcrumb = Component.disableBreadcrumb ?? false;
 
-  const locale: any =
-    typeof window !== 'undefined' && window.localStorage.getItem('locale_lang')
+  // Escolha manual de idioma tem prioridade: se o usuario ja selecionou um
+  // idioma pelo seletor (chave 'locale_lang'), respeitamos ele. Sem escolha
+  // salva, deixamos o LanguageDetector (configurado em n18n.config.js) decidir
+  // a partir do navegador, entao nao forcamos changeLanguage com undefined.
+  const savedLocale: string | null =
+    typeof window !== 'undefined' ? window.localStorage.getItem('locale_lang') : null;
 
-  useSyncLanguage(locale);
+  useSyncLanguage(savedLocale ?? undefined);
 
   const router = useRouter();
   const transformValue = 'translate(-50%, -50%)';
