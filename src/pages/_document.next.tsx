@@ -33,10 +33,10 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <meta
-            name="description"
-            content="MeasureSoftGram: meca a qualidade do seu software de forma objetiva, com base em metricas coletadas do seu pipeline."
-          />
+          {/* A meta description nao fica aqui: cada pagina injeta a sua via
+              next/head (a Landing resolve a description no servidor em
+              getStaticProps). Mantida aqui, ela sairia duplicada no HTML,
+              porque o Next nao deduplica meta name="description". */}
           <link rel="icon" href="/images/svg/logo.svg" />
 
           <link rel="preconnect" href="https://fonts.googleapis.com" />
