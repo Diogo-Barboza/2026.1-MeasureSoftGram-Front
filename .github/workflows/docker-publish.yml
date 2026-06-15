@@ -9,7 +9,10 @@ on:
 
 jobs:
   build-and-push:
+    # Imagem de producao buildada na nuvem (ubuntu-latest); a maquina de deploy
+    # apenas faz PULL desta imagem, nao builda.
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
 
     steps:
       - name: Checkout do código
@@ -27,4 +30,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          # SERVICE_URL e inlined no bundle em build-time (next.config.js).
+          # Trocar a URL exige rebuild da imagem.
+          build-args: |
+            SERVICE_URL=https://msgram.lappis.rocks/api
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/front:latest
