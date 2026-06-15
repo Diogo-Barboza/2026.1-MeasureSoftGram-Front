@@ -39,9 +39,9 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# build-args inlined no bundle (build-time). Default aponta pro /api atras do
-# proxy. Sobrescreva via --build-arg no CI conforme o ambiente.
-ARG SERVICE_URL=https://msgram.lappis.rocks/api
+# build-args inlined no bundle (build-time). O default e o ambiente de
+# desenvolvimento; o valor de cada ambiente vem via --build-arg no CI.
+ARG SERVICE_URL=http://localhost:8080/api/v1
 ARG LOGIN_REDIRECT_URL
 ARG GITHUB_CLIENT_ID
 ENV SERVICE_URL=$SERVICE_URL
