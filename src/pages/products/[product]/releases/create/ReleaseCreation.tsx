@@ -16,12 +16,10 @@ import * as Styles from './styles';
 import BasicInfoForm from './components/BasicInfoForm/BasicInfoForm';
 import ModelConfigForm from './components/ModelConfigForm/ModelConfigForm';
 import ReferenceValuesForm from './components/ReferenceValuesForm/ReferenceValuesForm';
-import { StyledSlider } from '@components/Equalizer/EqualizerSlider/styles';
 import CharacteristicsBalanceForm from './components/CharacteristicsBalanceForm/CharacteristicsBalanceForm';
 
 // --- MOCK PEQUENO (2 Linhas / 8 Características) ---
-const generateMockPreConfigData = (): PreConfigData => {
-  return {
+const generateMockPreConfigData = (): PreConfigData => ({
     name: "Produto Mockado (8 Características)",
     characteristics: [
       {
@@ -84,12 +82,10 @@ const generateMockPreConfigData = (): PreConfigData => {
         subcharacteristics: [{ key: "adaptability", weight: 100, active: true, measures: [{ key: "hardware_independence", weight: 100, active: true, min_threshold: 80, max_threshold: 100 }] }]
       }
     ] as unknown as Characteristic[],
-  };
-};
+  });
 
 // --- MOCK GRANDE (3 Linhas / 12 Características) ---
-const generateExtremeMockPreConfigData = (): PreConfigData => {
-  return {
+const generateExtremeMockPreConfigData = (): PreConfigData => ({
     name: "Produto Mockado (12 Características)",
     characteristics: [
       { key: "reliability", weight: 9, active: true, goal: 50, subcharacteristics: [{ key: "sub_rel", weight: 100, active: true, measures: [{ key: "m_rel", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
@@ -105,8 +101,7 @@ const generateExtremeMockPreConfigData = (): PreConfigData => {
       { key: "interaction_capability", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_int", weight: 100, active: true, measures: [{ key: "m_int", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
       { key: "sustainability", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_sus", weight: 100, active: true, measures: [{ key: "m_sus", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] }
     ] as unknown as Characteristic[],
-  };
-};
+  });
 
 function ReleaseCreation() {
   const [organizationId, setOrganizationId] = useState<string>("");
@@ -240,18 +235,22 @@ function ReleaseCreation() {
     return { ...current, characteristics: updatedCharacteristics };
   };
 
-  function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigData {
+function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigData {
     data.characteristics.forEach((characteristic: Characteristic) => {
+      // eslint-disable-next-line no-param-reassign
       characteristic.goal = currentReleaseGoal.data[characteristic.key] ?? 0;
       if (characteristic.weight > 0) {
+        // eslint-disable-next-line no-param-reassign
         characteristic.active = true;
       }
       characteristic.subcharacteristics.forEach((subcharacteristic: Subcharacteristic) => {
         if (subcharacteristic.weight > 0 && characteristic.active) {
+          // eslint-disable-next-line no-param-reassign
           subcharacteristic.active = true;
         }
         subcharacteristic.measures.forEach((measure: Measure) => {
           if (measure.weight > 0 && subcharacteristic.active) {
+            // eslint-disable-next-line no-param-reassign
             measure.active = true;
           }
         });
@@ -260,7 +259,6 @@ function ReleaseCreation() {
 
     return data;
   }
-
   function handleSetFollowLastConfig(value: boolean) {
     if (value) setConfigPageData(lastConfigPageData!);
     else setConfigPageData(defaultPageData!);
@@ -559,27 +557,36 @@ function ReleaseCreation() {
       </Styles.Body >
 
       <ConfirmModal
+        // eslint-disable-next-line react/jsx-no-bind
         setIsModalOpen={setShowChangeDateModal}
         text={t('conflictDates')}
         btnConfirmText={t('continue')}
         btnDismissText={t('back')}
         isModalOpen={showChangeDateModal}
+        // eslint-disable-next-line react/jsx-no-bind
         handleConfirmBtnClick={handleReleaseDateModal}
+        // eslint-disable-next-line react/jsx-no-bind
         handleDismissBtnClick={() => setShowChangeDateModal(false)}
       />
       <ConfirmModal
+        // eslint-disable-next-line react/jsx-no-bind
         setIsModalOpen={setShowConfirmationModal}
         text={activeStep === 1 ? t('alertRefValue') : t('alertDinamicBalance')}
         btnConfirmText={t('continue')}
         btnDismissText={t('back')}
         isModalOpen={showConfirmationModal}
+        // eslint-disable-next-line react/jsx-no-bind
         handleDismissBtnClick={() => {
           setShowConfirmationModal(false);
-          activeStep === 1 ? setChangeRefValue(false) : setDinamicBalance(false);
+          if (activeStep === 1) {
+            setChangeRefValue(false);
+          } else {
+            setDinamicBalance(false);
+          }
         }}
+        // eslint-disable-next-line react/jsx-no-bind
         handleConfirmBtnClick={handleModalBtnClick} 
-      />
-    </>
+      />    </>
   );
 }
 
