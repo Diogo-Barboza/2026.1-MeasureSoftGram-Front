@@ -12,12 +12,12 @@ import { AuthProvider } from '@contexts/Auth';
 import { useRouter } from 'next/router';
 import { RotatingLines } from 'react-loader-spinner';
 import { Modal, Box } from '@mui/material';
-import { appWithI18Next, useSyncLanguage } from 'ni18n';
+import { appWithI18Next } from 'ni18n';
 import { useTranslation } from 'react-i18next';
 import { SnackbarProvider } from '@components/snackbar';
 import { ni18nConfig } from "../../n18n.config";
 
-export type NextPageWithLayout = NextPage & {
+export type NextPageWithLayout<P = {}> = NextPage<P> & {
   getLayout?: (page: ReactElement, disableBreadcrumb?: boolean) => typeof page;
   disableBreadcrumb?: boolean;
 };
@@ -34,10 +34,26 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const disableBreadcrumb = Component.disableBreadcrumb ?? false;
 
-  const locale: any =
-    typeof window !== 'undefined' && window.localStorage.getItem('locale_lang')
+  const { t, i18n } = useTranslation();
 
-  useSyncLanguage(locale);
+  // Escolha manual de idioma tem prioridade: se o usuario ja selecionou um
+  // idioma pelo seletor (chave 'locale_lang'), respeitamos ele. Sem escolha
+  // salva, deixamos o LanguageDetector (configurado em n18n.config.js) decidir
+  // a partir do navegador.
+  //
+  // Importante: NAO usamos useSyncLanguage(savedLocale ?? undefined). Aquele
+  // hook faz `if (i18n.language !== language) changeLanguage(language)`, e como
+  // i18n.language nunca e undefined, passar undefined dispararia
+  // changeLanguage(undefined) em todo ciclo, sobrescrevendo o LanguageDetector
+  // do navegador. Sincronizamos apenas quando ha um valor salvo valido.
+  const savedLocale: string | null =
+    typeof window !== 'undefined' ? window.localStorage.getItem('locale_lang') : null;
+
+  useEffect(() => {
+    if (savedLocale && i18n.language !== savedLocale) {
+      i18n.changeLanguage(savedLocale);
+    }
+  }, [savedLocale, i18n]);
 
   const router = useRouter();
   const transformValue = 'translate(-50%, -50%)';
@@ -113,8 +129,6 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     setShowError(false);
     setErrorOccurred(false);
   }
-
-  const { t } = useTranslation();
 
   return (
     <SnackbarProvider>

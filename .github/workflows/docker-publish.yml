@@ -9,7 +9,10 @@ on:
 
 jobs:
   build-and-push:
+    # Imagem de producao buildada na nuvem (ubuntu-latest); a maquina de deploy
+    # apenas faz PULL desta imagem, nao builda.
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
 
     steps:
       - name: Checkout do código
@@ -27,4 +30,18 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          # SERVICE_URL, GITHUB_CLIENT_ID e LOGIN_REDIRECT_URL sao inlined no
+          # bundle em build-time (next.config.js bloco env:). GITHUB_CLIENT_ID e
+          # LOGIN_REDIRECT_URL sao lidos client-side em Auth.service.tsx pra
+          # montar a URL de OAuth do GitHub (client_id + redirect_uri); sem eles
+          # o login GitHub quebra na imagem publicada. Trocar qualquer um exige
+          # rebuild da imagem.
+          # NOTA: o secret NAO pode se chamar GITHUB_CLIENT_ID - o GitHub Actions
+          # reserva o prefixo GITHUB_ e recusa secrets/vars com esse nome. Por
+          # isso o secret e GH_OAUTH_CLIENT_ID, mas o build-arg que o Dockerfile
+          # le continua sendo GITHUB_CLIENT_ID.
+          build-args: |
+            SERVICE_URL=https://msgram.lappis.rocks/api
+            GITHUB_CLIENT_ID=${{ secrets.GH_OAUTH_CLIENT_ID }}
+            LOGIN_REDIRECT_URL=${{ secrets.LOGIN_REDIRECT_URL }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/front:latest

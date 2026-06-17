@@ -48,8 +48,8 @@ describe('useRequireAuth', () => {
     const testCases = [
       { pathname: '/products', loading: 'loaded', redirect: false, displayToast: false },
       { pathname: '/products', loading: 'loading', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loaded', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loading', redirect: false, displayToast: false },
+      { pathname: '/auth', loading: 'loaded', redirect: false, displayToast: false },
+      { pathname: '/auth', loading: 'loading', redirect: false, displayToast: false },
     ];
 
     testCases.forEach(({ pathname, loading, redirect, displayToast }) => {
@@ -88,8 +88,8 @@ describe('useRequireAuth', () => {
     const testCases = [
       { pathname: '/products', loading: 'loaded', redirect: true, displayToast: true },
       { pathname: '/products', loading: 'loading', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loaded', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loading', redirect: false, displayToast: false },
+      { pathname: '/auth', loading: 'loaded', redirect: false, displayToast: false },
+      { pathname: '/auth', loading: 'loading', redirect: false, displayToast: false },
       { pathname: '/productstest', loading: 'loaded', redirect: false, displayToast: true, redirectError: true },
     ];
 
@@ -124,6 +124,12 @@ describe('useRequireAuth', () => {
 
         test(`redirects`, () => {
           expect(mockPush).toHaveBeenCalledTimes(redirect ? 1 : 0);
+        });
+
+        test('redirects to /auth when it redirects', () => {
+          if (redirect) {
+            expect(mockPush).toHaveBeenCalledWith('/auth');
+          }
         });
 
         test('logs the error to console', () => {
