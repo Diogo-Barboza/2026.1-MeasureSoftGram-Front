@@ -7,7 +7,6 @@ import { useRouter } from 'next/router';
 import { useAuth } from '@contexts/Auth';
 import { AuthLayout } from '@layouts/auth';
 import { AuthHeader } from './components/AuthHeader';
-import { AuthFooter } from './components/AuthFooter';
 import { SignInForm } from './components/SignInForm';
 import { SignUpForm } from './components/SignUpForm';
 
