@@ -32,7 +32,7 @@ const Auth: NextPageWithLayout = () => {
 
         <Button
           fullWidth
-          variant="contained"
+          variant="outlined"
           size="large"
           startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <GitHub />}
           disabled={loading}
@@ -67,15 +67,19 @@ const Auth: NextPageWithLayout = () => {
             py: 1.5,
             fontSize: '1rem',
             fontWeight: '600',
-            textTransform: 'none',
-            backgroundColor: '#24292e',
-            color: '#fff',
+            textTransform: 'uppercase',
+            color: 'primary.main',
+            borderColor: 'primary.main',
+            backgroundColor: '#fff',
+            borderWidth: '1px',
             '&:hover': {
-              backgroundColor: '#1b1f23',
+              backgroundColor: 'rgba(43, 77, 111, 0.08)',
+              borderColor: 'primary.main',
+              borderWidth: '1px',
             },
           }}
         >
-          {loading ? 'Validando...' : 'Entrar com o GitHub'}
+          {loading ? 'Validando...' : 'LOGIN COM GITHUB'}
         </Button>
       </Box>
     </AuthLayout>

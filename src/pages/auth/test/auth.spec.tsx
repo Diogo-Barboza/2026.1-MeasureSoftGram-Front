@@ -8,11 +8,18 @@ jest.mock('next/router', () => require('next-router-mock'));
 
 describe('Auth', () => {
   const originalEnv = process.env;
+  const originalLocation = window.location;
 
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...originalEnv };
     global.fetch = jest.fn();
+    delete (window as any).location;
+    window.location = { href: '', assign: jest.fn() } as any;
+  });
+
+  afterEach(() => {
+    window.location = originalLocation;
   });
 
   afterAll(() => {
@@ -42,11 +49,11 @@ describe('Auth', () => {
         </AuthProvider>
       );
 
-      const button = screen.getByRole('button', { name: /entrar com o github/i });
+      const button = screen.getByRole('button', { name: /login com github/i });
       fireEvent.click(button);
 
       // Wait for validation to finish and button to enable back
-      await screen.findByRole('button', { name: /entrar com o github/i });
+      await screen.findByRole('button', { name: /login com github/i });
 
       expect(mockRouter.asPath).toBe('/auth/error');
     });
@@ -62,12 +69,12 @@ describe('Auth', () => {
         </AuthProvider>
       );
 
-      const button = screen.getByRole('button', { name: /entrar com o github/i });
+      const button = screen.getByRole('button', { name: /login com github/i });
       fireEvent.click(button);
 
-      await screen.findByRole('button', { name: /entrar com o github/i });
+      await screen.findByRole('button', { name: /login com github/i });
 
-      expect(mockRouter.asPath).toContain('/login/oauth/authorize');
+      expect(window.location.href).toContain('/login/oauth/authorize');
     });
   });
 });

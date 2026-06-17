@@ -82,7 +82,7 @@ describe('Products Component', () => {
   it('deve renderizar a tela de importação de repositórios com campos corretos', () => {
     render(<Products />);
     
-    expect(screen.getByText('Importação de Repositórios e Planejamento')).toBeInTheDocument();
+    expect(screen.getByText('Importação de Repositórios')).toBeInTheDocument();
     expect(screen.getAllByText('Organizações do GitHub')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Produtos do MeasureSoftGram')[0]).toBeInTheDocument();
   });
