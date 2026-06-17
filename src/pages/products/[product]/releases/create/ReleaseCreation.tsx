@@ -544,7 +544,7 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
               }}
             >
               {activeStep !== 0 && (
-                <Button onClick={() => handlePreviousButtonClick()} variant="outlined">
+                <Button onClick={handlePreviousButtonClick} variant="outlined">
                   {t('back')}
                 </Button>
               )}
