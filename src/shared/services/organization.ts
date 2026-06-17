@@ -19,15 +19,10 @@ export type Result<T> = ResultSuccess<T> | ResultError;
 
 class OrganizationQuery {
 
-private async getAuthHeaders(): Promise<{ Authorization: string } | null> {
+private async getAuthHeaders(): Promise<{ Authorization: string }> {
   const tokenResult = await getAccessToken();
   if (tokenResult.type === 'error' || !tokenResult.value.key) {
-    // Opção 1: Lançar um erro específico para ser tratado posteriormente
     throw new Error('Token de acesso não encontrado.');
-
-    // Opção 2: Redirecionar para a página de login ou outra ação
-    // window.location.href = '/login';
-    // return null;
   }
 
   return { Authorization: `Token ${tokenResult.value.key}` };
@@ -36,10 +31,6 @@ private async getAuthHeaders(): Promise<{ Authorization: string } | null> {
 async getAllOrganization(): Promise<Result<OrganizationFormData[]>> {
   try {
     const headers = await this.getAuthHeaders();
-    if (!headers) {
-      throw new Error('Token de acesso não encontrado.');
-    }
-
     const response = await api.get('/organizations/', { headers });
     return { type: 'success', value: response.data.results as OrganizationFormData[] };
   } catch (error) {
@@ -50,9 +41,6 @@ async getAllOrganization(): Promise<Result<OrganizationFormData[]>> {
 async createOrganization(data: OrganizationFormData): Promise<Result<OrganizationFormData>> {
     try {
       const headers = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Token de acesso não encontrado.');
-      }
       const response = await api.post('/organizations/', data, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
@@ -75,9 +63,6 @@ async createOrganization(data: OrganizationFormData): Promise<Result<Organizatio
   async getOrganizationById(id: string): Promise<Result<OrganizationFormData>> {
     try {
       const headers = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Token de acesso não encontrado.');
-      }
       const response = await api.get(`/organizations/${id}/`, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
@@ -90,9 +75,6 @@ async createOrganization(data: OrganizationFormData): Promise<Result<Organizatio
 async updateOrganization(id: string, data: OrganizationFormData): Promise<Result<void>> {
     try {
       const headers = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Token de acesso não encontrado.');
-      }
       const response = await api.put(`/organizations/${id}/`, data, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
@@ -115,9 +97,6 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
   async deleteOrganization(id: string): Promise<Result<void>> {
     try {
       const headers = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Token de acesso não encontrado.');
-      }
       const response = await api.delete(`/organizations/${id}/`, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
@@ -129,9 +108,6 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
   async getGithubOrganizations(): Promise<Result<GitHubOrganization[]>> {
     try {
       const headers = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Token de acesso não encontrado.');
-      }
       const response = await api.get('/accounts/github-organizations/', { headers });
       return { type: 'success', value: response.data as GitHubOrganization[] };
     } catch (error) {
@@ -142,9 +118,6 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
   async importOrganization(githubOrgName: string): Promise<Result<OrganizationFormData>> {
     try {
       const headers = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Token de acesso não encontrado.');
-      }
       const response = await api.post(
         '/organizations/import/',
         { github_org_name: githubOrgName },
@@ -159,9 +132,6 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
   async getGithubRepos(orgId: string): Promise<Result<GitHubRepo[]>> {
     try {
       const headers = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Token de acesso não encontrado.');
-      }
       const response = await api.get(`/organizations/${orgId}/github-repos/`, { headers });
       return { type: 'success', value: response.data as GitHubRepo[] };
     } catch (error) {

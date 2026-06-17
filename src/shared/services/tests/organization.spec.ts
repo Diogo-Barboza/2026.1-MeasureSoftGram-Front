@@ -199,4 +199,90 @@ describe('Organization Service', () => {
       expect(result.error.message).toBe('Ocorreu um erro ao atualizar organização.');
     }
   });
+
+  // Testes de getGithubOrganizations
+  it('deve buscar organizações do GitHub (GET)', async () => {
+    const mockGithubOrgs = [{ github_org_id: 1, github_org_name: 'Org1' }];
+    (api.get as jest.Mock).mockResolvedValue({ data: mockGithubOrgs });
+
+    const result = await organizationQuery.getGithubOrganizations();
+
+    expect(api.get).toHaveBeenCalledWith('/accounts/github-organizations/', expect.any(Object));
+    expect(result.type).toBe('success');
+    if (result.type === 'success') {
+      expect(result.value).toEqual(mockGithubOrgs);
+    }
+  });
+
+  it('deve retornar erro ao falhar buscar organizações do GitHub', async () => {
+    (api.get as jest.Mock).mockRejectedValue(new Error('Network error'));
+    const result = await organizationQuery.getGithubOrganizations();
+    expect(result.type).toBe('error');
+  });
+
+  // Testes de importOrganization
+  it('deve importar organização do GitHub (POST)', async () => {
+    (api.post as jest.Mock).mockResolvedValue({ data: { id: '1', name: 'Org1' } });
+
+    const result = await organizationQuery.importOrganization('Org1');
+
+    expect(api.post).toHaveBeenCalledWith('/organizations/import/', { github_org_name: 'Org1' }, expect.any(Object));
+    expect(result.type).toBe('success');
+    if (result.type === 'success') {
+      expect(result.value).toEqual({ id: '1', name: 'Org1' });
+    }
+  });
+
+  it('deve retornar erro ao falhar importar organização do GitHub', async () => {
+    (api.post as jest.Mock).mockRejectedValue(new Error('Network error'));
+    const result = await organizationQuery.importOrganization('Org1');
+    expect(result.type).toBe('error');
+  });
+
+  // Testes de getGithubRepos
+  it('deve buscar repositórios do GitHub (GET)', async () => {
+    const mockRepos = [{ github_repo_id: 1, name: 'repo1' }];
+    (api.get as jest.Mock).mockResolvedValue({ data: mockRepos });
+
+    const result = await organizationQuery.getGithubRepos('1');
+
+    expect(api.get).toHaveBeenCalledWith('/organizations/1/github-repos/', expect.any(Object));
+    expect(result.type).toBe('success');
+    if (result.type === 'success') {
+      expect(result.value).toEqual(mockRepos);
+    }
+  });
+
+  it('deve retornar erro ao falhar buscar repositórios do GitHub', async () => {
+    (api.get as jest.Mock).mockRejectedValue(new Error('Network error'));
+    const result = await organizationQuery.getGithubRepos('1');
+    expect(result.type).toBe('error');
+  });
+
+  // Teste de erro de token em outros métodos
+  it('deve retornar erro se o token de acesso não for encontrado para outros métodos', async () => {
+    (getAccessToken as jest.Mock).mockResolvedValue({ type: 'error' });
+
+    const createRes = await organizationQuery.createOrganization(mockPayload);
+    expect(createRes.type).toBe('error');
+
+    const getByIdRes = await organizationQuery.getOrganizationById('1');
+    expect(getByIdRes.type).toBe('error');
+
+    const updateRes = await organizationQuery.updateOrganization('1', mockPayload);
+    expect(updateRes.type).toBe('error');
+
+    const deleteRes = await organizationQuery.deleteOrganization('1');
+    expect(deleteRes.type).toBe('error');
+
+    const getGithubOrgsRes = await organizationQuery.getGithubOrganizations();
+    expect(getGithubOrgsRes.type).toBe('error');
+
+    const importRes = await organizationQuery.importOrganization('Org1');
+    expect(importRes.type).toBe('error');
+
+    const getReposRes = await organizationQuery.getGithubRepos('1');
+    expect(getReposRes.type).toBe('error');
+  });
+
 });
