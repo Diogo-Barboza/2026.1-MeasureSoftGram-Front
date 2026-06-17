@@ -3,12 +3,11 @@ import { Box, FormControlLabel, Grid, Switch, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Characteristic, PreConfigData } from '@customTypes/preConfig';
 import { StyledSlider } from '@components/Equalizer/EqualizerSlider/styles';
-import { Container } from '@mui/system';
 import SectionTooltip from '../SectionTooltip/SectionTooltip';
 
 interface CharacteristicsBalanceFormProps {
   dinamicBalance: boolean;
-  setDinamicBalance: any;
+  setDinamicBalance: (value: boolean) => void;
   configPageData: PreConfigData;
   setConfigPageData: any;
   characteristicRelations: any;
@@ -23,13 +22,21 @@ export default function CharacteristicsBalanceForm({
 }: CharacteristicsBalanceFormProps) {
   const { t } = useTranslation('plan_release');
 
+  const activeCharacteristics = configPageData?.characteristics?.filter(c => c.active) || [];
+  const totalItems = activeCharacteristics.length;
+
+  // Lógica para definir as colunas de forma simétrica
+  const maxColsScreen = 4; // Fixo em 4 colunas para manter a simetria
+  const numRows = totalItems > 0 ? Math.ceil(totalItems / maxColsScreen) : 1;
+  const optimalCols = totalItems > 0 ? Math.ceil(totalItems / numRows) : 1;
+
   function handleCharacteristicChange(event: any, characteristicKey: string) {
     const { value } = event.target;
     const newGoal = Number(value);
 
     setConfigPageData((prevData: { characteristics: Characteristic[] }) => {
       let relatedCharacteristics: string[] = [];
-
+      
       if (!dinamicBalance) {
         relatedCharacteristics = characteristicRelations[characteristicKey]?.["+"] || [];
       }
@@ -49,29 +56,11 @@ export default function CharacteristicsBalanceForm({
     });
   }
 
-  // --- LÓGICA DE BALANCEAMENTO IGUALITÁRIO DAS COLUNAS ---
-  const activeCharacteristics = configPageData?.characteristics?.filter(c => c.active) || [];
-  const totalItems = activeCharacteristics.length;
-
-  // Limite máximo de colunas para telas desktop normais
-  const maxColsScreen = 5; 
-  // Calcula quantas linhas serão necessárias
-  const numRows = totalItems > 0 ? Math.ceil(totalItems / maxColsScreen) : 1;
-  // Calcula a quantidade de itens por linha de forma igualitária (ex: 8 itens / 2 linhas = 4 colunas)
-  const optimalCols = totalItems > 0 ? Math.ceil(totalItems / numRows) : 1;
-
-  // Largura definida no Grid (120px) e Gap padrão do MUI (gap={4} equivale a 32px)
-  const itemWidth = 120;
-  const gapSize = 32; 
-  
-  // Limita a caixa do Flexbox exatamente onde a quebra de linha deve ocorrer
-  const containerMaxWidth = (optimalCols * itemWidth) + ((optimalCols - 1) * gapSize);
-
   return (
     <>
       <SectionTooltip text={t("balanceGoal")} tooltip={t("balanceGoalTooltip")} />
       <FormControlLabel
-        sx={{ marginLeft: 0 }}
+        sx={{ marginLeft: 0, marginBottom: 2 }}
         control={
           <Switch
             data-testid="allowBalanceGoal"
@@ -84,46 +73,42 @@ export default function CharacteristicsBalanceForm({
         labelPlacement="start"
       />
       
-      <Container sx={{ border: 1, borderRadius: 3, paddingX: 3, paddingY: 4 }}>
+      {/* APLICANDO CSS GRID PARA EQUIESPAÇAMENTO PERFEITO */}
+      <Box sx={{ border: 1, borderRadius: 3, paddingX: 3, paddingY: 4, width: '100%' }}>
         <Box 
-          display="flex" 
-          justifyContent="center" 
+          display="grid" 
+          gridTemplateColumns={`repeat(${optimalCols}, 1fr)`} // Cria colunas idênticas e iguais
+          gap={4} // Espaçamento fixo entre os sliders
+          justifyItems="center" // Centraliza o slider no meio de sua coluna designada
           alignItems="center" 
-          flexWrap="wrap" 
-          gap={4}
-          sx={{
-            // Aplica a largura calculada e centraliza o bloco na tela
-            maxWidth: `${containerMaxWidth}px`,
-            margin: '0 auto' 
-          }}
         >
           {activeCharacteristics.map(characteristic => (
-              <Grid 
-                container 
-                key={`GridCharacteristicsBalance-${characteristic.key}`} 
-                gap={2} 
-                direction="column" 
-                width={120} 
-              >
-                <Grid item xs={9} display="flex" justifyContent="center">
-                  <StyledSlider
-                    data-testid={`characteristic-${characteristic.key}`}
-                    sx={{ minHeight: "15rem" }}
-                    value={characteristic.goal}
-                    onChange={(event: any) => handleCharacteristicChange(event, characteristic.key)}
-                    orientation="vertical"
-                    valueLabelDisplay="auto"
-                  />
-                </Grid>
-                <Grid item xs={2} display="flex" alignItems="center" justifyContent="center">
-                  <Typography fontSize="14px" align="center">
-                    {t(`characteristics.${characteristic.key}`)}
-                  </Typography>
-                </Grid>
+            <Grid 
+              container 
+              key={`GridCharacteristicsBalance-${characteristic.key}`} 
+              gap={2} 
+              direction="column" 
+              sx={{ width: '100%', maxWidth: '120px' }} // Mantém o slider fininho dentro da coluna do grid
+            >
+              <Grid item xs={9} display="flex" justifyContent="center">
+                <StyledSlider
+                  data-testid={`characteristic-${characteristic.key}`}
+                  sx={{ minHeight: "15rem" }}
+                  value={characteristic.goal}
+                  onChange={(event: any) => handleCharacteristicChange(event, characteristic.key)}
+                  orientation="vertical"
+                  valueLabelDisplay="auto"
+                />
               </Grid>
-            ))}
+              <Grid item xs={2} display="flex" alignItems="center" justifyContent="center">
+                <Typography fontSize="14px" align="center">
+                  {t(`characteristics.${characteristic.key}`)}
+                </Typography>
+              </Grid>
+            </Grid>
+          ))}
         </Box>
-      </Container>
+      </Box>
     </>
   );
 }

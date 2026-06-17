@@ -16,8 +16,8 @@ import * as Styles from './styles';
 import BasicInfoForm from './components/BasicInfoForm/BasicInfoForm';
 import ModelConfigForm from './components/ModelConfigForm/ModelConfigForm';
 import ReferenceValuesForm from './components/ReferenceValuesForm/ReferenceValuesForm';
-import CharacteristicsBalanceForm from './components/CharacteristicsBalanceForm/CharacteristicsBalanceForm';
 import { StyledSlider } from '@components/Equalizer/EqualizerSlider/styles';
+import CharacteristicsBalanceForm from './components/CharacteristicsBalanceForm/CharacteristicsBalanceForm';
 
 // --- MOCK PEQUENO (2 Linhas / 8 Características) ---
 const generateMockPreConfigData = (): PreConfigData => {
@@ -314,92 +314,6 @@ function ReleaseCreation() {
     setDinamicBalance(value);
   }
 
-  // --- COMPONENTE INTERNO: CharacteristicsBalanceForm (com GRID Equiespaçado) ---
-  const renderBalanceForm = () => {
-    const activeCharacteristics = configPageData?.characteristics?.filter(c => c.active) || [];
-    const totalItems = activeCharacteristics.length;
-
-    // Lógica para definir as colunas de forma simétrica
-    const maxColsScreen = 4; // Fixo em 4 colunas para manter a simetria no mock de 8 e 12
-    const numRows = totalItems > 0 ? Math.ceil(totalItems / maxColsScreen) : 1;
-    const optimalCols = totalItems > 0 ? Math.ceil(totalItems / numRows) : 1;
-
-    function handleCharacteristicChange(event: any, characteristicKey: string) {
-      const { value } = event.target;
-      const newGoal = Number(value);
-
-      setConfigPageData((prevData: { characteristics: Characteristic[] }) => {
-        let relatedCharacteristics: string[] = [];
-        if (!dinamicBalance) relatedCharacteristics = balanceMatrix[characteristicKey]?.["+"] || [];
-
-        return {
-          ...prevData,
-          characteristics: prevData.characteristics.map((characteristic: Characteristic) => {
-            if (characteristic.key === characteristicKey || relatedCharacteristics.includes(characteristic.key)) {
-              return { ...characteristic, goal: newGoal };
-            }
-            return characteristic;
-          }),
-        };
-      });
-    }
-
-    return (
-      <>
-        <FormControlLabel
-          sx={{ marginLeft: 0, marginBottom: 2 }}
-          control={
-            <Switch
-              data-testid="allowBalanceGoal"
-              checked={dinamicBalance}
-              onChange={() => handleChangeDinamicBalance(!dinamicBalance)}
-              color="primary"
-            />
-          }
-          label={t("allowBalanceGoal")}
-          labelPlacement="start"
-        />
-        
-        {/* APLICANDO CSS GRID PARA EQUIESPAÇAMENTO PERFEITO */}
-        <Box sx={{ border: 1, borderRadius: 3, paddingX: 3, paddingY: 4, width: '100%' }}>
-          <Box 
-            display="grid" 
-            gridTemplateColumns={`repeat(${optimalCols}, 1fr)`} // Cria colunas idênticas e iguais
-            gap={4} // Espaçamento fixo entre os sliders
-            justifyItems="center" // Centraliza o slider no meio de sua coluna designada
-            alignItems="center" 
-          >
-            {activeCharacteristics.map(characteristic => (
-              <Grid 
-                container 
-                key={`GridCharacteristicsBalance-${characteristic.key}`} 
-                gap={2} 
-                direction="column" 
-                sx={{ width: '100%', maxWidth: '120px' }} // Mantém o slider fininho dentro da coluna do grid
-              >
-                <Grid item xs={9} display="flex" justifyContent="center">
-                  <StyledSlider
-                    data-testid={`characteristic-${characteristic.key}`}
-                    sx={{ minHeight: "15rem" }}
-                    value={characteristic.goal}
-                    onChange={(event: any) => handleCharacteristicChange(event, characteristic.key)}
-                    orientation="vertical"
-                    valueLabelDisplay="auto"
-                  />
-                </Grid>
-                <Grid item xs={2} display="flex" alignItems="center" justifyContent="center">
-                  <Typography fontSize="14px" align="center">
-                    {t(`characteristics.${characteristic.key}`)}
-                  </Typography>
-                </Grid>
-              </Grid>
-            ))}
-          </Box>
-        </Box>
-      </>
-    );
-  };
-
   function renderStep(): React.ReactNode {
     switch (activeStep) {
       case 0:
@@ -409,8 +323,15 @@ function ReleaseCreation() {
       case 2:
         return <ReferenceValuesForm configPageData={configPageData!} defaultPageData={defaultPageData!} setConfigPageData={setConfigPageData} />;
       case 3:
-        return renderBalanceForm();
-      default:
+        return (
+          <CharacteristicsBalanceForm 
+            characteristicRelations={balanceMatrix} 
+            configPageData={configPageData!} 
+            setConfigPageData={setConfigPageData} 
+            dinamicBalance={dinamicBalance} 
+            setDinamicBalance={handleChangeDinamicBalance} 
+          />
+        );    default:
         break;
     }
   }
