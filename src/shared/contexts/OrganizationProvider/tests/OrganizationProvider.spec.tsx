@@ -1,9 +1,8 @@
-import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { toast } from 'react-toastify';
-import { OrganizationProvider, useOrganizationContext } from '../OrganizationProvider';
-import { organizationQuery } from '@services/organization';
 import { useAuth } from '@contexts/Auth';
+import { organizationQuery } from '@services/organization';
+import { OrganizationProvider, useOrganizationContext } from '../OrganizationProvider';
 
 jest.mock('@contexts/Auth', () => ({
   useAuth: jest.fn(),

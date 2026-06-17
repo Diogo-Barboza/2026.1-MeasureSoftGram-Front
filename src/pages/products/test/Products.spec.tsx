@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import * as routerHooks from 'next/router';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
@@ -7,7 +7,6 @@ import { useProductContext } from '@contexts/ProductProvider';
 import { organizationQuery } from '@services/organization';
 import { productQuery } from '@services/product';
 import { repository } from '@services/repository';
-import { useAuth } from '@contexts/Auth';
 import { toast } from 'react-toastify';
 import Products from '../Products';
 
@@ -68,27 +67,34 @@ jest.mock('react-toastify', () => ({
 }));
 
 describe('Products Component', () => {
+  const SUCCESS = 'success';
+  const MOCK_ORG_NAME = 'Org-GitHub-1';
+  const MOCK_ORG_ID = 'backend-org-1';
+  const PROD_1_ID = 'prod1';
+  const REPO_ALPHA_URL = 'https://github.com/org/repo-alpha';
+  const REPO_BETA_URL = 'https://github.com/org/repo-beta';
+
   const mockGitHubOrgs = [
-    { github_org_id: 1, github_org_name: 'Org-GitHub-1', description: 'Desc 1', avatar_url: '' },
+    { github_org_id: 1, github_org_name: MOCK_ORG_NAME, description: 'Desc 1', avatar_url: '' },
     { github_org_id: 2, github_org_name: 'Org-GitHub-2', description: '', avatar_url: '' }
   ];
 
   const mockBackendOrgs = [
-    { id: 'backend-org-1', name: 'Org-GitHub-1', key: 'Org-GitHub-1' }
+    { id: MOCK_ORG_ID, name: MOCK_ORG_NAME, key: MOCK_ORG_NAME }
   ];
 
   const mockProducts = [
-    { id: 'prod1', name: 'Alpha Product' },
+    { id: PROD_1_ID, name: 'Alpha Product' },
     { id: 'prod2', name: 'Beta Product' }
   ];
 
   const mockGithubRepos = [
-    { github_repo_id: 101, name: 'repo-alpha', github_full_name: 'Org-GitHub-1/repo-alpha', url: 'https://github.com/org/repo-alpha', description: 'Alpha description' },
-    { github_repo_id: 102, name: 'repo-beta', github_full_name: 'Org-GitHub-1/repo-beta', url: 'https://github.com/org/repo-beta', description: 'Beta description' }
+    { github_repo_id: 101, name: 'repo-alpha', github_full_name: `${MOCK_ORG_NAME}/repo-alpha`, url: REPO_ALPHA_URL, description: 'Alpha description' },
+    { github_repo_id: 102, name: 'repo-beta', github_full_name: `${MOCK_ORG_NAME}/repo-beta`, url: REPO_BETA_URL, description: 'Beta description' }
   ];
 
   const mockImportedRepos = [
-    { id: 'repo-db-1', name: 'repo-alpha', url: 'https://github.com/org/repo-alpha', description: 'Alpha description' }
+    { id: 'repo-db-1', name: 'repo-alpha', url: REPO_ALPHA_URL, description: 'Alpha description' }
   ];
 
   const mockSetCurrentOrganizations = jest.fn();
@@ -126,31 +132,31 @@ describe('Products Component', () => {
 
     // Default successful API resolves
     (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({
-      type: 'success',
+      type: SUCCESS,
       value: mockGitHubOrgs
     });
     (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
+      type: SUCCESS,
       value: mockBackendOrgs
     });
     (organizationQuery.importOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
+      type: SUCCESS,
       value: { id: 'imported-org-id' }
     });
     (productQuery.getAllProducts as jest.Mock).mockResolvedValue({
       data: { results: mockProducts }
     });
     (organizationQuery.getGithubRepos as jest.Mock).mockResolvedValue({
-      type: 'success',
+      type: SUCCESS,
       value: mockGithubRepos
     });
     (productQuery.getAllRepositories as jest.Mock).mockResolvedValue({
       data: { results: mockImportedRepos }
     });
     (repository.createRepository as jest.Mock).mockResolvedValue({
-      type: 'success'
+      type: SUCCESS
     });
-    mockSignInWithGithub.mockResolvedValue({ type: 'success' });
+    mockSignInWithGithub.mockResolvedValue({ type: SUCCESS });
   });
 
   it('deve renderizar a tela de importação de repositórios com campos corretos', async () => {
@@ -192,29 +198,29 @@ describe('Products Component', () => {
     // Espera carregar a primeira por padrão
     await waitFor(() => {
       expect(organizationQuery.getAllOrganization).toHaveBeenCalled();
-      expect(productQuery.getAllProducts).toHaveBeenCalledWith('backend-org-1');
-      expect(organizationQuery.getGithubRepos).toHaveBeenCalledWith('backend-org-1');
+      expect(productQuery.getAllProducts).toHaveBeenCalledWith(MOCK_ORG_ID);
+      expect(organizationQuery.getGithubRepos).toHaveBeenCalledWith(MOCK_ORG_ID);
     });
   });
 
   it('deve importar a organização do GitHub no MeasureSoftGram caso ela não exista no backend', async () => {
     // Retorna organização diferente
     (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
+      type: SUCCESS,
       value: []
     });
 
     render(<Products />);
 
     await waitFor(() => {
-      expect(organizationQuery.importOrganization).toHaveBeenCalledWith('Org-GitHub-1');
+      expect(organizationQuery.importOrganization).toHaveBeenCalledWith(MOCK_ORG_NAME);
       expect(mockFetchOrganizations).toHaveBeenCalledWith(true);
     });
   });
 
   it('deve exibir erro se a importação da organização falhar', async () => {
     (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
+      type: SUCCESS,
       value: []
     });
     (organizationQuery.importOrganization as jest.Mock).mockResolvedValue({
@@ -247,7 +253,7 @@ describe('Products Component', () => {
 
     // Espera carregar repos importados
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-alpha')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-alpha`)).toBeInTheDocument();
     });
 
     // Clique na tab "A Importar"
@@ -256,7 +262,7 @@ describe('Products Component', () => {
 
     // Agora repo-beta deve aparecer
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-beta')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-beta`)).toBeInTheDocument();
     });
 
     const importBtn = screen.getByRole('button', { name: /importar/i });
@@ -264,11 +270,11 @@ describe('Products Component', () => {
 
     await waitFor(() => {
       expect(repository.createRepository).toHaveBeenCalledWith(
-        'backend-org-1',
-        'prod1',
+        MOCK_ORG_ID,
+        PROD_1_ID,
         {
           name: 'repo-beta',
-          url: 'https://github.com/org/repo-beta',
+          url: REPO_BETA_URL,
           description: 'Beta description',
           platform: 'github',
           imported: true
@@ -287,7 +293,7 @@ describe('Products Component', () => {
     render(<Products />);
 
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-alpha')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-alpha`)).toBeInTheDocument();
     });
 
     // Clique na tab "A Importar"
@@ -295,7 +301,7 @@ describe('Products Component', () => {
     fireEvent.click(tabAImportar);
 
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-beta')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-beta`)).toBeInTheDocument();
     });
 
     const importBtn = screen.getByRole('button', { name: /importar/i });
@@ -312,7 +318,7 @@ describe('Products Component', () => {
     render(<Products />);
 
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-alpha')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-alpha`)).toBeInTheDocument();
     });
 
     // Clique na tab "A Importar"
@@ -320,7 +326,7 @@ describe('Products Component', () => {
     fireEvent.click(tabAImportar);
 
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-beta')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-beta`)).toBeInTheDocument();
     });
 
     const importBtn = screen.getByRole('button', { name: /importar/i });
@@ -379,20 +385,20 @@ describe('Products Component', () => {
     const btn = screen.getByRole('button', { name: /criar produto/i });
     fireEvent.click(btn);
 
-    expect(mockPush).toHaveBeenCalledWith('/products/create?id_organization=backend-org-1');
+    expect(mockPush).toHaveBeenCalledWith(`/products/create?id_organization=${MOCK_ORG_ID}`);
   });
 
   it('deve filtrar repositórios pelo campo de busca', async () => {
     render(<Products />);
 
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-alpha')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-alpha`)).toBeInTheDocument();
     });
 
     const searchInput = screen.getByPlaceholderText('Buscar repositórios do produto...');
     fireEvent.change(searchInput, { target: { value: 'alpha' } });
 
-    expect(screen.getByText('Org-GitHub-1/repo-alpha')).toBeInTheDocument();
+    expect(screen.getByText(`${MOCK_ORG_NAME}/repo-alpha`)).toBeInTheDocument();
   });
 
   it('deve filtrar repositórios pelas tabs de Importado / Todos / A Importar', async () => {
@@ -400,17 +406,17 @@ describe('Products Component', () => {
 
     // Por padrão (tab 0: Importados), apenas repo-alpha (importado) é visível
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-alpha')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-alpha`)).toBeInTheDocument();
     });
-    expect(screen.queryByText('Org-GitHub-1/repo-beta')).not.toBeInTheDocument();
+    expect(screen.queryByText(`${MOCK_ORG_NAME}/repo-beta`)).not.toBeInTheDocument();
 
     // Clique na tab "Todos" (Index 1)
     const tabTodos = screen.getByRole('tab', { name: /todos/i });
     fireEvent.click(tabTodos);
 
     await waitFor(() => {
-      expect(screen.getByText('Org-GitHub-1/repo-alpha')).toBeInTheDocument();
-      expect(screen.getByText('Org-GitHub-1/repo-beta')).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-alpha`)).toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-beta`)).toBeInTheDocument();
     });
 
     // Clique na tab "A Importar" (Index 2)
@@ -418,8 +424,8 @@ describe('Products Component', () => {
     fireEvent.click(tabAImportar);
 
     await waitFor(() => {
-      expect(screen.queryByText('Org-GitHub-1/repo-alpha')).not.toBeInTheDocument();
-      expect(screen.getByText('Org-GitHub-1/repo-beta')).toBeInTheDocument();
+      expect(screen.queryByText(`${MOCK_ORG_NAME}/repo-alpha`)).not.toBeInTheDocument();
+      expect(screen.getByText(`${MOCK_ORG_NAME}/repo-beta`)).toBeInTheDocument();
     });
   });
 
@@ -495,6 +501,6 @@ describe('Products Component', () => {
     const registerBtn = screen.getByRole('button', { name: /cadastrar primeiro produto/i });
     fireEvent.click(registerBtn);
 
-    expect(mockPush).toHaveBeenCalledWith('/products/create?id_organization=backend-org-1');
+    expect(mockPush).toHaveBeenCalledWith(`/products/create?id_organization=${MOCK_ORG_ID}`);
   });
 });

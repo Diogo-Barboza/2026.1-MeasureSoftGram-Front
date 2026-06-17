@@ -1,6 +1,6 @@
-import { AxiosRequestConfig, AxiosError } from 'axios';
-import api from './api';
+import { AxiosError } from 'axios';
 import { getAccessToken } from '@services/Auth';
+import api from './api';
 
 export interface OrganizationFormData {
   id?: string;
@@ -19,14 +19,15 @@ export type Result<T> = ResultSuccess<T> | ResultError;
 
 class OrganizationQuery {
 
-private async getAuthHeaders(): Promise<{ Authorization: string }> {
-  const tokenResult = await getAccessToken();
-  if (tokenResult.type === 'error' || !tokenResult.value.key) {
-    throw new Error('Token de acesso não encontrado.');
-  }
+  // eslint-disable-next-line class-methods-use-this
+  private async getAuthHeaders(): Promise<{ Authorization: string }> {
+    const tokenResult = await getAccessToken();
+    if (tokenResult.type === 'error' || !tokenResult.value.key) {
+      throw new Error('Token de acesso não encontrado.');
+    }
 
-  return { Authorization: `Token ${tokenResult.value.key}` };
-}
+    return { Authorization: `Token ${tokenResult.value.key}` };
+  }
 
 async getAllOrganization(): Promise<Result<OrganizationFormData[]>> {
   try {
