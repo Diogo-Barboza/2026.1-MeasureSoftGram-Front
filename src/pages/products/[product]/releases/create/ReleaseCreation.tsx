@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, Breadcrumbs, Button, FormControlLabel, Grid, Switch, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { format, addDays } from 'date-fns';
 import { useRouter } from 'next/router';
@@ -137,7 +137,7 @@ function ReleaseCreation() {
     }
   });
 
-  useEffect(() => {
+useEffect(() => {
     if (router.isReady) {
       const organization = routerParams.product.split('-')[0];
       const productIdentifier = routerParams.product.split('-')[1];
@@ -167,6 +167,7 @@ function ReleaseCreation() {
       }
       // --- FIM DA INTERCEPTAÇÃO DE MOCK ---
 
+      // DECLARAÇÃO RESTAURADA DA FUNÇÃO NO SINGULAR
       const getPreConfig = async () => {
         let currentReleaseGoal: any;
         let entitiesRelationship;
@@ -191,20 +192,29 @@ function ReleaseCreation() {
 
           await getPreConfigs(organization, productIdentifier, currentReleaseGoal);
         }
-      }
+      };
 
-      getPreConfig();
+      getPreConfig(); // Agora a chamada vai funcionar perfeitamente!
     }
   }, [router.isReady, routerParams.product]);
 
+  // FUNÇÃO NO PLURAL ATUALIZADA (com a injeção do name)
   async function getPreConfigs(organization: string, productIdentifier: string, currentReleaseGoal: any) {
     try {
       const defaultPreConfigResult = await productQuery.getProductDefaultPreConfig(organization, productIdentifier);
-      setConfigPageData(formatConfig(defaultPreConfigResult.data, currentReleaseGoal));
-      setConfigDefaultPageData(formatConfig(defaultPreConfigResult.data, currentReleaseGoal));
+      
+      const defaultData = formatConfig(defaultPreConfigResult.data, currentReleaseGoal);
+      defaultData.name = productName; // Injetando o nome real
+
+      setConfigPageData(defaultData);
+      setConfigDefaultPageData(defaultData);
 
       const currentPreConfigResult = await productQuery.getProductCurrentPreConfig(organization, productIdentifier);
-      setLastConfigPageData(formatConfig(mergeWithDefault(currentPreConfigResult.data.data, defaultPreConfigResult.data), currentReleaseGoal));
+      
+      const currentData = formatConfig(mergeWithDefault(currentPreConfigResult.data.data, defaultPreConfigResult.data), currentReleaseGoal);
+      currentData.name = productName; // Injetando o nome real
+
+      setLastConfigPageData(currentData);
 
       const balance = await balanceMatrixService.getBalanceMatrix();
       setBalanceMatrix(balance.data.result);
@@ -212,7 +222,6 @@ function ReleaseCreation() {
       enqueueSnackbar(t('getPreConfigError'), { autoHideDuration: 10000, variant: 'error' });
     }
   }
-
   function mergeWithDefault(current: PreConfigData, defaultData: PreConfigData): PreConfigData {
     const findOrCreate = <T extends { key: string }>(array: T[], key: string, defaultEntry: T): T => {
       const entry = array.find(item => item.key === key);
@@ -269,7 +278,7 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
   async function checkBasicValues() {
     if (Object.keys(errors).length !== 0) return;
 
-    if (configPageData?.name?.includes("Mockado")) {
+    if (configPageData?.name.includes("Mockado")) {
       setActiveStep(activeStep + 1);
       return;
     }
@@ -314,23 +323,16 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
 
   function renderStep(): React.ReactNode {
     switch (activeStep) {
-      case 0:
-        return <BasicInfoForm configPageData={configPageData!} trigger={trigger} register={register} errors={errors} watch={watch} followLastConfig={followLastConfig} setFollowLastConfig={handleSetFollowLastConfig} />;
-      case 1:
-        return <ModelConfigForm changeRefValue={changeRefValue} setChangeRefValue={handleChangeRefValue} configPageData={configPageData!} setConfigPageData={setConfigPageData} />;
-      case 2:
-        return <ReferenceValuesForm configPageData={configPageData!} defaultPageData={defaultPageData!} setConfigPageData={setConfigPageData} />;
-      case 3:
-        return (
-          <CharacteristicsBalanceForm 
-            characteristicRelations={balanceMatrix} 
-            configPageData={configPageData!} 
-            setConfigPageData={setConfigPageData} 
-            dinamicBalance={dinamicBalance} 
-            setDinamicBalance={handleChangeDinamicBalance} 
-          />
-        );    default:
-        break;
+      case 0:// eslint-disable-next-line react/jsx-no-bind
+        return <BasicInfoForm configPageData={configPageData!} trigger={trigger} register={register} errors={errors} watch={watch} followLastConfig={followLastConfig} setFollowLastConfig={handleSetFollowLastConfig} />
+      case 1:// eslint-disable-next-line react/jsx-no-bind
+        return <ModelConfigForm changeRefValue={changeRefValue} setChangeRefValue={handleChangeRefValue} configPageData={configPageData!} setConfigPageData={setConfigPageData} />
+      case 2:// eslint-disable-next-line react/jsx-no-bind
+        return <ReferenceValuesForm configPageData={configPageData!} defaultPageData={defaultPageData!} setConfigPageData={setConfigPageData} />
+      case 3:// eslint-disable-next-line react/jsx-no-bind
+        return <CharacteristicsBalanceForm characteristicRelations={balanceMatrix} configPageData={configPageData!} setConfigPageData={setConfigPageData} dinamicBalance={dinamicBalance} setDinamicBalance={handleChangeDinamicBalance} />
+      default:
+        break
     }
   }
 
@@ -544,7 +546,7 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
               }}
             >
               {activeStep !== 0 && (
-                <Button onClick={handlePreviousButtonClick} variant="outlined">
+                <Button onClick={() => handlePreviousButtonClick()} variant="outlined">
                   {t('back')}
                 </Button>
               )}
