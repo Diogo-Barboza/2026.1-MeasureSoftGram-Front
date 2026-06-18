@@ -47,7 +47,7 @@ class Repository {
       }
 
       const response = await api.post(
-        `/organizations/${organizationId}/products/${productId}/repositories/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/`,
         { ...data, imported },
         {
           headers
@@ -75,7 +75,7 @@ class Repository {
       }
 
       const response = await api.put(
-        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
         { ...data, imported },
         { headers }
       );
@@ -95,7 +95,7 @@ class Repository {
         throw new Error('Access token not found.');
       }
       const response = await api.delete(
-        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
         { headers }
       );
       return { type: 'success', value: response?.data };
@@ -112,7 +112,7 @@ class Repository {
         throw new Error('Access token not found.');
       }
       const response = await api.get(
-        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`,
         { headers }
       );
       return { type: 'success', value: response?.data };
@@ -122,13 +122,13 @@ class Repository {
   }
 
   getRepository(organizationId: string, productId: string, repositoryId: string): Promise<Result<any>> {
-    return api.get(`organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`);
+    return api.get(`/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`);
   }
 
   getHistorical(props: HistoricalCharacteristicsProps): Promise<Result<any>> {
     const { organizationId, entity, productId, repositoryId } = props;
     return api.get(
-      `organizations/${organizationId}` +
+      `/v1/organizations/${organizationId}` +
         `/products/${productId}/repositories/${repositoryId}` +
         `/historical-values/${entity}/`
     );
@@ -139,7 +139,7 @@ class Repository {
 
     try {
       return await api.get(
-        `organizations/${organizationId}` +
+        `/v1/organizations/${organizationId}` +
           `/products/${productId}/repositories/${repositoryId}` +
           `/latest-values/${entity}/`
       );
@@ -151,7 +151,7 @@ class Repository {
   getTsqmiBadgeUrl(props: HistoricalCharacteristicsProps) {
     const { organizationId, entity, productId, repositoryId } = props;
     return (
-      `${api.getUri()}/organizations/${organizationId}` +
+      `${api.getUri()}/v1/organizations/${organizationId}` +
       `/products/${productId}/repositories/${repositoryId}` +
       `/latest-values/${entity}/badge`
     );

@@ -41,7 +41,7 @@ COPY . .
 
 # build-args inlined no bundle (build-time). O default e o ambiente de
 # desenvolvimento; o valor de cada ambiente vem via --build-arg no CI.
-ARG SERVICE_URL=http://localhost:8080/api/v1
+ARG SERVICE_URL=http://localhost:8080/api
 ARG LOGIN_REDIRECT_URL
 ARG GITHUB_CLIENT_ID
 ENV SERVICE_URL=$SERVICE_URL
