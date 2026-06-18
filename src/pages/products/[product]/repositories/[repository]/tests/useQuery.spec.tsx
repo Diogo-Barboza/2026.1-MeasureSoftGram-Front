@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { productQuery } from '@services/product';
 import { useQuery } from '../hooks/useQuery';
 
@@ -11,6 +11,7 @@ const mockSetMetrics = jest.fn();
 const mockSetHistoricalTSQMI = jest.fn();
 const mockSetLatestTSQMI = jest.fn();
 const mockSetLatestTSQMIBadgeUrl = jest.fn();
+const mockSetCharacteristicBadgeUrls = jest.fn();
 const mockSetCurrentProduct = jest.fn();
 const mockSetCurrentOrganizations = jest.fn();
 
@@ -36,6 +37,7 @@ jest.mock('@contexts/RepositoryProvider', () => ({
     setHistoricalTSQMI: mockSetHistoricalTSQMI,
     setLatestTSQMI: mockSetLatestTSQMI,
     setLatestTSQMIBadgeUrl: mockSetLatestTSQMIBadgeUrl,
+    setCharacteristicBadgeUrls: mockSetCharacteristicBadgeUrls,
   }),
 }));
 
@@ -155,6 +157,21 @@ describe('useQuery', () => {
 
     await waitFor(() => {
       expect(productQuery.getProductById).toHaveBeenCalledWith('10', '20');
+    });
+  });
+
+  it('should clear repository-scoped badge state when query.repository changes', async () => {
+    mockQuery = {
+      product: '1-2',
+      repository: '3-test',
+    };
+
+    renderHook(() => useQuery());
+
+    await waitFor(() => {
+      expect(mockSetCharacteristicBadgeUrls).toHaveBeenCalledWith({});
+      expect(mockSetLatestTSQMI).toHaveBeenCalledWith(undefined);
+      expect(mockSetLatestTSQMIBadgeUrl).toHaveBeenCalledWith(undefined);
     });
   });
 

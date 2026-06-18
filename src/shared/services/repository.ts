@@ -18,20 +18,32 @@ interface HistoricalCharacteristicsProps {
 }
 
 export type ResultSuccess<T> = { type: 'success'; value: T };
-export type ResultError = { type: 'error'; error: Error | AxiosError | any };
+export type ResultError = { type: 'error'; error: Error | AxiosError };
 export type Result<T> = ResultSuccess<T> | ResultError;
+
+const ACCESS_TOKEN_NOT_FOUND = 'Access token not found.';
+const buildAuthHeaders = (token: string): AxiosRequestConfig['headers'] => ({
+  Authorization: `Token ${token}`
+});
+const getMissingTokenResult = (): ResultError => ({ type: 'error', error: new Error(ACCESS_TOKEN_NOT_FOUND) });
+const buildRepositoryBasePath = (organizationId: string, productId: string, repositoryId: string): string =>
+  `organizations/${organizationId}/products/${productId}/repositories/${repositoryId}`;
+
 class Repository {
-  private async getAuthHeaders(): Promise<AxiosRequestConfig['headers']> {
+  private readonly apiClient = api;
+
+  private readonly accessTokenProvider = getAccessToken;
+
+  private async getAuthToken(): Promise<string | undefined> {
     try {
-      const tokenResult = await getAccessToken();
+      const tokenResult = await this.accessTokenProvider();
       if (tokenResult.type === 'error' || !tokenResult.value.key) {
-        return {};
+        return undefined;
       }
 
-      return { Authorization: `Token ${tokenResult.value.key}` };
-    } catch (error) {
-      console.error('Failed to fetch authentication token:', error);
-      return {};
+      return tokenResult.value.key;
+    } catch {
+      return undefined;
     }
   }
 
@@ -41,12 +53,13 @@ class Repository {
     { imported = false, ...data }: RepositoryFormData
   ): Promise<Result<RepositoryFormData>> {
     try {
-      const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Access token not found.');
+      const token = await this.getAuthToken();
+      if (!token) {
+        return getMissingTokenResult();
       }
+      const headers = buildAuthHeaders(token);
 
-      const response = await api.post(
+      const response = await this.apiClient.post(
         `/organizations/${organizationId}/products/${productId}/repositories/`,
         { ...data, imported },
         {
@@ -69,12 +82,13 @@ class Repository {
     { imported = false, ...data }: RepositoryFormData
   ): Promise<Result<RepositoryFormData>> {
     try {
-      const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Access token not found.');
+      const token = await this.getAuthToken();
+      if (!token) {
+        return getMissingTokenResult();
       }
+      const headers = buildAuthHeaders(token);
 
-      const response = await api.put(
+      const response = await this.apiClient.put(
         `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
         { ...data, imported },
         { headers }
@@ -90,16 +104,20 @@ class Repository {
 
   async deleteRepository(organizationId: string, productId: string, repositoryId: string): Promise<Result<void>> {
     try {
-      const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Access token not found.');
+      const token = await this.getAuthToken();
+      if (!token) {
+        return getMissingTokenResult();
       }
-      const response = await api.delete(
+      const headers = buildAuthHeaders(token);
+      await this.apiClient.delete(
         `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
         { headers }
       );
-      return { type: 'success', value: response?.data };
+      return { type: 'success', value: undefined };
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return { type: 'error', error: err };
+      }
       return { type: 'error', error: new Error('Failed to delete repository.') };
     }
   }
@@ -107,54 +125,54 @@ class Repository {
   async getHistoricalData(props: HistoricalCharacteristicsProps): Promise<Result<any>> {
     try {
       const { organizationId, entity, productId, repositoryId } = props;
-      const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
-      if (!headers) {
-        throw new Error('Access token not found.');
+      const token = await this.getAuthToken();
+      if (!token) {
+        return getMissingTokenResult();
       }
-      const response = await api.get(
+      const headers = buildAuthHeaders(token);
+      const response = await this.apiClient.get(
         `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`,
         { headers }
       );
       return { type: 'success', value: response?.data };
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return { type: 'error', error: err };
+      }
       return { type: 'error', error: new Error('Failed to fetch historical data.') };
     }
   }
 
   getRepository(organizationId: string, productId: string, repositoryId: string): Promise<Result<any>> {
-    return api.get(`organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`);
+    return this.apiClient.get(`${buildRepositoryBasePath(organizationId, productId, repositoryId)}/`);
   }
 
   getHistorical(props: HistoricalCharacteristicsProps): Promise<Result<any>> {
     const { organizationId, entity, productId, repositoryId } = props;
-    return api.get(
-      `organizations/${organizationId}` +
-        `/products/${productId}/repositories/${repositoryId}` +
-        `/historical-values/${entity}/`
-    );
+    const basePath = buildRepositoryBasePath(organizationId as string, productId as string, repositoryId as string);
+    return this.apiClient.get(`${basePath}/historical-values/${entity}/`);
   }
 
   async getLatest(props: HistoricalCharacteristicsProps) {
     const { organizationId, entity, productId, repositoryId } = props;
+    const basePath = buildRepositoryBasePath(organizationId as string, productId as string, repositoryId as string);
 
     try {
-      return await api.get(
-        `organizations/${organizationId}` +
-          `/products/${productId}/repositories/${repositoryId}` +
-          `/latest-values/${entity}/`
-      );
-    } catch (e) {
-      console.error(e);
+      return await this.apiClient.get(`${basePath}/latest-values/${entity}/`);
+    } catch {
+      return undefined;
     }
   }
 
   getTsqmiBadgeUrl(props: HistoricalCharacteristicsProps) {
     const { organizationId, entity, productId, repositoryId } = props;
-    return (
-      `${api.getUri()}/organizations/${organizationId}` +
-      `/products/${productId}/repositories/${repositoryId}` +
-      `/latest-values/${entity}/badge`
-    );
+    const basePath = buildRepositoryBasePath(organizationId as string, productId as string, repositoryId as string);
+    return `${this.apiClient.getUri()}/${basePath}/latest-values/${entity}/badge`;
+  }
+
+  getCharacteristicBadgeUrl(organizationId: string, productId: string, repositoryId: string, characteristicKey: string) {
+    const basePath = buildRepositoryBasePath(organizationId, productId, repositoryId);
+    return `${this.apiClient.getUri()}/${basePath}/latest-values/characteristics/${characteristicKey}/badge/`;
   }
 }
 
