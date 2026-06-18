@@ -136,6 +136,15 @@ describe('Utils', () => {
         const projectName = '3-MSG';
         expect(getPathId(projectName)).toStrictEqual(['3', 'MSG']);
       });
+
+      it('Deve retornar valores vazios quando nome for undefined', () => {
+        expect(getPathId(undefined)).toStrictEqual(['', '']);
+      });
+
+      it('Deve retornar segunda posicao vazia quando nao houver hifen', () => {
+        const projectName = '3MSG';
+        expect(getPathId(projectName)).toStrictEqual(['3MSG', '']);
+      });
     });
   });
   describe('formatRepositoriesTsqmiHistory', () => {
