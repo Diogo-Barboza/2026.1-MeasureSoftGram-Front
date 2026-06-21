@@ -32,7 +32,7 @@ export const getAllUsers = async (): Promise<Result<UserResult>> => {
 
     const token = tokenResult.value.key;
 
-    const response = await api.get('/accounts/users/', {
+    const response = await api.get('/v1/accounts/users/', {
       headers: {
         Authorization: `Token ${token}`
       }
@@ -60,7 +60,7 @@ type GetUserRepoResponse = {
 
 export async function getUserRepos(code: string): Promise<Result<GetUserRepoResponse>> {
   try {
-    const response = await api.get('/accounts/user-repos', { params: { code } });
+    const response = await api.get('/v1/accounts/user-repos', { params: { code } });
     return { type: 'success', value: response.data };
   } catch (err) {
     const error = err as AxiosError;
