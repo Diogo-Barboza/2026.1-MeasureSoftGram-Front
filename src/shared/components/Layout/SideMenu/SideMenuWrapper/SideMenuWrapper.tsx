@@ -6,12 +6,12 @@ import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { Box, Divider } from '@mui/material';
 
 import { useSideMenuContext } from '@contexts/SidebarProvider/SideMenuProvider';
-import { useTranslation } from 'react-i18next';
-import Translation from '@components/Translation/Translation';
 import * as Styles from './styles';
 
 import OrganizationSelector from '../OrganizationSelector';
 import ProductsSelector from '../ProductsSelector';
+import { useTranslation } from 'react-i18next';
+import Translation from '@components/Translation/Translation';
 
 const IMAGE_SOURCE = '/images/svg/logo_white.svg';
 

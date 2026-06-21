@@ -9,8 +9,6 @@ import { AuthLayout } from '@layouts/auth';
 import Image from 'next/image';
 import logoImage from '@public/images/svg/logo.svg';
 
-const PRIMARY_MAIN = 'primary.main';
-
 const Auth: NextPageWithLayout = () => {
   const router = useRouter();
   const { setProvider } = useAuth();
@@ -70,13 +68,13 @@ const Auth: NextPageWithLayout = () => {
             fontSize: '1rem',
             fontWeight: '600',
             textTransform: 'uppercase',
-            color: PRIMARY_MAIN,
-            borderColor: PRIMARY_MAIN,
+            color: 'primary.main',
+            borderColor: 'primary.main',
             backgroundColor: '#fff',
             borderWidth: '1px',
             '&:hover': {
               backgroundColor: 'rgba(43, 77, 111, 0.08)',
-              borderColor: PRIMARY_MAIN,
+              borderColor: 'primary.main',
               borderWidth: '1px',
             },
           }}

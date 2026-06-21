@@ -1,13 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import convertToCsv from '@utils/convertToCsv';
 import Download from '../DownloadButton';
+import convertToCsv from '@utils/convertToCsv';
 
 jest.mock('@utils/convertToCsv', () => jest.fn());
 
 describe('Download Component', () => {
-  const dialogTitleText = 'Escolha um formato para o download';
-
   const mockProduct = {
     historical_values: {
       metrics: 'https://api.example.com/metrics'
@@ -78,19 +76,19 @@ describe('Download Component', () => {
     expect(downloadButton).toBeInTheDocument();
 
     fireEvent.click(downloadButton);
-    expect(screen.getByText(dialogTitleText)).toBeInTheDocument();
+    expect(screen.getByText('Escolha um formato para o download')).toBeInTheDocument();
   });
 
   it('should close the dialog when clicking Cancel', async () => {
     render(<Download {...defaultProps} />);
     
     fireEvent.click(screen.getByRole('button', { name: /Download/i }));
-    expect(screen.getByText(dialogTitleText)).toBeInTheDocument();
+    expect(screen.getByText('Escolha um formato para o download')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
     await waitFor(() => {
 
-    expect(screen.queryByText(dialogTitleText)).not.toBeInTheDocument();
+    expect(screen.queryByText('Escolha um formato para o download')).not.toBeInTheDocument();
     
     });
   });
@@ -114,7 +112,7 @@ describe('Download Component', () => {
 
     await waitFor(() => {
 
-    expect(screen.queryByText(dialogTitleText)).not.toBeInTheDocument();
+    expect(screen.queryByText('Escolha um formato para o download')).not.toBeInTheDocument();
 
     });
   });
@@ -154,7 +152,7 @@ describe('Download Component', () => {
 
     await waitFor(() => {
 
-    expect(screen.queryByText(dialogTitleText)).not.toBeInTheDocument();
+    expect(screen.queryByText('Escolha um formato para o download')).not.toBeInTheDocument();
 
     });
   });

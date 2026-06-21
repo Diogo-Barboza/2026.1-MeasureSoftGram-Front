@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { useLocalStorage } from '@hooks/useLocalStorage';
 import ConfirmModal from '@components/ConfirmModal/ConfirmModal';
-
 export const authContextDefaultValues: authContextType = {
   session: null,
   loading: 'loading',
@@ -54,7 +53,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     const response = await signOut();
 
     if (response.type === 'success') {
-      await router.push('/auth');
+      await router.push('/');
       toast.success('Volte logo para acompanhar seus produtos!');
     }
 
@@ -69,11 +68,8 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
       const params = new URLSearchParams(globalThis.location.search);
       const state = params.get('state');
 
-      // A raiz '/' serve a landing publica. Um usuario ja autenticado que cair
-      // na landing (ou o callback OAuth, que volta para a raiz sem "state") deve
-      // seguir direto para o dashboard.
-      // Se viermos com um "state" do GitHub, nao redirecionamos aqui: o outro
-      // useEffect cuida de levar ao destino correto guardado no state.
+      // Se estamos na raiz mas viemos com um "state" do GitHub, não redirecione para a home,
+      // pois o outro useEffect vai cuidar de redirecionar para o local correto.
       if (router?.pathname === '/' && !state) {
         await router.push('/home');
         toast.success(`Bem vindo ao MeasureSoftGram ${response?.value?.username}!`);

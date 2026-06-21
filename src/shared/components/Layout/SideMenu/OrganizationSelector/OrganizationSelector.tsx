@@ -31,22 +31,25 @@ function OrganizationSelector() {
 
   const { t } = useTranslation('sidebar');
 
-  return !isCollapsed ? (
-    <MSGSelectBox
-      label={t('organization.placeholder')}
-      width="98%"
-      options={organizationList ?? []}
-      onChange={onChange}
-      value={currentOrganization?.id}
-    />
-  ) : (
-    <SideMenuItem
-      startIcon={<LetterAvatar name={currentOrganization?.name ?? '?'} icon={<BsFillBuildingFill color="#ffffff" />} />}
-      text={currentOrganization?.name ?? 'Selecione a Organização'}
-      tooltip={t("tooltip.organization-selection")}
-      onClick={() => toggleCollapse()}
-      selected={false}
-    />
+  return (
+    <>
+      {!isCollapsed ?
+        <MSGSelectBox
+          label={t('organization.placeholder')}
+          width="98%"
+          options={organizationList ?? []}
+          onChange={onChange}
+          value={currentOrganization?.id}
+        /> :
+        <SideMenuItem
+          startIcon={<LetterAvatar name={currentOrganization?.name ?? '?'} icon={<BsFillBuildingFill color="#ffffff" />} />}
+          text={currentOrganization?.name ?? 'Selecione a Organização'}
+          tooltip={t("tooltip.organization-selection")}
+          onClick={() => toggleCollapse()}
+          selected={false}
+        />
+      }
+    </>
   );
 }
 

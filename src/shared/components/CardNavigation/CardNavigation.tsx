@@ -33,7 +33,7 @@ const CardNavigation: React.FC<Props> = ({ id, name, url, description }) => (
           display="flex"
           alignItems="center"
           justifyContent="center"
-          marginLeft="2em"
+          marginLeft={"2em"}
         >
           <ChevronRight fontSize="large" />
         </Box>

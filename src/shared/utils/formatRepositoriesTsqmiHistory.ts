@@ -1,7 +1,7 @@
 import { RepositoriesTsqmiHistory } from '@customTypes/product';
+import convertToCsv, { CSVFilter } from './convertToCsv';
 import React, { ComponentRef } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import convertToCsv, { CSVFilter } from './convertToCsv';
 
 const formatTwoDecimalPlaces = (value: number) => Math.round(value * 100) / 100;
 
@@ -35,9 +35,7 @@ const formatRepositoriesTsqmiHistory = ({ history, csvFilters, ref }: Props) => 
         const { startValue, endValue } = chart.getOption().dataZoom[0];
         console.log(startValue, endValue);
         if (startValue && endValue) {
-          // eslint-disable-next-line no-param-reassign
           csvFilters.dateRange.startDate = startValue;
-          // eslint-disable-next-line no-param-reassign
           csvFilters.dateRange.endDate = endValue;
         }
       }

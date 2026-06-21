@@ -4,9 +4,9 @@ import { RepositoryProvider } from '@contexts/RepositoryProvider';
 import { OrganizationProvider } from '@contexts/OrganizationProvider';
 import * as ProductProvApi from '@contexts/ProductProvider';
 import { SideMenuProvider } from '@contexts/SidebarProvider/SideMenuProvider';
+import SideMenu, { SideMenuItemType } from '../SideMenu';
 import { Product } from '@customTypes/product';
 import { IProductContext } from '@contexts/ProductProvider';
-import SideMenu, { SideMenuItemType } from '../SideMenu';
 
 interface Props {
   children: ReactNode;
@@ -27,7 +27,8 @@ jest.mock('@contexts/ProductProvider', () => ({
     ...jest.requireActual('@contexts/ProductProvider')
 }));
 
-jest.mock('../SideMenuWrapper', () => jest.fn().mockImplementation(() => {
+jest.mock('../SideMenuWrapper', () => {
+  return jest.fn().mockImplementation(() => {
     const products: Product[] = [
       {id: 'prodtest', name: 'prodname', description: 'proddesc', github_url: 'https://test.github.com', created_at: '2022-01-01', updated_at: '2022-01-02'},
       {id: 'prodtest2', name: 'prodname2', description: 'proddesc2', github_url: 'https://test.github.com/proj2', created_at: '2022-02-01', updated_at: '2022-02-02'}
@@ -50,7 +51,8 @@ jest.mock('../SideMenuWrapper', () => jest.fn().mockImplementation(() => {
       {menuItems.map((item) => 
         productsContext.currentProduct && item.disable ? <p key={count++}>{item.text}</p> : <p key={(count++) + 10}>Null element</p>)}
     </div>
-  }));
+  });
+});
 
 jest.spyOn(ProductProvApi,'useProductContext').mockReturnValue(
     { 

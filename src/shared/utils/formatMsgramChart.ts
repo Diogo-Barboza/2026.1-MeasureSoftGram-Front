@@ -1,9 +1,9 @@
+import convertToCsv, { CSVFilter } from './convertToCsv';
 import { Historical } from '@customTypes/repository';
 import { format } from 'date-fns';
 import _ from 'lodash';
 import ReactEcharts from 'echarts-for-react';
 import { ComponentRef } from 'react';
-import convertToCsv, { CSVFilter } from './convertToCsv';
 
 interface Props {
   historical: Historical[];
@@ -28,9 +28,7 @@ const formatMsgramChart = ({ historical, title, isEmpty = false, csvFilters, ref
         // @ts-ignore
         const { startValue, endValue } = chart.getOption().dataZoom[0];
         console.log(startValue, endValue);
-        // eslint-disable-next-line no-param-reassign
         csvFilters.dateRange.startDate = indexToTime[startValue];
-        // eslint-disable-next-line no-param-reassign
         csvFilters.dateRange.endDate = indexToTime[endValue];
       }
     }

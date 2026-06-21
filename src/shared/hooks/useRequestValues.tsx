@@ -16,48 +16,6 @@ interface Props {
   collectionSource?: 'github' | 'sonarqube';
 }
 
-async function attachGoalToResults(
-  organizationId: string,
-  productId: string,
-  results?: Historical[]
-) {
-  if (!results) return;
-  try {
-    const { data: currentGoal } = await productQuery.getCurrentReleaseGoal(
-      organizationId,
-      productId
-    );
-    results.forEach((res: Historical) => {
-      // eslint-disable-next-line no-param-reassign
-      res.goal = currentGoal.data[res.key];
-    });
-  } catch {
-    results.forEach((res: Historical) => {
-      // eslint-disable-next-line no-param-reassign
-      res.goal = undefined;
-    });
-  }
-}
-
-function filterByCollectionSource(returnData: any[], collectionSource?: 'github' | 'sonarqube') {
-  if (!collectionSource) return returnData;
-  const githubKeys = [
-    'total_builds',
-    'sum_ci_feedback_times',
-    'resolved_issues',
-    'total_issues',
-    'ci_feedback_time',
-    'team_throughput'
-  ];
-  if (collectionSource === 'github') {
-    return returnData.filter((res: any) => githubKeys.includes(res.key));
-  }
-  if (collectionSource === 'sonarqube') {
-    return returnData.filter((res: any) => !githubKeys.includes(res.key));
-  }
-  return returnData;
-}
-
 export function useRequestValues({
   type,
   value,
@@ -75,21 +33,33 @@ export function useRequestValues({
     currentOrganization?.id && currentProduct?.id && currentRepository?.id
       ? `organizations/${currentOrganization.id}/products/${currentProduct.id}/repositories/${currentRepository.id}/${type}/${value}/`
       : null,
-    async (url) => {
+    (url) => {
       setLoading();
-      try {
-        const response = await api.get(url);
-        if (addCurrentGoal && currentOrganization?.id && currentProduct?.id) {
-          await attachGoalToResults(
-            currentOrganization.id,
-            currentProduct.id,
-            response.data?.results
-          );
-        }
-        return response.data;
-      } finally {
-        setIsLoadingEnd();
-      }
+
+      return api
+        .get(url)
+        .then(async (response) => {
+          if (addCurrentGoal && currentOrganization?.id && currentProduct?.id) {
+            try {
+              const { data: currentGoal } = await productQuery.getCurrentReleaseGoal(
+                currentOrganization.id,
+                currentProduct.id
+              );
+              response.data?.results?.forEach((res: Historical) => {
+                res.goal = currentGoal.data[res.key];
+              });
+            } catch {
+              response.data?.results?.forEach((res: Historical) => {
+                res.goal = undefined;
+              });
+            }
+          }
+
+          return response.data;
+        })
+        .finally(() => {
+          setIsLoadingEnd();
+        });
     },
     {
       revalidateOnFocus: false,
@@ -100,14 +70,26 @@ export function useRequestValues({
     }
   );
 
+
   let returnData = _.cloneDeep(data?.results ?? []);
 
   if (addHistoricalTSQMI && !_.isEmpty(returnData) && !_.find(returnData, { key: 'TSQMI' })) {
     returnData.push(historicalTSQMI);
   }
 
-  if (returnData?.length) {
-    returnData = filterByCollectionSource(returnData, collectionSource);
+  if (returnData?.length && collectionSource) {
+
+    if (collectionSource === 'github') {
+      returnData = returnData.filter(
+        (res: any) => (res.key === 'total_builds' || res.key === 'sum_ci_feedback_times' || res.key === 'resolved_issues' || res.key === 'total_issues') || res.key === 'ci_feedback_time' || res.key === 'team_throughput'
+      );
+    }
+
+    if (collectionSource === 'sonarqube') {
+      returnData = returnData.filter(
+        (res: any) => res.key !== 'total_builds' && res.key !== 'sum_ci_feedback_times' && res.key !== 'resolved_issues' && res.key !== 'total_issues' && res.key !== 'ci_feedback_time' && res.key !== 'team_throughput'
+      );
+    }
   }
 
   console.log(collectionSource, returnData);

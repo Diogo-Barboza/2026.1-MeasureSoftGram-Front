@@ -68,7 +68,7 @@ export function useRequestInfinite<Data = unknown, Error = unknown>(
   );
 
   const isReachingEnd = useMemo(
-    () => isEmpty || Boolean(response && get(response, `[${response.length - 1}].${path}`)?.length < limit),
+    () => isEmpty || Boolean(response && get(response, `[${response?.length - 1}].${path}`)?.length < limit),
     [isEmpty, limit, path, response]
   );
 

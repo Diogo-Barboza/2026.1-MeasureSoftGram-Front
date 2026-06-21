@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import formatRepositoriesTsqmiHistory from '@utils/formatRepositoriesTsqmiHistory';
+import GraphicRepositoriesTsqmiHistory from '../GraphicRepositoriesTsqmiHistory';
 import { HistoryDateRange } from '@customTypes/product';
 import { CSVFilter } from '@utils/convertToCsv';
-import GraphicRepositoriesTsqmiHistory from '../GraphicRepositoriesTsqmiHistory';
 
 const dateRange: HistoryDateRange = {
   startDate: null,

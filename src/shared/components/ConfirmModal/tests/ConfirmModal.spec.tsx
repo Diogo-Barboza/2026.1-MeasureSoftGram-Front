@@ -1,16 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import ConfirmModal from '../ConfirmModal';
+import '@testing-library/jest-dom';
+import { useTranslation } from 'react-i18next';
 
 describe('ConfirmModal Component', () => {
   const mockSetIsModalOpen = jest.fn();
   const mockHandleConfirmBtnClick = jest.fn();
   const mockHandleDismissBtnClick = jest.fn();
 
-  const proceedMessage = 'Are you sure you want to proceed?';
-
   const defaultProps = {
-    text: proceedMessage,
+    text: 'Are you sure you want to proceed?',
     btnConfirmText: 'Confirm',
     btnDismissText: 'Cancel',
     isModalOpen: true,
@@ -21,12 +20,12 @@ describe('ConfirmModal Component', () => {
 
   it('should render the modal when isModalOpen is true', () => {
     render(<ConfirmModal {...defaultProps} />);
-    expect(screen.getByText(proceedMessage)).toBeInTheDocument();
+    expect(screen.getByText('Are you sure you want to proceed?')).toBeInTheDocument();
   });
 
   it('should not render the modal when isModalOpen is false', () => {
     render(<ConfirmModal {...defaultProps} isModalOpen={false} />);
-    expect(screen.queryByText(proceedMessage)).not.toBeInTheDocument();
+    expect(screen.queryByText('Are you sure you want to proceed?')).not.toBeInTheDocument();
   });
 
   it('should call handleConfirmBtnClick when the confirm button is clicked', () => {

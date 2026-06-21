@@ -44,9 +44,9 @@ function convertToCsv(data: any[], filter: CSVFilter): string {
         history_created_at: item.created_at
       }));
 
-  const filteredCsvData = csvData.filter((csvItem) => {
-    if (filter.dateRange !== undefined)
-      return hasValidDate(filter.dateRange, new Date(csvItem.history_created_at).getTime());
+  const filteredCsvData = csvData.filter((data) => {
+    if (filter.dateRange != undefined)
+      return hasValidDate(filter.dateRange, new Date(data.history_created_at).getTime());
     return true;
   });
 

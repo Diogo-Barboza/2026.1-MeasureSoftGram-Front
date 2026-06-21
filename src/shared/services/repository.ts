@@ -1,9 +1,6 @@
-/* eslint-disable class-methods-use-this */
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { getAccessToken } from '@services/Auth';
 import api from './api';
-
-const ACCESS_TOKEN_NOT_FOUND = 'Access token not found.';
 
 interface RepositoryFormData {
   name: string;
@@ -46,7 +43,7 @@ class Repository {
     try {
       const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
       if (!headers) {
-        throw new Error(ACCESS_TOKEN_NOT_FOUND);
+        throw new Error('Access token not found.');
       }
 
       const response = await api.post(
@@ -74,7 +71,7 @@ class Repository {
     try {
       const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
       if (!headers) {
-        throw new Error(ACCESS_TOKEN_NOT_FOUND);
+        throw new Error('Access token not found.');
       }
 
       const response = await api.put(
@@ -95,7 +92,7 @@ class Repository {
     try {
       const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
       if (!headers) {
-        throw new Error(ACCESS_TOKEN_NOT_FOUND);
+        throw new Error('Access token not found.');
       }
       const response = await api.delete(
         `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
@@ -112,7 +109,7 @@ class Repository {
       const { organizationId, entity, productId, repositoryId } = props;
       const headers: AxiosRequestConfig['headers'] = await this.getAuthHeaders();
       if (!headers) {
-        throw new Error(ACCESS_TOKEN_NOT_FOUND);
+        throw new Error('Access token not found.');
       }
       const response = await api.get(
         `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`,

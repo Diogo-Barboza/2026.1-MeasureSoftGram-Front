@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, act, waitFor } from '@testing-library/react';
+import { ProductProvider, useProductContext } from '../ProductProvider';
 import { Product } from '@customTypes/product';
 import { productQuery } from '@services/product';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
-import { ProductProvider, useProductContext } from '../ProductProvider';
 
 // Mocks necessários
 jest.mock('@contexts/OrganizationProvider', () => ({
@@ -37,7 +37,7 @@ const TestComponent = () => {
   return (
     <div>
       <span data-testid="currentProduct">{currentProduct?.name}</span>
-      <button type="button" onClick={() => setCurrentProduct(mockProduct)}>Set Product</button>
+      <button onClick={() => setCurrentProduct(mockProduct)}>Set Product</button>
       {/* Outras interações conforme necessário */}
     </div>
   );
@@ -49,9 +49,9 @@ const TestComponents = () => {
   return (
     <div>
       {productsList && productsList.map((product, index) => (
-        <div key={product.id} data-testid={`product-${index}`}>{product.name}</div>
+        <div key={index} data-testid={`product-${index}`}>{product.name}</div>
       ))}
-      <button type="button" onClick={() => updateProductList(mockProducts)}>Update Products</button>
+      <button onClick={() => updateProductList(mockProducts)}>Update Products</button>
     </div>
   );
 };
@@ -105,8 +105,8 @@ describe('ProductProvider', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
     render(
-      <ProductProvider>
-        <div />
+      <ProductProvider children={undefined}>
+        {/* Elementos filhos, se necessário */}
       </ProductProvider>
     );
 
@@ -121,8 +121,8 @@ describe('ProductProvider', () => {
     });
 
     render(
-      <ProductProvider>
-        <div />
+      <ProductProvider children={undefined}>
+        {/* Elementos filhos, se necessário */}
       </ProductProvider>
     );
 

@@ -4,7 +4,7 @@ import { AuthProvider } from '@contexts/Auth';
 import mockRouter from 'next-router-mock';
 import Auth from '../index.page';
 
-jest.mock('next/router', () => mockRouter);
+jest.mock('next/router', () => require('next-router-mock'));
 
 describe('Auth', () => {
   const originalEnv = process.env;

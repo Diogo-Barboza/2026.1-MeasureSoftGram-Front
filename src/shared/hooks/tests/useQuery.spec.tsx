@@ -1,10 +1,10 @@
 import { renderHook } from '@testing-library/react';
+import { useQuery } from '../useQuery';
 import { useProductContext } from '@contexts/ProductProvider';
 import { useRepositoryContext } from '@contexts/RepositoryProvider';
 import { productQuery } from '@services/product';
 import { repository } from '@services/repository';
 import { useRouter } from 'next/router';
-import { useQuery } from '../useQuery';
 
 // Mocks dos contextos e serviços
 jest.mock('@contexts/ProductProvider');

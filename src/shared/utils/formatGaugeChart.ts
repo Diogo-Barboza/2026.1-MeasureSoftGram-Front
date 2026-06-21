@@ -1,5 +1,5 @@
-import { Historical } from '@customTypes/repository';
 import convertToCsv from './convertToCsv';
+import { Historical } from '@customTypes/repository';
 
 export interface FormatGaugeChartType {
   historical?: Historical[];
@@ -113,7 +113,7 @@ const formatGaugeChart = ({ historical, title, isEmpty, redLimit, yellowLimit }:
           fontWeight: 'bold',
           distance: -45,
           rotate: 'tangential',
-          formatter (value: any) {
+          formatter: function (value: any) {
             if (value === 0.5) {
               return item.name;
             }

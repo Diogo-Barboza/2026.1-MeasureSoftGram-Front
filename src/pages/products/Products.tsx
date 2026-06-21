@@ -42,6 +42,7 @@ interface ProductType {
 const Products: NextPageWithLayout = () => {
   useRequireAuth();
   const { t: tp } = useTranslation('product');
+  const { t: to } = useTranslation('organization');
   const router = useRouter();
 
   const { organizationList, setCurrentOrganizations, fetchOrganizations } = useOrganizationContext();
@@ -57,6 +58,7 @@ const Products: NextPageWithLayout = () => {
 
   const [gitHubRepos, setGitHubRepos] = useState<GitHubRepo[]>([]);
   const [importedRepoUrls, setImportedRepoUrls] = useState<string[]>([]);
+  const [importedRepos, setImportedRepos] = useState<any[]>([]);
 
   const [loadingOrgs, setLoadingOrgs] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(false);
@@ -81,7 +83,6 @@ const Products: NextPageWithLayout = () => {
         toast.error("Erro ao buscar organizações do GitHub.");
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(error);
       toast.error("Erro ao carregar organizações.");
     } finally {
@@ -96,6 +97,7 @@ const Products: NextPageWithLayout = () => {
     setProducts([]);
     setGitHubRepos([]);
     setImportedRepoUrls([]);
+    setImportedRepos([]);
     try {
       // 1. Fetch backend organizations to check if it's already imported
       const backendOrgsResult = await organizationQuery.getAllOrganization();
@@ -160,6 +162,7 @@ const Products: NextPageWithLayout = () => {
     try {
       const res = await productQuery.getAllRepositories(orgDbId, productId);
       const repoList = res?.data?.results || res?.data || [];
+      setImportedRepos(repoList);
       const urls = repoList.map((r: any) => r.url);
       setImportedRepoUrls(urls);
       if (lastLoadedProductIdRef.current !== productId) {
@@ -261,7 +264,8 @@ const Products: NextPageWithLayout = () => {
     }
   }, [selectedProductId, products]);
 
-  const filteredRepos = useMemo(() => gitHubRepos.filter((repo) => {
+  const filteredRepos = useMemo(() => {
+    return gitHubRepos.filter((repo) => {
       const isAlreadyImported = importedRepoUrls.some(
         url => url === repo.url || url.toLowerCase() === repo.url.toLowerCase()
       );
@@ -269,7 +273,8 @@ const Products: NextPageWithLayout = () => {
       const matchesTab =
         (tabValue === 0 && isAlreadyImported) || tabValue === 1 || (tabValue === 2 && !isAlreadyImported);
       return matchesSearch && matchesTab;
-    }), [gitHubRepos, importedRepoUrls, search, tabValue]);
+    });
+  }, [gitHubRepos, importedRepoUrls, search, tabValue]);
 
 
 
