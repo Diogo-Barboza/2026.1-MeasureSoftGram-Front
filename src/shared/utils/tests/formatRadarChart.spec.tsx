@@ -2,6 +2,8 @@ import { Historical } from '@customTypes/repository';
 import formatRadarChart, { FormatRadarChartType } from '@utils/formatRadarChart';
 
 describe('formatGaugeChart', () => {
+  const testTitle = 'title-test';
+
   it('should return an object with the correct format', () => {
     const historical: Historical[] = [
       {
@@ -19,7 +21,7 @@ describe('formatGaugeChart', () => {
 
     const params: FormatRadarChartType = {
       historical,
-      title: 'title-test',
+      title: testTitle,
       isEmpty: false
     }
 
@@ -31,7 +33,7 @@ describe('formatGaugeChart', () => {
   it('should return an default object when historical param undefined', () => {
     const params: FormatRadarChartType = {
       historical: undefined,
-      title: 'title-test',
+      title: testTitle,
       isEmpty: false
     }
 
@@ -43,7 +45,7 @@ describe('formatGaugeChart', () => {
   it('should return an default object when historical param is empty', () => {
     const params: FormatRadarChartType = {
       historical: [],
-      title: 'title-test',
+      title: testTitle,
       isEmpty: false
     }
 

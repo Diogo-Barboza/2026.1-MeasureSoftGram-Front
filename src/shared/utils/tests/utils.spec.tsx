@@ -1,12 +1,14 @@
 import { MeasuresHistoryResult, RepositoriesTsqmiHistory } from '@customTypes/product';
 import capitalizer from '@utils/capitalizer';
-import getCharacteristicsWithBalanceMatrix from '@utils/getCharacteristicsWithBalanceMatrix';
 import formatEntitiesFilter, { FormatEntitiesFilterType } from '@utils/formatEntitiesFilter';
 import formatMeasuresHistoryChartData from '@utils/formatMeasuresHistory';
 import formatMsgramChart from '@utils/formatMsgramChart';
 import formatRepositoriesTsqmiHistory from '@utils/formatRepositoriesTsqmiHistory';
 import { getPathId } from '@utils/pathDestructer';
 import undelineRemover from '@utils/undelineRemover';
+
+const MOCK_CREATED_AT = '2022-09-05T17:33:14';
+const MEASURE_TEST_NAME = 'Medida Teste';
 
 const LOWER_STRING_WITHOUT_UNDERLINE = 'test utils';
 const LOWER_STRING = 'test_utils';
@@ -15,7 +17,7 @@ const TSQMI_HISTORY_MOCKED: RepositoriesTsqmiHistory = {
   count: 1,
   results: [
     {
-      history: [{ created_at: '2022-09-05T17:33:14', value: 50, id: 1 }],
+      history: [{ created_at: MOCK_CREATED_AT, value: 50, id: 1 }],
       id: 1,
       url: 'URL',
       name: 'TSQMI_NAME',
@@ -56,52 +58,12 @@ const FILTER_CONST: FormatEntitiesFilterType = [
   }
 ];
 
-const CHARACTERISTICS_HISTORY = [
-  {
-    id: 1,
-    key: 'TSQMI',
-    name: 'Name',
-    history: [{ created_at: '2022-09-05T17:33:14', id: 1, value: 50 }]
-  },
-  {
-    id: 2,
-    key: 'Teste1',
-    name: 'Name',
-    history: [{ created_at: '2022-09-05T17:33:14', id: 1, value: 50 }]
-  },
-  {
-    id: 3,
-    key: 'Teste2',
-    name: 'Name',
-    history: [{ created_at: '2022-09-05T17:33:14', id: 1, value: 50 }]
-  }
-];
-
-const CHARACTERISTIC_EXPECTED = {
-  dataZoom: [
-    { end: 200, start: 0, type: 'inside' },
-    { end: 200, start: 0 }
-  ],
-  grid: { bottom: '17%', containLabel: true, left: '3%', right: '4%' },
-  legend: { data: ['Name', null, 'Name'] },
-  series: [
-    { data: [{ itemStyle: { color: null }, value: '50.000' }], lineStyle: { width: 5 }, name: 'Name', type: 'line' },
-    { data: false, lineStyle: { width: 2 }, name: 'Name', type: 'line' },
-    { data: [{ itemStyle: { color: null }, value: '50.000' }], lineStyle: { width: 2 }, name: 'Name', type: 'line' }
-  ],
-  title: { text: undefined },
-  toolbox: { feature: { saveAsImage: {} }, show: true },
-  tooltip: { trigger: 'axis' },
-  xAxis: { boundaryGap: false, data: ['05/09/2022'], type: 'category' },
-  yAxis: { minInterval: 0.1, scale: true, type: 'value' }
-};
-
 const MEASURE_MOCKED: MeasuresHistoryResult = {
   description: 'teste',
-  history: [{ created_at: '2022-09-05T17:33:14', value: 50, measure_id: 1, id: 1 }],
+  history: [{ created_at: MOCK_CREATED_AT, value: 50, measure_id: 1, id: 1 }],
   id: 1,
   key: 'Teste',
-  name: 'Medida Teste'
+  name: MEASURE_TEST_NAME
 };
 
 const MEASURE_GRAPH = {
@@ -110,8 +72,8 @@ const MEASURE_GRAPH = {
     { end: 0, start: -19 }
   ],
   grid: { bottom: '12%', containLabel: true, left: '3%', right: '4%', top: '20%' },
-  legend: { data: ['Medida Teste'], top: 40 },
-  series: [{ animationDuration: 1200, data: [50], name: 'Medida Teste', type: 'line' }],
+  legend: { data: [MEASURE_TEST_NAME], top: 40 },
+  series: [{ animationDuration: 1200, data: [50], name: MEASURE_TEST_NAME, type: 'line' }],
   title: { left: 'center', text: 'Histórico de Medidas' },
   toolbox: { feature: { dataZoom: { yAxisIndex: 'none' }, restore: {}, saveAsImage: {} } },
   tooltip: { trigger: 'axis' },

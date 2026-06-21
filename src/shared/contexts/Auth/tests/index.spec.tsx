@@ -22,11 +22,9 @@ jest.mock('@services/Auth', () => ({
 }));
 
 // Mock ConfirmModal
-jest.mock('@components/ConfirmModal/ConfirmModal', () => {
-  return function MockConfirmModal() {
+jest.mock('@components/ConfirmModal/ConfirmModal', () => function MockConfirmModal() {
     return <div data-testid="confirm-modal" />;
-  };
-});
+  });
 
 describe('AuthProvider', () => {
   beforeEach(() => {

@@ -6,7 +6,9 @@ import {
   signUp,
   signOut,
   getUserInfo,
-  getAccessToken
+  getAccessToken,
+  getGithubAuthUrl,
+  getGithubAuthUrlToRepositoriesPage
 } from '../index'; // Ajuste o caminho conforme necessário
 
 
@@ -19,6 +21,7 @@ jest.mock('@services/api', () => ({
 
 
 describe('Auth Service', () => {
+  const networkErrorMsg = 'Network Error';
 
   // Teste para signInCredentials
   it('successfully signs in with credentials', async () => {
@@ -36,7 +39,7 @@ describe('Auth Service', () => {
   });
 
   it('handles sign in with credentials error', async () => {
-    const error = new Error('Network Error');
+    const error = new Error(networkErrorMsg);
 
     // Implementação manual para simular uma falha
     (api.post as jest.Mock).mockImplementation(() => Promise.reject(error));
@@ -65,7 +68,7 @@ describe('Auth Service', () => {
   });
 
   it('handles sign in with GitHub error', async () => {
-    const error = new Error('Network Error');
+    const error = new Error(networkErrorMsg);
     const code = 'githubCode';
 
     (api.post as jest.Mock).mockImplementation(() => Promise.reject(error));
@@ -97,7 +100,7 @@ describe('Auth Service', () => {
   });
 
   it('handles sign up error', async () => {
-    const error = new Error('Network Error');
+    const error = new Error(networkErrorMsg);
     const data = {
       username: 'teste123',
       first_name: 'teste',
@@ -128,7 +131,7 @@ describe('Auth Service', () => {
   });
 
   it('handles sign out error', async () => {
-    const error = new Error('Network Error');
+    const error = new Error(networkErrorMsg);
 
     (api.delete as jest.Mock).mockImplementation(() => Promise.reject(error));
 
@@ -151,7 +154,7 @@ describe('Auth Service', () => {
   });
 
   it('handles get user info error', async () => {
-    const error = new Error('Network Error');
+    const error = new Error(networkErrorMsg);
 
     (api.get as jest.Mock).mockImplementation(() => Promise.reject(error));
 
@@ -174,7 +177,7 @@ describe('Auth Service', () => {
   });
 
   it('handles get access token error', async () => {
-    const error = new Error('Network Error');
+    const error = new Error(networkErrorMsg);
 
     (api.get as jest.Mock).mockImplementation(() => Promise.reject(error));
 
@@ -186,7 +189,6 @@ describe('Auth Service', () => {
   // Testes para getGithubAuthUrl
   describe('getGithubAuthUrl', () => {
     it('should return a GitHub OAuth URL with client_id, redirect_uri and scope', () => {
-      const { getGithubAuthUrl } = require('../index');
       const url = getGithubAuthUrl();
 
       expect(url).toContain('https://github.com/login/oauth/authorize');
@@ -198,7 +200,6 @@ describe('Auth Service', () => {
   // Testes para getGithubAuthUrlToRepositoriesPage
   describe('getGithubAuthUrlToRepositoriesPage', () => {
     it('should return a GitHub OAuth URL with state parameter and scope', () => {
-      const { getGithubAuthUrlToRepositoriesPage } = require('../index');
       const pathName = '/products/1-test/repositories/2-repo';
       const url = getGithubAuthUrlToRepositoriesPage(pathName);
 

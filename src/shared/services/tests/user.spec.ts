@@ -1,6 +1,6 @@
+import * as authService from '@services/Auth';
 import api from '../api';
 import * as userService from '../user';
-import * as authService from '@services/Auth';
 
 jest.mock('../api');
 

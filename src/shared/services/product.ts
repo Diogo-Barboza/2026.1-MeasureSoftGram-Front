@@ -46,10 +46,8 @@ class ProductQuery {
       const error = err as AxiosError;
 
       const responseData = error.response?.data as { name?: string[]; key?: string[] };
-      if (error.response && error.response.status === 400) {
-        if (responseData.name && responseData.name[0] === 'Product with this name already exists.') {
-          return { type: 'error', error: new Error('Já existe um produto com este nome.') };
-        }
+      if (error.response && error.response.status === 400 && responseData.name && responseData.name[0] === 'Product with this name already exists.') {
+        return { type: 'error', error: new Error('Já existe um produto com este nome.') };
       }
 
       return { type: 'error', error: new Error('Erro ao atualizar o produto.') };
@@ -166,10 +164,8 @@ class ProductQuery {
       const error = err as AxiosError;
 
       const responseData = error.response?.data as { name?: string[]; key?: string[] };
-      if (error.response && error.response.status === 400) {
-        if (responseData.name && responseData.name[0] === 'Product with this name already exists.') {
-          return { type: 'error', error: new Error('Já existe um produto com este nome.') };
-        }
+      if (error.response && error.response.status === 400 && responseData.name && responseData.name[0] === 'Product with this name already exists.') {
+        return { type: 'error', error: new Error('Já existe um produto com este nome.') };
       }
 
       return { type: 'error', error: new Error('Erro ao criar o produto.') };

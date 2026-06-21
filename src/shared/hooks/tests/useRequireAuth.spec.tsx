@@ -2,7 +2,7 @@ import { useAuth } from '@contexts/Auth';
 import { toast } from 'react-toastify';
 import useRequireAuth from '@hooks/useRequireAuth';
 import { useRouter } from 'next/router';
-import { act, renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 
 jest.mock('react-toastify', () => ({
   toast: {
@@ -11,7 +11,6 @@ jest.mock('react-toastify', () => ({
 }));
 
 const mockPush = jest.fn();
-let mockPathname = '/';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
@@ -37,7 +36,7 @@ describe('useRequireAuth', () => {
   });
 
   describe('when user is authorized', () => {
-    let mockSession = {
+    const mockSession = {
       user: {
         id: 1,
         name: 'Fake name',
@@ -45,91 +44,107 @@ describe('useRequireAuth', () => {
       },
     };
 
-    const testCases = [
-      { pathname: '/products', loading: 'loaded', redirect: false, displayToast: false },
-      { pathname: '/products', loading: 'loading', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loaded', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loading', redirect: false, displayToast: false },
-    ];
-
-    testCases.forEach(({ pathname, loading, redirect, displayToast }) => {
-      describe(`when pathname is ${pathname} and loading is ${loading}`, () => {
-        beforeEach(() => {
-          mockUseAuth.mockReturnValueOnce({
-            session: mockSession,
-            loading,
-          });
-          mockUseRouter.mockReturnValueOnce({
-            push: (path: string) => mockPush(path),
-            pathname,
-          });
-
-          const { result } = renderHook(() => useRequireAuth());
-    
-          act(() => {
-            result.current;
-          });
-        });
-
-        test(`does not display toast message`, () => {
-          expect(toast.error).toHaveBeenCalledTimes(displayToast ? 1 : 0);
-        });
-
-        test(`does not redirect`, () => {
-          expect(mockPush).toHaveBeenCalledTimes(redirect ? 1 : 0);
-        });
+    const setupAuthorizedTest = ({ pathname, loading }: any) => {
+      mockUseAuth.mockReturnValueOnce({
+        session: mockSession,
+        loading,
       });
+      mockUseRouter.mockReturnValueOnce({
+        push: (path: string) => mockPush(path),
+        pathname,
+      });
+
+      return renderHook(() => useRequireAuth());
+    };
+
+    it('should not redirect or display toast for authorized user on /products when loaded', () => {
+      const { result } = setupAuthorizedTest({ pathname: '/products', loading: 'loaded' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(0);
+      expect(mockPush).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not redirect or display toast for authorized user on /products when loading', () => {
+      const { result } = setupAuthorizedTest({ pathname: '/products', loading: 'loading' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(0);
+      expect(mockPush).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not redirect or display toast for authorized user on / when loaded', () => {
+      const { result } = setupAuthorizedTest({ pathname: '/', loading: 'loaded' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(0);
+      expect(mockPush).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not redirect or display toast for authorized user on / when loading', () => {
+      const { result } = setupAuthorizedTest({ pathname: '/', loading: 'loading' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(0);
+      expect(mockPush).toHaveBeenCalledTimes(0);
     });
   });
 
   describe('when user is not authorized', () => {
-    let mockSession:any = null;
+    const mockSession: any = null;
 
-    const testCases = [
-      { pathname: '/products', loading: 'loaded', redirect: true, displayToast: true },
-      { pathname: '/products', loading: 'loading', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loaded', redirect: false, displayToast: false },
-      { pathname: '/', loading: 'loading', redirect: false, displayToast: false },
-      { pathname: '/productstest', loading: 'loaded', redirect: false, displayToast: true, redirectError: true },
-    ];
-
-    testCases.forEach(({ pathname, loading, redirect, displayToast, redirectError }) => {
-      describe(`when pathname is ${pathname} and loading is ${loading}`, () => {
-        beforeEach(() => {
-          mockUseAuth.mockReturnValueOnce({
-            session: mockSession,
-            loading,
-          });
-          mockUseRouter.mockReturnValueOnce({
-            push: (path: string) => {
-              if (redirectError) {
-                throw new Error('Redirect error');
-              } else {
-                mockPush(path);
-              }
-            },
-            pathname,
-          });
-
-          const { result } = renderHook(() => useRequireAuth());
-    
-          act(() => {
-            result.current;
-          });
-        });
-
-        test(`displays toast message`, () => {
-          expect(toast.error).toHaveBeenCalledTimes(displayToast ? 1 : 0);
-        });
-
-        test(`redirects`, () => {
-          expect(mockPush).toHaveBeenCalledTimes(redirect ? 1 : 0);
-        });
-
-        test('logs the error to console', () => {
-          expect(mockConsoleError).toHaveBeenCalledTimes(redirectError ? 1 : 0);
-        });
+    const setupUnauthorizedTest = ({ pathname, loading, redirectError }: any) => {
+      mockUseAuth.mockReturnValueOnce({
+        session: mockSession,
+        loading,
       });
+      mockUseRouter.mockReturnValueOnce({
+        push: (path: string) => {
+          if (redirectError) {
+            throw new Error('Redirect error');
+          }
+          mockPush(path);
+        },
+        pathname,
+      });
+
+      return renderHook(() => useRequireAuth());
+    };
+
+    it('should redirect and display toast for unauthorized user on /products when loaded', () => {
+      const { result } = setupUnauthorizedTest({ pathname: '/products', loading: 'loaded' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledTimes(1);
+      expect(mockConsoleError).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not redirect or display toast for unauthorized user on /products when loading', () => {
+      const { result } = setupUnauthorizedTest({ pathname: '/products', loading: 'loading' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(0);
+      expect(mockPush).toHaveBeenCalledTimes(0);
+      expect(mockConsoleError).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not redirect or display toast for unauthorized user on / when loaded', () => {
+      const { result } = setupUnauthorizedTest({ pathname: '/', loading: 'loaded' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(0);
+      expect(mockPush).toHaveBeenCalledTimes(0);
+      expect(mockConsoleError).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not redirect or display toast for unauthorized user on / when loading', () => {
+      const { result } = setupUnauthorizedTest({ pathname: '/', loading: 'loading' });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(0);
+      expect(mockPush).toHaveBeenCalledTimes(0);
+      expect(mockConsoleError).toHaveBeenCalledTimes(0);
+    });
+
+    it('should display toast and log redirect error on /productstest when loaded', () => {
+      const { result } = setupUnauthorizedTest({ pathname: '/productstest', loading: 'loaded', redirectError: true });
+      expect(result.current).toBeDefined();
+      expect(toast.error).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledTimes(0);
+      expect(mockConsoleError).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -11,6 +11,7 @@ api.interceptors.request.use(
       const token = localStorage.getItem('token');
 
       if (token && config?.headers) {
+        // eslint-disable-next-line no-param-reassign
         config.headers.Authorization = token ? `Token ${JSON.parse(token)}` : '';
       }
     }
@@ -20,20 +21,16 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        // Limpa todos os dados de autenticação armazenados
-        localStorage.removeItem('token');
-        localStorage.removeItem('session');
-        localStorage.removeItem('provider');
-        localStorage.removeItem('login_timestamp');
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      // Limpa todos os dados de autenticação armazenados
+      localStorage.removeItem('token');
+      localStorage.removeItem('session');
+      localStorage.removeItem('provider');
+      localStorage.removeItem('login_timestamp');
 
-        window.location.href = '/auth';
-      }
+      window.location.href = '/auth';
     }
     return Promise.reject(error);
   }

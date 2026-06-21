@@ -1,19 +1,17 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { toast } from 'react-toastify';
 import ProductsCreation from '../ProductsCreation';
 
 const mockPush = jest.fn();
 const mockUseRouter = {
-  query: {
-    id_organization: ['123'],
-    id_product: '',
-  },
   push: mockPush,
+  query: {} as any,
 };
 
 jest.mock('next/router', () => ({
-  useRouter: jest.fn(() => mockUseRouter),
+  useRouter: () => mockUseRouter,
 }));
 
 jest.mock('@contexts/OrganizationProvider', () => ({
@@ -43,11 +41,16 @@ jest.mock('react-toastify', () => ({
 
 describe('ProductsCreation Component', () => {
   const originalLocation = window.location;
+  const NAME_INPUT = 'name-input';
+  const PROD_NOVO = 'Produto Novo';
+  const TOAST_NAME_EXISTS = 'toast.name-exists';
+  const PROD_EDITANDO = 'Produto Editando';
+  const ORG_123 = '123';
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseRouter.query = {
-      id_organization: ['123'],
+      id_organization: [ORG_123],
       id_product: '',
     };
     delete (window as any).location;
@@ -60,7 +63,7 @@ describe('ProductsCreation Component', () => {
 
   it('renders the "Nome" field', () => {
     render(<ProductsCreation />);
-    const nameField = screen.getByTestId('name-input');
+    const nameField = screen.getByTestId(NAME_INPUT);
     expect(nameField).toBeDefined();
   });
 
@@ -85,10 +88,10 @@ describe('ProductsCreation Component', () => {
     mockCreateProduct.mockResolvedValue({ type: 'success' });
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
+    const nameInput = screen.getByTestId(NAME_INPUT).querySelector('input')!;
     const descInput = screen.getByTestId('description-input').querySelector('textarea')!;
 
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    fireEvent.change(nameInput, { target: { value: PROD_NOVO } });
     fireEvent.change(descInput, { target: { value: 'Desc Novo' } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
@@ -96,7 +99,7 @@ describe('ProductsCreation Component', () => {
 
     await waitFor(() => {
       expect(mockCreateProduct).toHaveBeenCalledWith({
-        name: 'Produto Novo',
+        name: PROD_NOVO,
         description: 'Desc Novo',
         organizationId: 123,
       });
@@ -109,18 +112,18 @@ describe('ProductsCreation Component', () => {
   it('deve exibir toast.error se a criação de produto falhar com erro com mensagem ja existente', async () => {
     mockCreateProduct.mockResolvedValue({
       type: 'error',
-      error: { message: 'toast.name-exists' },
+      error: { message: TOAST_NAME_EXISTS },
     });
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    const nameInput = screen.getByTestId(NAME_INPUT).querySelector('input')!;
+    fireEvent.change(nameInput, { target: { value: PROD_NOVO } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('toast.name-exists');
+      expect(toast.error).toHaveBeenCalledWith(TOAST_NAME_EXISTS);
     });
   });
 
@@ -131,8 +134,8 @@ describe('ProductsCreation Component', () => {
     });
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    const nameInput = screen.getByTestId(NAME_INPUT).querySelector('input')!;
+    fireEvent.change(nameInput, { target: { value: PROD_NOVO } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
     fireEvent.click(submitButton);
@@ -147,8 +150,8 @@ describe('ProductsCreation Component', () => {
     const spy = jest.spyOn(console, 'log').mockImplementation(() => {});
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    const nameInput = screen.getByTestId(NAME_INPUT).querySelector('input')!;
+    fireEvent.change(nameInput, { target: { value: PROD_NOVO } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
     fireEvent.click(submitButton);
@@ -161,13 +164,13 @@ describe('ProductsCreation Component', () => {
 
   it('deve rodar em modo de edição se id_product estiver na query', async () => {
     mockUseRouter.query = {
-      id_organization: ['123'],
+      id_organization: [ORG_123],
       id_product: '456',
     };
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
+        name: PROD_EDITANDO,
         description: 'Desc Editando',
         organizationId: 123,
       },
@@ -175,16 +178,17 @@ describe('ProductsCreation Component', () => {
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(PROD_EDITANDO);
 
-    expect(mockGetProductById).toHaveBeenCalledWith(['123'], '456');
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    expect(nameInput.value).toBe('Produto Editando');
+    const nameInput = screen.getByTestId(NAME_INPUT).querySelector('input')!;
+    expect(nameInput.value).toBe(PROD_EDITANDO);
+
+    expect(mockGetProductById).toHaveBeenCalledWith([ORG_123], '456');
   });
 
   it('deve capturar erro no catch se getProductById lançar exceção', async () => {
     mockUseRouter.query = {
-      id_organization: ['123'],
+      id_organization: [ORG_123],
       id_product: '456',
     };
     mockGetProductById.mockRejectedValue(new Error('Fetch Error'));
@@ -200,13 +204,13 @@ describe('ProductsCreation Component', () => {
 
   it('deve atualizar o produto com sucesso em modo de edição', async () => {
     mockUseRouter.query = {
-      id_organization: ['123'],
+      id_organization: [ORG_123],
       id_product: '456',
     };
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
+        name: PROD_EDITANDO,
         description: 'Desc Editando',
         organizationId: 123,
       },
@@ -215,14 +219,14 @@ describe('ProductsCreation Component', () => {
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(PROD_EDITANDO);
 
     const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(mockUpdateProduct).toHaveBeenCalledWith('456', {
-        name: 'Produto Editando',
+        name: PROD_EDITANDO,
         description: 'Desc Editando',
         organizationId: 123,
       });
@@ -232,43 +236,43 @@ describe('ProductsCreation Component', () => {
 
   it('deve tratar erro de edição com erro com mensagem ja existente', async () => {
     mockUseRouter.query = {
-      id_organization: ['123'],
+      id_organization: [ORG_123],
       id_product: '456',
     };
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
+        name: PROD_EDITANDO,
         description: 'Desc Editando',
         organizationId: 123,
       },
     });
     mockUpdateProduct.mockResolvedValue({
       type: 'error',
-      error: { message: 'toast.name-exists' },
+      error: { message: TOAST_NAME_EXISTS },
     });
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(PROD_EDITANDO);
 
     const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('toast.name-exists');
+      expect(toast.error).toHaveBeenCalledWith(TOAST_NAME_EXISTS);
     });
   });
 
   it('deve tratar erro de edição com outro erro', async () => {
     mockUseRouter.query = {
-      id_organization: ['123'],
+      id_organization: [ORG_123],
       id_product: '456',
     };
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
+        name: PROD_EDITANDO,
         description: 'Desc Editando',
         organizationId: 123,
       },
@@ -280,7 +284,7 @@ describe('ProductsCreation Component', () => {
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(PROD_EDITANDO);
 
     const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
@@ -297,6 +301,11 @@ describe('ProductsCreation Component', () => {
 
     const menuItem = await screen.findByRole('option', { name: 'Organization 1' });
     fireEvent.click(menuItem);
+
+    await waitFor(() => {
+      const input = screen.getByTestId('org-input').querySelector('input')!;
+      expect(input.value).toBe('123');
+    });
   });
 
   it('deve voltar para a listagem ao clicar no botão de voltar', () => {

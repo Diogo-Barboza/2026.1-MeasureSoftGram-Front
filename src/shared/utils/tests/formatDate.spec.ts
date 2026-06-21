@@ -1,8 +1,10 @@
 import { formatDate } from '../formatDate';
 
 describe('formatDate util', () => {
+  const testDateString = '2026-05-10T12:00:00Z';
+
   it('deve formatar uma data corretamente no formato longo (default)', () => {
-    const date = new Date('2026-05-10T12:00:00Z');
+    const date = new Date(testDateString);
 
     const formatted = formatDate(date);
     expect(typeof formatted).toBe('string');
@@ -10,7 +12,7 @@ describe('formatDate util', () => {
   });
 
   it('deve formatar uma data corretamente no formato numérico', () => {
-    const date = new Date('2026-05-10T12:00:00Z');
+    const date = new Date(testDateString);
     const formatted = formatDate(date, 'numeric');
 
     // Pode ser algo como "10/05/2026"
@@ -25,7 +27,7 @@ describe('formatDate util', () => {
   });
 
   it('deve lidar com datas em formato string ISO', () => {
-    const stringDate = '2026-05-10T12:00:00Z';
+    const stringDate = testDateString;
     const formatted = formatDate(stringDate);
     expect(typeof formatted).toBe('string');
   });

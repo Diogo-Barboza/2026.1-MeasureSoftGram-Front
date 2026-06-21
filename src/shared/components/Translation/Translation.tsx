@@ -21,10 +21,8 @@ function getImageSrc(key: string) {
   return `/images/png/${key}.png`
 }
 
-const Translation = ({ t, i18n }: TranslationProps) => {
-  return (
-    <>
-      <Box sx={{ display: 'flex' }}>
+const Translation = ({ t, i18n }: TranslationProps) => (
+    <Box sx={{ display: 'flex' }}>
         {languages.map((language) => (
           <Button
             type='button'
@@ -38,8 +36,6 @@ const Translation = ({ t, i18n }: TranslationProps) => {
           </Button>
         ))}
       </Box>
-    </>
   );
-};
 
 export default Translation;

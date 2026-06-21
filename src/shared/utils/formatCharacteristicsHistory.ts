@@ -1,9 +1,9 @@
-import convertToCsv, { CSVFilter } from './convertToCsv';
 import { Historical } from '@customTypes/repository';
 import { format } from 'date-fns';
 import _ from 'lodash';
 import ReactEcharts from 'echarts-for-react';
 import { ComponentRef } from 'react';
+import convertToCsv, { CSVFilter } from './convertToCsv';
 
 export interface FormatCharacteristicsHistoryType {
   historical?: Historical[];
@@ -42,7 +42,9 @@ const formatCharacteristicsHistory = ({
         // @ts-ignore
         const { startValue, endValue } = chart.getOption().dataZoom[0];
         console.log(startValue, endValue);
+        // eslint-disable-next-line no-param-reassign
         csvFilters.dateRange.startDate = indexToTime[startValue];
+        // eslint-disable-next-line no-param-reassign
         csvFilters.dateRange.endDate = indexToTime[endValue];
       }
     }

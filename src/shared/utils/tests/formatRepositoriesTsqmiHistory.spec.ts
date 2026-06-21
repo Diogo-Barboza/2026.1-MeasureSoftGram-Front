@@ -36,18 +36,22 @@ describe('formatRepositoriesTsqmiHistory', () => {
     jest.clearAllMocks();
   });
 
+  const repoBackend = 'Repositório Backend';
+  const repoFrontend = 'Repositório Frontend';
+  const testDateStr = '2026-05-20T10:00:00.000Z';
+
   const mockHistory: any = {
     results: [
       {
-        name: 'Repositório Backend',
+        name: repoBackend,
         history: [
-          { created_at: '2026-05-20T10:00:00.000Z', value: 0.123 },
+          { created_at: testDateStr, value: 0.123 },
           { created_at: '2026-05-21T10:00:00.000Z', value: 0.567 }
         ]
       },
       {
-        name: 'Repositório Frontend',
-        history: [{ created_at: '2026-05-20T10:00:00.000Z', value: 0.999 }]
+        name: repoFrontend,
+        history: [{ created_at: testDateStr, value: 0.999 }]
       }
     ]
   };
@@ -76,12 +80,12 @@ describe('formatRepositoriesTsqmiHistory', () => {
       expect(result.options.title.text).toBe('Comportamento observado do produto');
       expect(result.options.series).toHaveLength(2);
 
-      expect(result.options.series[0].name).toBe('Repositório Backend');
-      expect(result.options.series[0].data[0][0]).toBe(new Date('2026-05-20T10:00:00.000Z').getTime());
+      expect(result.options.series[0].name).toBe(repoBackend);
+      expect(result.options.series[0].data[0][0]).toBe(new Date(testDateStr).getTime());
       expect(result.options.series[0].data[0][1]).toBe(0.12);
       expect(result.options.series[0].data[1][1]).toBe(0.57);
 
-      expect(result.options.series[1].name).toBe('Repositório Frontend');
+      expect(result.options.series[1].name).toBe(repoFrontend);
       expect(result.options.series[1].data[0][1]).toBe(1);
     });
 
@@ -93,10 +97,10 @@ describe('formatRepositoriesTsqmiHistory', () => {
       });
 
       expect(result.options.legend.data).toEqual([
-        'Repositório Backend',
-        'Repositório Backend',
-        'Repositório Frontend',
-        'Repositório Frontend'
+        repoBackend,
+        repoBackend,
+        repoFrontend,
+        repoFrontend
       ]);
     });
 
