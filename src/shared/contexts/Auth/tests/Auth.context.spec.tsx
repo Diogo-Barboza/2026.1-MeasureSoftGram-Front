@@ -268,7 +268,7 @@ describe('AuthContext', () => {
     });
   });
 
-  it('deve realizar o logout com sucesso e redirecionar para /', async () => {
+  it('deve realizar o logout com sucesso e redirecionar para /auth', async () => {
     (signOut as jest.Mock).mockResolvedValue({ type: 'success' });
 
     render(
@@ -283,7 +283,7 @@ describe('AuthContext', () => {
 
     await waitFor(() => {
       expect(signOut).toHaveBeenCalled();
-      expect(mockPush).toHaveBeenCalledWith('/');
+      expect(mockPush).toHaveBeenCalledWith('/auth');
       expect(toast.success).toHaveBeenCalledWith('Volte logo para acompanhar seus produtos!');
     });
   });
@@ -350,7 +350,7 @@ describe('AuthContext', () => {
       await waitFor(() => {
         expect(signOut).toHaveBeenCalled();
         expect(toast.warning).toHaveBeenCalledWith('Sua sessão expirou por segurança (limite de 2h).');
-        expect(mockPush).toHaveBeenCalledWith('/');
+        expect(mockPush).toHaveBeenCalledWith('/auth');
       });
     });
   });
