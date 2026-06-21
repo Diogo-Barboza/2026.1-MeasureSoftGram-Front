@@ -90,6 +90,24 @@ const Products: NextPageWithLayout = () => {
     }
   };
 
+  const getBackendOrgId = async (orgName: string): Promise<string> => {
+    const res = await organizationQuery.getAllOrganization();
+    if (res.type !== 'success') return '';
+    const match = res.value.find(
+      (o: any) => o.name.toLowerCase() === orgName.toLowerCase() || (o.key && o.key.toLowerCase() === orgName.toLowerCase())
+    );
+    return match?.id || '';
+  };
+
+  const importOrg = async (orgName: string): Promise<string> => {
+    const importResult = await organizationQuery.importOrganization(orgName);
+    if (importResult.type === 'success' && importResult.value.id) {
+      fetchOrganizations(true);
+      return importResult.value.id;
+    }
+    return '';
+  };
+
   const handleSelectOrganization = async (orgName: string) => {
     if (!orgName) return;
     setLoadingProducts(true);
@@ -99,27 +117,11 @@ const Products: NextPageWithLayout = () => {
     setImportedRepoUrls([]);
     setImportedRepos([]);
     try {
-      // 1. Fetch backend organizations to check if it's already imported
-      const backendOrgsResult = await organizationQuery.getAllOrganization();
-      let orgDbId = '';
+      let orgDbId = await getBackendOrgId(orgName);
 
-      if (backendOrgsResult.type === 'success') {
-        const matchingOrg = backendOrgsResult.value.find(
-          (o: any) => o.name.toLowerCase() === orgName.toLowerCase() || (o.key && o.key.toLowerCase() === orgName.toLowerCase())
-        );
-        if (matchingOrg && matchingOrg.id) {
-          orgDbId = matchingOrg.id;
-        }
-      }
-
-      // 2. If organization is not yet in the backend, import it
       if (!orgDbId) {
-        const importResult = await organizationQuery.importOrganization(orgName);
-        if (importResult.type === 'success' && importResult.value.id) {
-          orgDbId = importResult.value.id;
-          // Trigger reload of context organizations so components like sidebar stay updated
-          fetchOrganizations(true);
-        } else {
+        orgDbId = await importOrg(orgName);
+        if (!orgDbId) {
           toast.error(`Erro ao importar organização no MeasureSoftGram.`);
           setLoadingProducts(false);
           setLoadingRepos(false);
@@ -264,17 +266,19 @@ const Products: NextPageWithLayout = () => {
     }
   }, [selectedProductId, products]);
 
-  const filteredRepos = useMemo(() => {
-    return gitHubRepos.filter((repo) => {
-      const isAlreadyImported = importedRepoUrls.some(
-        url => url === repo.url || url.toLowerCase() === repo.url.toLowerCase()
-      );
-      const matchesSearch = repo.name.toLowerCase().includes(search.toLowerCase());
-      const matchesTab =
-        (tabValue === 0 && isAlreadyImported) || tabValue === 1 || (tabValue === 2 && !isAlreadyImported);
-      return matchesSearch && matchesTab;
-    });
-  }, [gitHubRepos, importedRepoUrls, search, tabValue]);
+  const filteredRepos = useMemo(
+    () =>
+      gitHubRepos.filter((repo) => {
+        const isAlreadyImported = importedRepoUrls.some(
+          url => url === repo.url || url.toLowerCase() === repo.url.toLowerCase()
+        );
+        const matchesSearch = repo.name.toLowerCase().includes(search.toLowerCase());
+        const matchesTab =
+          (tabValue === 0 && isAlreadyImported) || tabValue === 1 || (tabValue === 2 && !isAlreadyImported);
+        return matchesSearch && matchesTab;
+      }),
+    [gitHubRepos, importedRepoUrls, search, tabValue]
+  );
 
 
 

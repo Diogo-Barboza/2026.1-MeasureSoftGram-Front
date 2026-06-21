@@ -44,6 +44,12 @@ jest.mock('react-toastify', () => ({
 describe('ProductsCreation Component', () => {
   const originalLocation = window.location;
 
+  const nameInputTestId = 'name-input';
+  const newProductTitle = 'Produto Novo';
+  const toastNameExists = 'toast.name-exists';
+  const editingProductTitle = 'Produto Editando';
+  const editingProductDesc = 'Desc Editando';
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseRouter.query = {
@@ -60,7 +66,7 @@ describe('ProductsCreation Component', () => {
 
   it('renders the "Nome" field', () => {
     render(<ProductsCreation />);
-    const nameField = screen.getByTestId('name-input');
+    const nameField = screen.getByTestId(nameInputTestId);
     expect(nameField).toBeDefined();
   });
 
@@ -85,10 +91,10 @@ describe('ProductsCreation Component', () => {
     mockCreateProduct.mockResolvedValue({ type: 'success' });
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
+    const nameInput = screen.getByTestId(nameInputTestId).querySelector('input')!;
     const descInput = screen.getByTestId('description-input').querySelector('textarea')!;
 
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    fireEvent.change(nameInput, { target: { value: newProductTitle } });
     fireEvent.change(descInput, { target: { value: 'Desc Novo' } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
@@ -96,7 +102,7 @@ describe('ProductsCreation Component', () => {
 
     await waitFor(() => {
       expect(mockCreateProduct).toHaveBeenCalledWith({
-        name: 'Produto Novo',
+        name: newProductTitle,
         description: 'Desc Novo',
         organizationId: 123,
       });
@@ -109,18 +115,18 @@ describe('ProductsCreation Component', () => {
   it('deve exibir toast.error se a criação de produto falhar com erro com mensagem ja existente', async () => {
     mockCreateProduct.mockResolvedValue({
       type: 'error',
-      error: { message: 'toast.name-exists' },
+      error: { message: toastNameExists },
     });
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    const nameInput = screen.getByTestId(nameInputTestId).querySelector('input')!;
+    fireEvent.change(nameInput, { target: { value: newProductTitle } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('toast.name-exists');
+      expect(toast.error).toHaveBeenCalledWith(toastNameExists);
     });
   });
 
@@ -131,8 +137,8 @@ describe('ProductsCreation Component', () => {
     });
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    const nameInput = screen.getByTestId(nameInputTestId).querySelector('input')!;
+    fireEvent.change(nameInput, { target: { value: newProductTitle } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
     fireEvent.click(submitButton);
@@ -147,8 +153,8 @@ describe('ProductsCreation Component', () => {
     const spy = jest.spyOn(console, 'log').mockImplementation(() => {});
     render(<ProductsCreation />);
 
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    fireEvent.change(nameInput, { target: { value: 'Produto Novo' } });
+    const nameInput = screen.getByTestId(nameInputTestId).querySelector('input')!;
+    fireEvent.change(nameInput, { target: { value: newProductTitle } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
     fireEvent.click(submitButton);
@@ -167,19 +173,19 @@ describe('ProductsCreation Component', () => {
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
-        description: 'Desc Editando',
+        name: editingProductTitle,
+        description: editingProductDesc,
         organizationId: 123,
       },
     });
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(editingProductTitle);
 
     expect(mockGetProductById).toHaveBeenCalledWith(['123'], '456');
-    const nameInput = screen.getByTestId('name-input').querySelector('input')!;
-    expect(nameInput.value).toBe('Produto Editando');
+    const nameInput = screen.getByTestId(nameInputTestId).querySelector('input')!;
+    expect(nameInput.value).toBe(editingProductTitle);
   });
 
   it('deve capturar erro no catch se getProductById lançar exceção', async () => {
@@ -206,8 +212,8 @@ describe('ProductsCreation Component', () => {
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
-        description: 'Desc Editando',
+        name: editingProductTitle,
+        description: editingProductDesc,
         organizationId: 123,
       },
     });
@@ -215,15 +221,15 @@ describe('ProductsCreation Component', () => {
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(editingProductTitle);
 
     const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(mockUpdateProduct).toHaveBeenCalledWith('456', {
-        name: 'Produto Editando',
-        description: 'Desc Editando',
+        name: editingProductTitle,
+        description: editingProductDesc,
         organizationId: 123,
       });
       expect(toast.success).toHaveBeenCalledWith('toast.success-edit');
@@ -238,25 +244,25 @@ describe('ProductsCreation Component', () => {
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
-        description: 'Desc Editando',
+        name: editingProductTitle,
+        description: editingProductDesc,
         organizationId: 123,
       },
     });
     mockUpdateProduct.mockResolvedValue({
       type: 'error',
-      error: { message: 'toast.name-exists' },
+      error: { message: toastNameExists },
     });
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(editingProductTitle);
 
     const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('toast.name-exists');
+      expect(toast.error).toHaveBeenCalledWith(toastNameExists);
     });
   });
 
@@ -268,8 +274,8 @@ describe('ProductsCreation Component', () => {
     mockGetProductById.mockResolvedValue({
       type: 'success',
       value: {
-        name: 'Produto Editando',
-        description: 'Desc Editando',
+        name: editingProductTitle,
+        description: editingProductDesc,
         organizationId: 123,
       },
     });
@@ -280,7 +286,7 @@ describe('ProductsCreation Component', () => {
 
     render(<ProductsCreation />);
 
-    await screen.findByDisplayValue('Produto Editando');
+    await screen.findByDisplayValue(editingProductTitle);
 
     const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
@@ -297,6 +303,8 @@ describe('ProductsCreation Component', () => {
 
     const menuItem = await screen.findByRole('option', { name: 'Organization 1' });
     fireEvent.click(menuItem);
+
+    expect(selectWrapper).toBeDefined();
   });
 
   it('deve voltar para a listagem ao clicar no botão de voltar', () => {

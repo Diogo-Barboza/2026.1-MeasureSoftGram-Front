@@ -78,28 +78,30 @@ describe('useOrganizationQuery Hook', () => {
   });
 
   it('deve atualizar uma organização com sucesso e disparar atualização', async () => {
+    const orgEditadaName = 'Org Editada';
     (organizationQuery.updateOrganization as jest.Mock).mockResolvedValue({ type: 'success' });
 
     const { result } = renderHook(() => useOrganizationQuery());
 
     await act(async () => {
-      await result.current.updateOrganization('1', { name: 'Org Editada' } as any);
+      await result.current.updateOrganization('1', { name: orgEditadaName } as any);
     });
 
-    expect(organizationQuery.updateOrganization).toHaveBeenCalledWith('1', { name: 'Org Editada' });
+    expect(organizationQuery.updateOrganization).toHaveBeenCalledWith('1', { name: orgEditadaName });
     expect(mockFetchOrganizations).toHaveBeenCalledWith(true);
   });
 
   it('NÃO deve disparar atualização se a atualização falhar', async () => {
+    const orgEditadaName = 'Org Editada';
     (organizationQuery.updateOrganization as jest.Mock).mockResolvedValue({ type: 'error' });
 
     const { result } = renderHook(() => useOrganizationQuery());
 
     await act(async () => {
-      await result.current.updateOrganization('1', { name: 'Org Editada' } as any);
+      await result.current.updateOrganization('1', { name: orgEditadaName } as any);
     });
 
-    expect(organizationQuery.updateOrganization).toHaveBeenCalledWith('1', { name: 'Org Editada' });
+    expect(organizationQuery.updateOrganization).toHaveBeenCalledWith('1', { name: orgEditadaName });
     expect(mockFetchOrganizations).not.toHaveBeenCalled();
   });
 
