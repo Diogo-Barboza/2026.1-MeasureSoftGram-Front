@@ -14,7 +14,7 @@ jest.mock('@contexts/ProductProvider', () => ({
 
 jest.mock('@contexts/RepositoryProvider', () => ({
   useRepositoryContext: () => ({
-    latestTSQMI: { id: 1, value: 0.75, created_at: '2026-05-20T00:00:00Z' },
+    latestTSQMI: { id: 1, value: 0.75, created_at: new Date().toISOString() },
     latestTSQMIBadgeUrl: 'http://localhost:8000/organizations/1/products/1/repositories/1/latest-values/tsqmi/badge'
   })
 }));
