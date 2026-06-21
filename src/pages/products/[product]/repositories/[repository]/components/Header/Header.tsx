@@ -142,7 +142,7 @@ function Header() {
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Editar Intervalos
+            {t("edit_intervals")}
           </Typography>
           {values ?
             <>
@@ -152,6 +152,33 @@ function Header() {
                 }}
               >
                 <ReactEcharts option={option} />
+              </Box>
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                gap="16px"
+                marginBottom="8px"
+              >
+                {[
+                  { color: '#e74c3c', label: t("legend_bad") },
+                  { color: '#f1c40f', label: t("legend_regular") },
+                  { color: '#07bc0c', label: t("legend_good") }
+                ].map((range) => (
+                  <Box key={range.label} display="flex" alignItems="center" gap="6px">
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '2px',
+                        backgroundColor: range.color
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary">
+                      {range.label}
+                    </Typography>
+                  </Box>
+                ))}
               </Box>
               <Box>
                 <GaugeSlider
@@ -174,7 +201,7 @@ function Header() {
                   onClick={handleCloseModal}
                   variant='outlined'
                 >
-                  Cancelar
+                  {t("cancel")}
                 </Button>
                 <Button
                   variant='contained'

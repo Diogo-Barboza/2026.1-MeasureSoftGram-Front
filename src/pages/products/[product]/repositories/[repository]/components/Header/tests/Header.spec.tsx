@@ -45,7 +45,7 @@ describe('Header', () => {
   it('opens and closes the modal correctly', () => {
     const { getByText, queryByText, getByTestId } = render(<Header />, { wrapper: AllTheProviders });
 
-    const testString = 'Editar Intervalos';
+    const testString = 'edit_intervals';
 
     expect(queryByText(testString)).toBeFalsy();
 
@@ -55,11 +55,32 @@ describe('Header', () => {
     fireEvent.click(settingsButton);
     expect(queryByText(testString)).toBeTruthy();
 
-    const cancelButton = getByText('Cancelar');
+    const cancelButton = getByText('cancel');
     expect(cancelButton).toBeTruthy();
     fireEvent.click(cancelButton);
     expect(queryByText(testString)).toBeFalsy();
 
+  });
+
+  it('uses i18n keys for the modal title and cancel button', () => {
+    const { getByTestId, queryByText } = render(<Header />, { wrapper: AllTheProviders });
+
+    fireEvent.click(getByTestId('SettingsIcon'));
+
+    // Sob o mock de i18n, t(key) => key. Os textos do modal devem vir do
+    // namespace 'header', nao hardcoded em portugues.
+    expect(queryByText('edit_intervals')).toBeTruthy();
+    expect(queryByText('cancel')).toBeTruthy();
+  });
+
+  it('shows a legend describing the semaphore ranges', () => {
+    const { getByTestId, queryByText } = render(<Header />, { wrapper: AllTheProviders });
+
+    fireEvent.click(getByTestId('SettingsIcon'));
+
+    expect(queryByText('legend_bad')).toBeTruthy();
+    expect(queryByText('legend_regular')).toBeTruthy();
+    expect(queryByText('legend_good')).toBeTruthy();
   });
 
   it('initialValues should be 0.33 and 0.66', () => {
