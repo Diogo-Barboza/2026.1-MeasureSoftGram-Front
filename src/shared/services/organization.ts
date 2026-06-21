@@ -38,7 +38,7 @@ class OrganizationQuery {
         throw new Error('Token de acesso não encontrado.');
       }
 
-      const response = await api.get('/organizations/', { headers });
+      const response = await api.get('/v1/organizations/', { headers });
       return { type: 'success', value: response.data.results as OrganizationFormData[] };
     } catch (error) {
       return { type: 'error', error: error as AxiosError };
@@ -51,7 +51,7 @@ class OrganizationQuery {
       if (!headers) {
         throw new Error('Token de acesso não encontrado.');
       }
-      const response = await api.post('/organizations/', data, { headers });
+      const response = await api.post('/v1/organizations/', data, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
       const error = err as AxiosError;
@@ -76,7 +76,7 @@ class OrganizationQuery {
       if (!headers) {
         throw new Error('Token de acesso não encontrado.');
       }
-      const response = await api.get(`/organizations/${id}/`, { headers });
+      const response = await api.get(`/v1/organizations/${id}/`, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
       const error = err as AxiosError;
@@ -90,7 +90,7 @@ class OrganizationQuery {
       if (!headers) {
         throw new Error('Token de acesso não encontrado.');
       }
-      const response = await api.put(`/organizations/${id}/`, data, { headers });
+      const response = await api.put(`/v1/organizations/${id}/`, data, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
       const error = err as AxiosError;
@@ -115,7 +115,7 @@ class OrganizationQuery {
       if (!headers) {
         throw new Error('Token de acesso não encontrado.');
       }
-      const response = await api.delete(`/organizations/${id}/`, { headers });
+      const response = await api.delete(`/v1/organizations/${id}/`, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
       const error = err as AxiosError;

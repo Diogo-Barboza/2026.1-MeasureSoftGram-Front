@@ -19,7 +19,7 @@ describe('SubCharacteristics service', () => {
     const response = await subCharacteristics.getRepository(organizationId, productId, repositoryId);
 
     expect(api.get).toHaveBeenCalledWith(
-      `organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`
+      `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`
     );
     expect(response).toBe(expectedResponse);
   });
@@ -38,7 +38,7 @@ describe('SubCharacteristics service', () => {
     const response = await subCharacteristics.getHistoricalCharacteristics(props);
 
     expect(api.get).toHaveBeenCalledWith(
-      `organizations/${props.organizationId}` +
+      `/v1/organizations/${props.organizationId}` +
         `/products/${props.productId}/repositories/${props.repositoryId}` +
         `/historical-values/${props.entity}/`
     );
