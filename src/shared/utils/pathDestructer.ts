@@ -3,6 +3,6 @@ export function getPathId(name?: string): [string, string] {
     return ['', ''];
   }
 
-  const [first = '', second = ''] = name.split('-');
+  const [first, second = ''] = name.split('-');
   return [first, second];
 }
