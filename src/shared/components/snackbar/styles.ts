@@ -11,7 +11,7 @@ export const StyledNotistack = styled(MaterialDesignContent)(({ theme }) => {
     '& #notistack-snackbar': {
       ...theme.typography.subtitle2,
       padding: 0,
-      flexGrow: 1,
+      flexGrow: 1
     },
     '&.notistack-MuiContent': {
       padding: theme.spacing(0.5),
@@ -19,13 +19,13 @@ export const StyledNotistack = styled(MaterialDesignContent)(({ theme }) => {
       color: theme.palette.text.primary,
       boxShadow: theme.shadows[3],
       borderRadius: 5,
-      backgroundColor: "white",
+      backgroundColor: 'white'
     },
     '&.notistack-MuiContent-default': {
       padding: theme.spacing(1),
       color: isLight ? theme.palette.common.white : theme.palette.grey[800],
-      backgroundColor: isLight ? theme.palette.grey[800] : theme.palette.common.white,
-    },
+      backgroundColor: isLight ? theme.palette.grey[800] : theme.palette.common.white
+    }
     // '&.notistack-MuiContent-info': {},
     // '&.notistack-MuiContent-success': {},
     // '&.notistack-MuiContent-warning': {},
@@ -48,5 +48,5 @@ export const StyledIcon = styled('span')<StyledIconProps>(({ color, theme }) => 
   marginRight: theme.spacing(1.5),
   color: theme.palette[color].main,
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette[color].main, 0.16),
+  backgroundColor: alpha(theme.palette[color].main, 0.16)
 }));

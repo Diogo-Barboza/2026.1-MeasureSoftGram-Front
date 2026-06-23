@@ -57,7 +57,7 @@ exports[`<Repository /> Should render correctly 1`] = `
               />
             </button>
             <button
-              aria-label="Copiar Badge"
+              aria-label="repository.copy-badge"
               class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
               data-mui-internal-clone-element="true"
               tabindex="0"
@@ -88,14 +88,14 @@ exports[`<Repository /> Should render correctly 1`] = `
           >
             <img
               alt="TSQMI Badge"
-              aria-label="Qualidade do repositório"
+              aria-label="repository.badge-tooltip"
               class=""
               data-mui-internal-clone-element="true"
               src="http://localhost:8000/organizations/1/products/1/repositories/1/latest-values/tsqmi/badge"
               style="width: 158px; height: 20px;"
             />
             <button
-              aria-label="Copiar Badge"
+              aria-label="repository.copy-badge"
               class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
               data-mui-internal-clone-element="true"
               tabindex="0"

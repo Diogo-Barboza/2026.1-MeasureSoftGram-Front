@@ -7,13 +7,13 @@ describe('Auth Services', () => {
   it('should signInCredentials with the right URL and data', async () => {
     const data = { email: 'test@test.com', password: 'test' };
     await services.signInCredentials(data);
-    expect(api.post).toHaveBeenCalledWith('/accounts/login/', data);
+    expect(api.post).toHaveBeenCalledWith('/v1/accounts/login/', data);
   });
 
   it('should signInGithub with the right URL and data', async () => {
     const code = 'test_code';
     await services.signInGithub(code);
-    expect(api.post).toHaveBeenCalledWith('accounts/github/login/', { code });
+    expect(api.post).toHaveBeenCalledWith('/v1/accounts/github/login/', { code });
   });
 
   it('should signUp with the right URL and data', async () => {
@@ -23,29 +23,27 @@ describe('Auth Services', () => {
       username: 'testUser',
       first_name: 'Test',
       last_name: 'User',
-      confirmPassword: 'test',
+      confirmPassword: 'test'
     };
 
     await services.signUp(data);
 
-    expect(api.post).toHaveBeenCalledWith('accounts/signin/', data);
+    expect(api.post).toHaveBeenCalledWith('/v1/accounts/signin/', data);
   });
-
-
 
   it('should signOut with the right URL', async () => {
     await services.signOut();
-    expect(api.delete).toHaveBeenCalledWith('accounts/logout/');
+    expect(api.delete).toHaveBeenCalledWith('/v1/accounts/logout/');
   });
 
   it('should getUserInfo with the right URL', async () => {
     await services.getUserInfo();
-    expect(api.get).toHaveBeenCalledWith('/accounts/');
+    expect(api.get).toHaveBeenCalledWith('/v1/accounts/');
   });
 
   it('should getAccessToken with the right URL', async () => {
     await services.getAccessToken();
-    expect(api.get).toHaveBeenCalledWith('/accounts/access-token');
+    expect(api.get).toHaveBeenCalledWith('/v1/accounts/access-token');
   });
 
   afterEach(() => {

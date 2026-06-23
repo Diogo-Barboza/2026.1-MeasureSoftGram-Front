@@ -8,12 +8,12 @@ const useRequireAuth = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (loading === "loaded" && !session && router.pathname !== "/") {
+    if (loading === "loaded" && !session && router.pathname !== "/auth") {
       const redirect = async () => {
         toast.error(
           "Usuário(a) não autenticado(a). Por favor, realize o login."
         );
-        await router.push("/");
+        await router.push("/auth");
       };
 
       redirect().catch((error) => {

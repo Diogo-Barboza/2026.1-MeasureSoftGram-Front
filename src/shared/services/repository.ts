@@ -27,7 +27,7 @@ const buildAuthHeaders = (token: string): AxiosRequestConfig['headers'] => ({
 });
 const getMissingTokenResult = (): ResultError => ({ type: 'error', error: new Error(ACCESS_TOKEN_NOT_FOUND) });
 const buildRepositoryBasePath = (organizationId: string, productId: string, repositoryId: string): string =>
-  `organizations/${organizationId}/products/${productId}/repositories/${repositoryId}`;
+  `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}`;
 
 class Repository {
   private readonly apiClient = api;
@@ -60,7 +60,7 @@ class Repository {
       const headers = buildAuthHeaders(token);
 
       const response = await this.apiClient.post(
-        `/organizations/${organizationId}/products/${productId}/repositories/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/`,
         { ...data, imported },
         {
           headers
@@ -89,7 +89,7 @@ class Repository {
       const headers = buildAuthHeaders(token);
 
       const response = await this.apiClient.put(
-        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
         { ...data, imported },
         { headers }
       );
@@ -110,7 +110,7 @@ class Repository {
       }
       const headers = buildAuthHeaders(token);
       await this.apiClient.delete(
-        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/`,
         { headers }
       );
       return { type: 'success', value: undefined };
@@ -131,7 +131,7 @@ class Repository {
       }
       const headers = buildAuthHeaders(token);
       const response = await this.apiClient.get(
-        `/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`,
+        `/v1/organizations/${organizationId}/products/${productId}/repositories/${repositoryId}/historical-values/${entity}/`,
         { headers }
       );
       return { type: 'success', value: response?.data };
@@ -167,12 +167,12 @@ class Repository {
   getTsqmiBadgeUrl(props: HistoricalCharacteristicsProps) {
     const { organizationId, entity, productId, repositoryId } = props;
     const basePath = buildRepositoryBasePath(organizationId as string, productId as string, repositoryId as string);
-    return `${this.apiClient.getUri()}/${basePath}/latest-values/${entity}/badge`;
+    return `${this.apiClient.getUri()}${basePath}/latest-values/${entity}/badge`;
   }
 
   getCharacteristicBadgeUrl(organizationId: string, productId: string, repositoryId: string, characteristicKey: string) {
     const basePath = buildRepositoryBasePath(organizationId, productId, repositoryId);
-    return `${this.apiClient.getUri()}/${basePath}/latest-values/characteristics/${characteristicKey}/badge/`;
+    return `${this.apiClient.getUri()}${basePath}/latest-values/characteristics/${characteristicKey}/badge/`;
   }
 }
 

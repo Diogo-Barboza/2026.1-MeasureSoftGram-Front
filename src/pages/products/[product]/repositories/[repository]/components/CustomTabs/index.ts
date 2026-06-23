@@ -1,1 +1,1 @@
-export { default } from './CustomTabs'
+export { default } from './CustomTabs';
