@@ -52,6 +52,9 @@
     "badge-copy-btn": "Copy",
     "badge-copy-error": "Failed to copy to clipboard.",
     "badge-stale": "The last analysis was performed more than 30 days ago. The badge may be outdated.",
-    "badge-error": "An error occurred while loading badge information."
+    "badge-stale-label": "Outdated badge",
+    "badge-stale-tooltip": "Badge has been outdated for more than 30 days. Rerun the repository workflow to generate the latest version.",
+    "badge-error": "An error occurred while loading badge information.",
+    "characteristic-badges": "Characteristic Badges"
   }
 }
