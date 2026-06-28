@@ -18,93 +18,6 @@ import ModelConfigForm from './components/ModelConfigForm/ModelConfigForm';
 import ReferenceValuesForm from './components/ReferenceValuesForm/ReferenceValuesForm';
 import CharacteristicsBalanceForm from './components/CharacteristicsBalanceForm/CharacteristicsBalanceForm';
 
-// --- MOCK PEQUENO (2 Linhas / 8 Características) ---
-const generateMockPreConfigData = (): PreConfigData => ({
-    name: "Produto Mockado (8 Características)",
-    characteristics: [
-      {
-        key: "reliability", weight: 15, active: true, goal: 50,
-        subcharacteristics: [
-          {
-            key: "testing_status", weight: 50, active: true,
-            measures: [
-              { key: "passed_tests", weight: 33, active: true, min_threshold: 0, max_threshold: 1 },
-              { key: "test_builds", weight: 33, active: true, min_threshold: 0, max_threshold: 300000 },
-              { key: "test_coverage", weight: 34, active: true, min_threshold: 60, max_threshold: 100 }
-            ]
-          },
-          {
-            key: "maturity", weight: 50, active: true,
-            measures: [{ key: "ci_feedback_time", weight: 100, active: true, min_threshold: 1, max_threshold: 900 }]
-          }
-        ]
-      },
-      {
-        key: "maintainability", weight: 12, active: true, goal: 50,
-        subcharacteristics: [
-          {
-            key: "modifiability", weight: 100, active: true,
-            measures: [
-              { key: "non_complex_file_density", weight: 33, active: true, min_threshold: 0, max_threshold: 10 },
-              { key: "commented_file_density", weight: 33, active: true, min_threshold: 10, max_threshold: 30 },
-              { key: "duplication_absense", weight: 34, active: true, min_threshold: 0, max_threshold: 5 }
-            ]
-          }
-        ]
-      },
-      {
-        key: "functional suitability", weight: 12, active: true, goal: 50,
-        subcharacteristics: [
-          {
-            key: "functional_completeness", weight: 100, active: true,
-            measures: [{ key: "team_throughput", weight: 100, active: true, min_threshold: 45, max_threshold: 100 }]
-          }
-        ]
-      },
-      {
-        key: "performance_efficiency", weight: 13, active: true, goal: 50,
-        subcharacteristics: [{ key: "time_behavior", weight: 100, active: true, measures: [{ key: "response_time", weight: 100, active: true, min_threshold: 0, max_threshold: 200 }] }]
-      },
-      {
-        key: "usability", weight: 12, active: true, goal: 50,
-        subcharacteristics: [{ key: "learnability", weight: 100, active: true, measures: [{ key: "user_docs_density", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }]
-      },
-      {
-        key: "security", weight: 12, active: true, goal: 50,
-        subcharacteristics: [{ key: "confidentiality", weight: 100, active: true, measures: [{ key: "vulnerabilities_count", weight: 100, active: true, min_threshold: 0, max_threshold: 0 }] }]
-      },
-      {
-        key: "compatibility", weight: 12, active: true, goal: 50,
-        subcharacteristics: [{ key: "interoperability", weight: 100, active: true, measures: [{ key: "api_compliance", weight: 100, active: true, min_threshold: 90, max_threshold: 100 }] }]
-      },
-      {
-        key: "portability", weight: 12, active: true, goal: 50,
-        subcharacteristics: [{ key: "adaptability", weight: 100, active: true, measures: [{ key: "hardware_independence", weight: 100, active: true, min_threshold: 80, max_threshold: 100 }] }]
-      }
-    ] as unknown as Characteristic[],
-  });
-
-// --- MOCK GIGANTE (3 Linhas de 5, ou como o grid definir / 15 Características) ---
-const generateExtremeMockPreConfigData = (): PreConfigData => ({
-    name: "Produto Mockado (15 Características)",
-    characteristics: [
-      { key: "reliability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_rel", weight: 100, active: true, measures: [{ key: "m_rel", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "maintainability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_mai", weight: 100, active: true, measures: [{ key: "m_mai", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "functional suitability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_fun", weight: 100, active: true, measures: [{ key: "m_fun", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "performance efficiency", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_per", weight: 100, active: true, measures: [{ key: "m_per", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "usability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_usa", weight: 100, active: true, measures: [{ key: "m_usa", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "security", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_sec", weight: 100, active: true, measures: [{ key: "m_sec", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "compatibility", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_com", weight: 100, active: true, measures: [{ key: "m_com", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "portability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_por", weight: 100, active: true, measures: [{ key: "m_por", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "safety", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_saf", weight: 100, active: true, measures: [{ key: "m_saf", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "flexibility", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_fle", weight: 100, active: true, measures: [{ key: "m_fle", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "interaction capability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_int", weight: 100, active: true, measures: [{ key: "m_int", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "sustainability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_sus", weight: 100, active: true, measures: [{ key: "m_sus", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "scalability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_sca", weight: 100, active: true, measures: [{ key: "m_sca", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "testability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_tes", weight: 100, active: true, measures: [{ key: "m_tes", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "reusability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_reu", weight: 100, active: true, measures: [{ key: "m_reu", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] }
-    ] as unknown as Characteristic[],
-});
 function ReleaseCreation() {
   const [organizationId, setOrganizationId] = useState<string>("");
   const [productId, setProductId] = useState<string>("");
@@ -122,10 +35,11 @@ function ReleaseCreation() {
   const [preConfigEntitiesRelationship, setPreConfigEntitiesRelationship] = useState<PreConfigEntitiesRelationship[]>();
   const [releaseGoal, setReleaseGoal] = useState<any>();
   const [releaseConflict, setReleaseConflict] = useState<string>();
-  
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar()
+
   const router = useRouter();
   const routerParams: any = router.query;
+
   const { t } = useTranslation('plan_release');
 
   const { register, handleSubmit, formState: { errors }, getValues, watch, trigger } = useForm<ReleaseInfoForm>({
@@ -139,7 +53,7 @@ function ReleaseCreation() {
     }
   });
 
-useEffect(() => {
+  useEffect(() => {
     if (router.isReady) {
       const organization = routerParams.product.split('-')[0];
       const productIdentifier = routerParams.product.split('-')[1];
@@ -149,27 +63,6 @@ useEffect(() => {
       setProductId(productIdentifier);
       setProductName(productTitle);
 
-      // --- INÍCIO DA INTERCEPTAÇÃO DE MOCK COM CONFIRM ---
-      const wantsToMock = window.confirm("MODO DE DESENVOLVEDOR: Deseja usar dados mockados para testar a reatividade das colunas?");
-      
-      if (wantsToMock) {
-        const wantsExtremeMock = window.confirm(
-          "Qual o tamanho do Mock?\n\n[ OK ] = Mock Grande (15 Características)\n[ CANCELAR ] = Mock Pequeno (8 Características)"
-        );
-        
-        const mockData = wantsExtremeMock ? generateExtremeMockPreConfigData() : generateMockPreConfigData();
-
-        setConfigPageData(mockData);
-        setConfigDefaultPageData(mockData);
-        setLastConfigPageData(mockData);
-        setReleaseGoal({ data: {}, allow_dynamic: true });
-        setBalanceMatrix({}); 
-        setPreConfigEntitiesRelationship([]);
-        return; 
-      }
-      // --- FIM DA INTERCEPTAÇÃO DE MOCK ---
-
-      // DECLARAÇÃO RESTAURADA DA FUNÇÃO NO SINGULAR
       const getPreConfig = async () => {
         let currentReleaseGoal: any;
         let entitiesRelationship;
@@ -181,7 +74,7 @@ useEffect(() => {
           currentReleaseGoal = await productQuery.getCurrentReleaseGoal(organization, productIdentifier);
           setReleaseGoal(currentReleaseGoal.data);
 
-          await getPreConfigs(organization, productIdentifier, currentReleaseGoal.data);
+          await getPreConfigs(organization, productIdentifier, currentReleaseGoal.data)
         } catch (error) {
           const data: Record<string, number> = {};
 
@@ -192,38 +85,31 @@ useEffect(() => {
           currentReleaseGoal = { id: 0, data, allow_dynamic: false };
           setReleaseGoal(currentReleaseGoal);
 
-          await getPreConfigs(organization, productIdentifier, currentReleaseGoal);
+          await getPreConfigs(organization, productIdentifier, currentReleaseGoal)
         }
-      };
+      }
 
-      getPreConfig(); // Agora a chamada vai funcionar perfeitamente!
-    }
+      getPreConfig();
+    };
   }, [router.isReady, routerParams.product]);
 
-  // FUNÇÃO NO PLURAL ATUALIZADA (com a injeção do name)
+
   async function getPreConfigs(organization: string, productIdentifier: string, currentReleaseGoal: any) {
     try {
       const defaultPreConfigResult = await productQuery.getProductDefaultPreConfig(organization, productIdentifier);
-      
-      const defaultData = formatConfig(defaultPreConfigResult.data, currentReleaseGoal);
-      defaultData.name = productName; // Injetando o nome real
-
-      setConfigPageData(defaultData);
-      setConfigDefaultPageData(defaultData);
+      setConfigPageData(formatConfig(defaultPreConfigResult.data, currentReleaseGoal));
+      setConfigDefaultPageData(formatConfig(defaultPreConfigResult.data, currentReleaseGoal));
 
       const currentPreConfigResult = await productQuery.getProductCurrentPreConfig(organization, productIdentifier);
-      
-      const currentData = formatConfig(mergeWithDefault(currentPreConfigResult.data.data, defaultPreConfigResult.data), currentReleaseGoal);
-      currentData.name = productName; // Injetando o nome real
-
-      setLastConfigPageData(currentData);
+      setLastConfigPageData(formatConfig(mergeWithDefault(currentPreConfigResult.data.data, defaultPreConfigResult.data), currentReleaseGoal));
 
       const balance = await balanceMatrixService.getBalanceMatrix();
       setBalanceMatrix(balance.data.result);
     } catch (error) {
-      enqueueSnackbar(t('getPreConfigError'), { autoHideDuration: 10000, variant: 'error' });
+      enqueueSnackbar(t('getPreConfigError'), { autoHideDuration: 10000, variant: 'error' })
     }
   }
+
   function mergeWithDefault(current: PreConfigData, defaultData: PreConfigData): PreConfigData {
     const findOrCreate = <T extends { key: string }>(array: T[], key: string, defaultEntry: T): T => {
       const entry = array.find(item => item.key === key);
@@ -235,18 +121,28 @@ useEffect(() => {
 
       const updatedSubcharacteristics = defaultChar.subcharacteristics.map(defaultSub => {
         const currentSub = findOrCreate(currentChar.subcharacteristics, defaultSub.key, defaultSub);
+
         const updatedMeasures = defaultSub.measures.map(defaultMeasure => findOrCreate(currentSub.measures, defaultMeasure.key, defaultMeasure));
 
-        return { ...currentSub, measures: updatedMeasures };
+        return {
+          ...currentSub,
+          measures: updatedMeasures
+        };
       });
 
-      return { ...currentChar, subcharacteristics: updatedSubcharacteristics };
+      return {
+        ...currentChar,
+        subcharacteristics: updatedSubcharacteristics
+      };
     });
 
-    return { ...current, characteristics: updatedCharacteristics };
+    return {
+      ...current,
+      characteristics: updatedCharacteristics
+    };
   };
 
-function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigData {
+  function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigData {
     data.characteristics.forEach((characteristic: Characteristic) => {
       // eslint-disable-next-line no-param-reassign
       characteristic.goal = currentReleaseGoal.data[characteristic.key] ?? 0;
@@ -270,57 +166,61 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
 
     return data;
   }
-  function handleSetFollowLastConfig(value: boolean) {
-    if (value) setConfigPageData(lastConfigPageData!);
-    else setConfigPageData(defaultPageData!);
 
-    setFollowLastConfig(value);
+  function handleSetFollowLastConfig(value: boolean) {
+    if (value)
+      setConfigPageData(lastConfigPageData!);
+    else
+      setConfigPageData(defaultPageData!);
+
+    setFollowLastConfig(value)
   }
 
   async function checkBasicValues() {
-    if (Object.keys(errors).length !== 0) return;
-
-    if (configPageData?.name.includes("Mockado")) {
-      setActiveStep(activeStep + 1);
+    if (Object.keys(errors).length !== 0)
       return;
-    }
 
     try {
       await productQuery.getIsReleaseValid(organizationId, productId, getValues());
       setActiveStep(activeStep + 1);
     } catch (error: any) {
       if (error?.response?.data?.detail === "Já existe uma release neste período") {
-        setReleaseConflict(error?.response?.data?.release?.id);
+        setReleaseConflict(error?.response?.data?.release?.id)
         setShowChangeDateModal(true);
-      } else {
-        enqueueSnackbar(`${error?.response?.data?.detail}`, { autoHideDuration: 10000, variant: 'error' });
       }
+      else
+        enqueueSnackbar(`${error?.response?.data?.detail}`, { autoHideDuration: 10000, variant: 'error' })
     }
   };
 
   async function handleReleaseDateModal() {
     try {
-      const newDate = new Date(getValues('start_at'));
+      const newDate = new Date(getValues('start_at'))
       newDate.setDate(newDate.getDate() - 1);
 
       setShowChangeDateModal(false);
 
       await productQuery.updateReleaseEndDate(organizationId, productId, releaseConflict!, { end_at: newDate });
       checkBasicValues();
-    } catch (error: any) {
+    }
+    catch (error: any) {
       setShowChangeDateModal(false);
       enqueueSnackbar(`${error?.response?.data?.detail}`, { autoHideDuration: 10000, variant: 'error' });
     }
   }
 
   function handleChangeRefValue(value: boolean) {
-    if (value) setShowConfirmationModal(value);
-    setChangeRefValue(value);
+    if (value)
+      setShowConfirmationModal(value);
+
+    setChangeRefValue(value)
   }
 
   function handleChangeDinamicBalance(value: boolean) {
-    if (value) setShowConfirmationModal(value);
-    setDinamicBalance(value);
+    if (value)
+      setShowConfirmationModal(value);
+
+    setDinamicBalance(value)
   }
 
   function renderStep(): React.ReactNode {
@@ -339,12 +239,16 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
   }
 
   function handlePreviousButtonClick(): void {
-    if (activeStep === 3 && !changeRefValue) setActiveStep(activeStep - 2);
-    else if (activeStep > 0) setActiveStep(activeStep - 1);
+    if (activeStep === 3 && !changeRefValue)
+      setActiveStep(activeStep - 2);
+    else if (activeStep > 0)
+      setActiveStep(activeStep - 1);
   }
 
   function findItemWithSumNotEqualTo100(items: { key: string; weight: number; active?: boolean }[]) {
-    return items.filter(item => item.active).reduce((sum, item) => sum + item.weight, 0) !== 100
+    return items.filter(item => item.active).reduce((sum, item) =>
+      sum + item.weight
+      , 0) !== 100
       ? items.find(item => item.active)?.key
       : null;
   }
@@ -353,7 +257,7 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
     const invalidCharacteristics = findItemWithSumNotEqualTo100(configPageData!.characteristics);
 
     if (invalidCharacteristics && invalidCharacteristics?.length > 0) {
-      enqueueSnackbar(t('invalidCharacteristicsError'), { autoHideDuration: 10000, variant: 'error' });
+      enqueueSnackbar(t('invalidCharacteristicsError'), { autoHideDuration: 10000, variant: 'error' })
       document.getElementById("characteristicSection")?.scrollIntoView({ behavior: "smooth" });
       return false;
     }
@@ -366,8 +270,9 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
       })
       .filter(key => key !== null);
 
+
     if (invalidSubcharacteristics && invalidSubcharacteristics?.length > 0) {
-      enqueueSnackbar(t("invalidSubcharacteristicsError"), { autoHideDuration: 10000, variant: 'error' });
+      enqueueSnackbar(t("invalidSubcharacteristicsError"), { autoHideDuration: 10000, variant: 'error' })
       document.getElementById(`SubCarAccordion-${invalidSubcharacteristics[0]}`)?.scrollIntoView({ behavior: "smooth" });
       return false;
     }
@@ -379,13 +284,13 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
           .filter(subcharacteristic => subcharacteristic.active)
           .map(subcharacteristic => {
             const invalidMeasureKey = findItemWithSumNotEqualTo100(subcharacteristic.measures);
-            return invalidMeasureKey ? subcharacteristic.key : null;
+            return invalidMeasureKey ? subcharacteristic.key : null; // Retorna o nome da subcaracterística se inválido
           })
       )
       .filter(key => key !== null);
 
     if (invalidMeasures && invalidMeasures?.length > 0) {
-      enqueueSnackbar(t('invalidMeasuresError'), { autoHideDuration: 10000, variant: 'error' });
+      enqueueSnackbar(t('invalidMeasuresError'), { autoHideDuration: 10000, variant: 'error' })
       document.getElementById(`MetricSubCarAccordion-${invalidMeasures[0]}`)?.scrollIntoView({ behavior: "smooth" });
       return false;
     }
@@ -400,6 +305,7 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
         break;
       case 1:
         if (!isConfigDataWeightValid()) break;
+
         if (!changeRefValue) setActiveStep(activeStep + 2);
         else setActiveStep(activeStep + 1);
         break;
@@ -415,41 +321,41 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
   }
 
   async function submitRelease() {
-    if (configPageData?.name.includes("Mockado")) {
-      enqueueSnackbar("Mock: Release criada com sucesso! (Nenhuma requisição real foi feita)", { autoHideDuration: 6000, variant: 'success' });
-      return;
-    }
-
     const goalChanges = generateChanges();
     const release = getValues();
     const finalConfig = cleanConfigData();
 
     try {
       await productQuery.postPreConfig(organizationId, productId, { name: productName, data: finalConfig });
+
       const productGoalResult = await productQuery.createProductGoal(organizationId, productId, goalChanges);
+
       release.goal = productGoalResult.data.id;
 
       await productQuery.createProductRelease(organizationId, productId, release);
+
       enqueueSnackbar(t('releaseCreated'), { autoHideDuration: 6000, variant: 'success' });
       router.push(`/products/${router.query.product}/releases/`);
     } catch (error: any) {
       enqueueSnackbar(`${error.response?.data?.message ?? error}`, { autoHideDuration: 10000, variant: 'error' });
     }
+
   }
 
   function generateChanges(): ReleaseGoal {
+    // Criação do array de mudanças com a tipagem explícita
     const changes: Change[] = [];
 
     configPageData?.characteristics
       .filter((characteristic: Characteristic) => characteristic.active)
       .forEach((characteristic: Characteristic) => {
-        const referenceGoal = releaseGoal?.data ? releaseGoal.data[characteristic.key] ?? 0 : 0;
+        const referenceGoal = releaseGoal.data[characteristic.key] ?? 0;
         let delta: number;
 
         if (dinamicBalance) {
           delta = 50 - characteristic.goal;
         } else {
-          const relatedPositiveKeys = balanceMatrix ? balanceMatrix[characteristic.key]?.['+'] || [] : [];
+          const relatedPositiveKeys = balanceMatrix[characteristic.key]?.['+'] || [];
           const isAlreadyChanged = relatedPositiveKeys.some((relatedKey: string) =>
             changes.some(change => change.characteristic_key === relatedKey)
           );
@@ -457,10 +363,14 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
           if (isAlreadyChanged || referenceGoal === characteristic.goal) {
             return;
           }
+
           delta = characteristic.goal - referenceGoal;
         }
 
-        changes.push({ characteristic_key: characteristic.key, delta });
+        changes.push({
+          characteristic_key: characteristic.key,
+          delta,
+        });
       });
 
     return { changes, allow_dynamic: dinamicBalance };
@@ -491,31 +401,31 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
   }
 
   function handleModalBtnClick() {
-    if (activeStep === 1) handleChangeRefValue(true);
-    else handleChangeDinamicBalance(true);
+    if (activeStep === 1)
+      handleChangeRefValue(true);
+    else
+      handleChangeDinamicBalance(true)
 
-    setShowConfirmationModal(false);
+    setShowConfirmationModal(false)
   }
 
   function renderBreadcrumb(label: string, step: number): any {
-    if (step === 2 && !changeRefValue) return;
+    if (step === 2 && !changeRefValue) return
 
-    return (
-      <Button
-        key={step}
-        sx={{
-          cursor: 'pointer',
-          textDecoration: 'none',
-          color: activeStep === step ? "text.primary" : "text.secondary",
-          fontWeight: activeStep === step ? '800' : 'normal',
-          textTransform: 'none',
-          pointerEvents: activeStep === 0 ? "none" : "auto"
-        }}
-        onClick={() => activeStep === 0 ? {} : setActiveStep(step)}
-      >
-        {label}
-      </Button>
-    );
+    return <Button
+      key={step}
+      sx={{
+        cursor: 'pointer',
+        textDecoration: 'none',
+        color: activeStep === step ? "text.primary" : "text.secondary",
+        fontWeight: activeStep === step ? '800' : 'normal',
+        textTransform: 'none',
+        pointerEvents: activeStep === 0 ? "none" : "auto"
+      }}
+      onClick={() => activeStep === 0 ? {} : setActiveStep(step)}
+    >
+      {label}
+    </Button>
   }
 
   return (
@@ -534,7 +444,6 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
           ].map(({ label, step }) => renderBreadcrumb(label, step))}
         </Breadcrumbs>
       </Styles.Header>
-      
       <Styles.Body>
         <Box>
           <form onSubmit={handleSubmit(handleNextButtonClick)}>
@@ -547,11 +456,11 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
                 marginTop: 2
               }}
             >
-              {activeStep !== 0 && (
+              {activeStep !== 0 &&
                 <Button onClick={() => handlePreviousButtonClick()} variant="outlined">
                   {t('back')}
                 </Button>
-              )}
+              }
               <Button type="submit" variant="contained">
                 {activeStep < 3 ? t('next') : t('end')}
               </Button>
@@ -559,7 +468,6 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
           </form>
         </Box>
       </Styles.Body >
-
       <ConfirmModal
         // eslint-disable-next-line react/jsx-no-bind
         setIsModalOpen={setShowChangeDateModal}
@@ -569,7 +477,6 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
         isModalOpen={showChangeDateModal}
         // eslint-disable-next-line react/jsx-no-bind
         handleConfirmBtnClick={handleReleaseDateModal}
-        // eslint-disable-next-line react/jsx-no-bind
         handleDismissBtnClick={() => setShowChangeDateModal(false)}
       />
       <ConfirmModal
@@ -579,18 +486,14 @@ function formatConfig(data: PreConfigData, currentReleaseGoal: any): PreConfigDa
         btnConfirmText={t('continue')}
         btnDismissText={t('back')}
         isModalOpen={showConfirmationModal}
-        // eslint-disable-next-line react/jsx-no-bind
+        /* eslint-disable no-unused-expressions */
         handleDismissBtnClick={() => {
-          setShowConfirmationModal(false);
-          if (activeStep === 1) {
-            setChangeRefValue(false);
-          } else {
-            setDinamicBalance(false);
-          }
+          setShowConfirmationModal(false)
+          activeStep === 1 ? setChangeRefValue(false) : setDinamicBalance(false)
         }}
         // eslint-disable-next-line react/jsx-no-bind
-        handleConfirmBtnClick={handleModalBtnClick} 
-      />    </>
+        handleConfirmBtnClick={handleModalBtnClick} />
+    </>
   );
 }
 
