@@ -31,7 +31,7 @@ export function useRequestValues({
 
   const { data, error, isValidating } = useSWR<{ results: Historical[] }>(
     currentOrganization?.id && currentProduct?.id && currentRepository?.id
-      ? `organizations/${currentOrganization.id}/products/${currentProduct.id}/repositories/${currentRepository.id}/${type}/${value}/`
+      ? `/v1/organizations/${currentOrganization.id}/products/${currentProduct.id}/repositories/${currentRepository.id}/${type}/${value}/`
       : null,
     (url) => {
       setLoading();
