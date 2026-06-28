@@ -53,7 +53,7 @@ const generateMockPreConfigData = (): PreConfigData => ({
         ]
       },
       {
-        key: "functional_suitability", weight: 12, active: true, goal: 50,
+        key: "functional suitability", weight: 12, active: true, goal: 50,
         subcharacteristics: [
           {
             key: "functional_completeness", weight: 100, active: true,
@@ -84,25 +84,27 @@ const generateMockPreConfigData = (): PreConfigData => ({
     ] as unknown as Characteristic[],
   });
 
-// --- MOCK GRANDE (3 Linhas / 12 Características) ---
+// --- MOCK GIGANTE (3 Linhas de 5, ou como o grid definir / 15 Características) ---
 const generateExtremeMockPreConfigData = (): PreConfigData => ({
-    name: "Produto Mockado (12 Características)",
+    name: "Produto Mockado (15 Características)",
     characteristics: [
-      { key: "reliability", weight: 9, active: true, goal: 50, subcharacteristics: [{ key: "sub_rel", weight: 100, active: true, measures: [{ key: "m_rel", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "maintainability", weight: 9, active: true, goal: 50, subcharacteristics: [{ key: "sub_mai", weight: 100, active: true, measures: [{ key: "m_mai", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "functional_suitability", weight: 9, active: true, goal: 50, subcharacteristics: [{ key: "sub_fun", weight: 100, active: true, measures: [{ key: "m_fun", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "performance_efficiency", weight: 9, active: true, goal: 50, subcharacteristics: [{ key: "sub_per", weight: 100, active: true, measures: [{ key: "m_per", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "usability", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_usa", weight: 100, active: true, measures: [{ key: "m_usa", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "security", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_sec", weight: 100, active: true, measures: [{ key: "m_sec", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "compatibility", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_com", weight: 100, active: true, measures: [{ key: "m_com", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "portability", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_por", weight: 100, active: true, measures: [{ key: "m_por", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "safety", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_saf", weight: 100, active: true, measures: [{ key: "m_saf", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "flexibility", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_fle", weight: 100, active: true, measures: [{ key: "m_fle", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "interaction_capability", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_int", weight: 100, active: true, measures: [{ key: "m_int", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
-      { key: "sustainability", weight: 8, active: true, goal: 50, subcharacteristics: [{ key: "sub_sus", weight: 100, active: true, measures: [{ key: "m_sus", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] }
+      { key: "reliability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_rel", weight: 100, active: true, measures: [{ key: "m_rel", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "maintainability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_mai", weight: 100, active: true, measures: [{ key: "m_mai", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "functional suitability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_fun", weight: 100, active: true, measures: [{ key: "m_fun", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "performance efficiency", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_per", weight: 100, active: true, measures: [{ key: "m_per", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "usability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_usa", weight: 100, active: true, measures: [{ key: "m_usa", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "security", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_sec", weight: 100, active: true, measures: [{ key: "m_sec", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "compatibility", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_com", weight: 100, active: true, measures: [{ key: "m_com", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "portability", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_por", weight: 100, active: true, measures: [{ key: "m_por", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "safety", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_saf", weight: 100, active: true, measures: [{ key: "m_saf", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "flexibility", weight: 7, active: true, goal: 50, subcharacteristics: [{ key: "sub_fle", weight: 100, active: true, measures: [{ key: "m_fle", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "interaction capability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_int", weight: 100, active: true, measures: [{ key: "m_int", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "sustainability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_sus", weight: 100, active: true, measures: [{ key: "m_sus", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "scalability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_sca", weight: 100, active: true, measures: [{ key: "m_sca", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "testability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_tes", weight: 100, active: true, measures: [{ key: "m_tes", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] },
+      { key: "reusability", weight: 6, active: true, goal: 50, subcharacteristics: [{ key: "sub_reu", weight: 100, active: true, measures: [{ key: "m_reu", weight: 100, active: true, min_threshold: 0, max_threshold: 100 }] }] }
     ] as unknown as Characteristic[],
-  });
-
+});
 function ReleaseCreation() {
   const [organizationId, setOrganizationId] = useState<string>("");
   const [productId, setProductId] = useState<string>("");
@@ -152,7 +154,7 @@ useEffect(() => {
       
       if (wantsToMock) {
         const wantsExtremeMock = window.confirm(
-          "Qual o tamanho do Mock?\n\n[ OK ] = Mock Grande (12 Características)\n[ CANCELAR ] = Mock Pequeno (8 Características)"
+          "Qual o tamanho do Mock?\n\n[ OK ] = Mock Grande (15 Características)\n[ CANCELAR ] = Mock Pequeno (8 Características)"
         );
         
         const mockData = wantsExtremeMock ? generateExtremeMockPreConfigData() : generateMockPreConfigData();

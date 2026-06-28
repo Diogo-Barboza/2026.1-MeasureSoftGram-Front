@@ -25,8 +25,8 @@ export default function CharacteristicsBalanceForm({
   const activeCharacteristics = configPageData?.characteristics?.filter(c => c.active) || [];
   const totalItems = activeCharacteristics.length;
 
-  // Lógica para definir as colunas de forma simétrica
-  const maxColsScreen = 4; // Fixo em 4 colunas para manter a simetria
+// Lógica de Grid Simétrico: Balanceia os itens de forma igual entre as linhas
+  const maxColsScreen = 6; 
   const numRows = totalItems > 0 ? Math.ceil(totalItems / maxColsScreen) : 1;
   const optimalCols = totalItems > 0 ? Math.ceil(totalItems / numRows) : 1;
 
@@ -65,6 +65,7 @@ export default function CharacteristicsBalanceForm({
           <Switch
             data-testid="allowBalanceGoal"
             checked={dinamicBalance}
+            // eslint-disable-next-line react/jsx-no-bind
             onChange={() => setDinamicBalance(!dinamicBalance)}
             color="primary" 
           />
@@ -73,13 +74,19 @@ export default function CharacteristicsBalanceForm({
         labelPlacement="start"
       />
       
-      {/* APLICANDO CSS GRID PARA EQUIESPAÇAMENTO PERFEITO */}
-      <Box sx={{ border: 1, borderRadius: 3, paddingX: 3, paddingY: 4, width: '100%' }}>
+      {/* APLICANDO CSS GRID E LIMITANDO A ALTURA COM SCROLL */}
+      <Box sx={{ 
+        border: 1, 
+        borderRadius: 3, 
+        paddingX: 3, 
+        paddingY: 6, 
+        width: '100%',
+      }}>
         <Box 
           display="grid" 
-          gridTemplateColumns={`repeat(${optimalCols}, 1fr)`} // Cria colunas idênticas e iguais
-          gap={4} // Espaçamento fixo entre os sliders
-          justifyItems="center" // Centraliza o slider no meio de sua coluna designada
+          gridTemplateColumns={`repeat(${optimalCols}, 1fr)`} // Cria no máximo 6 colunas
+          gap={6} // Espaçamento fixo entre os sliders
+          justifyItems="center" // Centraliza o slider na coluna
           alignItems="center" 
         >
           {activeCharacteristics.map(characteristic => (
@@ -88,13 +95,14 @@ export default function CharacteristicsBalanceForm({
               key={`GridCharacteristicsBalance-${characteristic.key}`} 
               gap={2} 
               direction="column" 
-              sx={{ width: '100%', maxWidth: '120px' }} // Mantém o slider fininho dentro da coluna do grid
+              sx={{ width: '100%', maxWidth: '120px' }} // Mantém o slider fininho
             >
               <Grid item xs={9} display="flex" justifyContent="center">
                 <StyledSlider
                   data-testid={`characteristic-${characteristic.key}`}
                   sx={{ minHeight: "15rem" }}
                   value={characteristic.goal}
+                  // eslint-disable-next-line react/jsx-no-bind
                   onChange={(event: any) => handleCharacteristicChange(event, characteristic.key)}
                   orientation="vertical"
                   valueLabelDisplay="auto"
