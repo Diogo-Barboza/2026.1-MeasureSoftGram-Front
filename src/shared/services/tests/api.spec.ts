@@ -121,3 +121,43 @@ describe('API Interceptors', () => {
     });
   });
 });
+
+describe('api client baseURL', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = { ...originalEnv };
+    delete process.env.NEXT_PUBLIC_API_URL;
+    delete process.env.SERVICE_URL;
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
+  it('uses NEXT_PUBLIC_API_URL when defined (client-side exposed var)', () => {
+    process.env.NEXT_PUBLIC_API_URL = 'https://api.example.test/api/v1';
+
+    const api = require('../api').default;
+
+    expect(api.defaults.baseURL).toBe('https://api.example.test/api/v1');
+  });
+
+  it('falls back to SERVICE_URL when NEXT_PUBLIC_API_URL is absent', () => {
+    process.env.SERVICE_URL = 'https://service.example.test/api/v1';
+
+    const api = require('../api').default;
+
+    expect(api.defaults.baseURL).toBe('https://service.example.test/api/v1');
+  });
+
+  it('prefers NEXT_PUBLIC_API_URL over SERVICE_URL when both are set', () => {
+    process.env.NEXT_PUBLIC_API_URL = 'https://public.example.test/api/v1';
+    process.env.SERVICE_URL = 'https://service.example.test/api/v1';
+
+    const api = require('../api').default;
+
+    expect(api.defaults.baseURL).toBe('https://public.example.test/api/v1');
+  });
+});

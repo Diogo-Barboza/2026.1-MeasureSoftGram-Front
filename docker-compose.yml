@@ -3,6 +3,10 @@ services:
     container_name: front
     build:
       context: .
+      args:
+        SERVICE_URL: ${SERVICE_URL:-http://localhost:8080/api}
+        LOGIN_REDIRECT_URL: ${LOGIN_REDIRECT_URL:-}
+        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
     restart: on-failure
     ports:
       - '3000:3000'

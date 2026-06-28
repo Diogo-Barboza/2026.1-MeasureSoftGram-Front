@@ -34,7 +34,7 @@ describe('Organization Service', () => {
 
     const result = await organizationQuery.getAllOrganization();
 
-    expect(api.get).toHaveBeenCalled();
+    expect(api.get).toHaveBeenCalledWith('/v1/organizations/', expect.any(Object));
     expect(result.type).toEqual('success');
     expect((result as any).value).toEqual(mockOrgs.results);
   });
@@ -45,7 +45,7 @@ describe('Organization Service', () => {
 
     const result = await organizationQuery.getOrganizationById('1');
 
-    expect(api.get).toHaveBeenCalledWith('/organizations/1/', expect.any(Object));
+    expect(api.get).toHaveBeenCalledWith('/v1/organizations/1/', expect.any(Object));
     expect(result.type).toEqual('success');
   });
 
@@ -53,7 +53,7 @@ describe('Organization Service', () => {
     (api.post as jest.Mock).mockResolvedValue({ data: { id: '2', ...mockPayload } });
 
     const result = await organizationQuery.createOrganization(mockPayload);
-    expect(api.post).toHaveBeenCalled();
+    expect(api.post).toHaveBeenCalledWith('/v1/organizations/', mockPayload, expect.any(Object));
     expect(result.type).toEqual('success');
   });
 
@@ -61,7 +61,7 @@ describe('Organization Service', () => {
     (api.put as jest.Mock).mockResolvedValue({ data: mockPayload });
 
     const result = await organizationQuery.updateOrganization('1', mockPayload);
-    expect(api.put).toHaveBeenCalled();
+    expect(api.put).toHaveBeenCalledWith('/v1/organizations/1/', mockPayload, expect.any(Object));
     expect(result.type).toEqual('success');
   });
 
@@ -69,7 +69,7 @@ describe('Organization Service', () => {
     (api.delete as jest.Mock).mockResolvedValue({ status: 204 });
 
     const result = await organizationQuery.deleteOrganization('1');
-    expect(api.delete).toHaveBeenCalled();
+    expect(api.delete).toHaveBeenCalledWith('/v1/organizations/1/', expect.any(Object));
     expect(result.type).toEqual('success');
   });
 

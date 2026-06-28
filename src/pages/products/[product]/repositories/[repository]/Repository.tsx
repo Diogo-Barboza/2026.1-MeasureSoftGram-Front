@@ -26,6 +26,7 @@ import CustomTabs from './components/CustomTabs';
 import { useQuery } from './hooks/useQuery';
 import OptionsHeader from './components/OptionsHeader/OptionsHeader';
 import TsqmiBadge from './components/TsqmiBadge';
+import CharacteristicsBadges from './components/CharacteristicsBadges';
 
 
 const Repository: NextPageWithLayout = () => {
@@ -54,6 +55,8 @@ const Repository: NextPageWithLayout = () => {
             latestTSQMI={latestTSQMI}
             latestTSQMIBadgeUrl={latestTSQMIBadgeUrl}
           />
+
+          <CharacteristicsBadges />
 
           <OptionsHeader
             title={t('repository.characteristic')}

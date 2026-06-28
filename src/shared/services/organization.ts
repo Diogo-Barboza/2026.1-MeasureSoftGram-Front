@@ -42,6 +42,9 @@ async getAllOrganization(): Promise<Result<OrganizationFormData[]>> {
 async createOrganization(data: OrganizationFormData): Promise<Result<OrganizationFormData>> {
     try {
       const headers = await this.getAuthHeaders();
+      if (!headers) {
+        throw new Error('Token de acesso não encontrado.');
+      }
       const response = await api.post('/organizations/', data, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
@@ -64,6 +67,9 @@ async createOrganization(data: OrganizationFormData): Promise<Result<Organizatio
   async getOrganizationById(id: string): Promise<Result<OrganizationFormData>> {
     try {
       const headers = await this.getAuthHeaders();
+      if (!headers) {
+        throw new Error('Token de acesso não encontrado.');
+      }
       const response = await api.get(`/organizations/${id}/`, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
@@ -76,6 +82,9 @@ async createOrganization(data: OrganizationFormData): Promise<Result<Organizatio
 async updateOrganization(id: string, data: OrganizationFormData): Promise<Result<void>> {
     try {
       const headers = await this.getAuthHeaders();
+      if (!headers) {
+        throw new Error('Token de acesso não encontrado.');
+      }
       const response = await api.put(`/organizations/${id}/`, data, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {
@@ -98,6 +107,9 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
   async deleteOrganization(id: string): Promise<Result<void>> {
     try {
       const headers = await this.getAuthHeaders();
+      if (!headers) {
+        throw new Error('Token de acesso não encontrado.');
+      }
       const response = await api.delete(`/organizations/${id}/`, { headers });
       return { type: 'success', value: response?.data };
     } catch (err) {

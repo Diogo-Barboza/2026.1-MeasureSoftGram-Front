@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 
 export const signInCredentials = async (data: LoginFormData): Promise<Result<User>> => {
   try {
-    const response = await api.post('/accounts/login/', data);
+    const response = await api.post('/v1/accounts/login/', data);
 
     return { type: 'success', value: response?.data };
   } catch (err) {
@@ -14,7 +14,7 @@ export const signInCredentials = async (data: LoginFormData): Promise<Result<Use
 
 export const signInGithub = async (code: string): Promise<Result<{ key: string }>> => {
   try {
-    const response = await api.post('accounts/github/login/', { code });
+    const response = await api.post('/v1/accounts/github/login/', { code });
 
     return { type: 'success', value: response?.data };
   } catch (err) {
@@ -25,7 +25,7 @@ export const signInGithub = async (code: string): Promise<Result<{ key: string }
 
 export const signUp = async (data: SignUpFormData): Promise<Result<void>> => {
   try {
-    const response = await api.post('accounts/signin/', data);
+    const response = await api.post('/v1/accounts/signin/', data);
 
     return { type: 'success', value: response?.data };
   } catch (err) {
@@ -36,7 +36,7 @@ export const signUp = async (data: SignUpFormData): Promise<Result<void>> => {
 
 export const signOut = async (): Promise<Result<void>> => {
   try {
-    const response = await api.delete('accounts/logout/');
+    const response = await api.delete('/v1/accounts/logout/');
 
     return { type: 'success', value: response?.data };
   } catch (err) {
@@ -47,7 +47,7 @@ export const signOut = async (): Promise<Result<void>> => {
 
 export const getUserInfo = async (): Promise<Result<User>> => {
   try {
-    const response = await api.get('/accounts/');
+    const response = await api.get('/v1/accounts/');
 
     return { type: 'success', value: response?.data };
   } catch (err) {
@@ -58,7 +58,7 @@ export const getUserInfo = async (): Promise<Result<User>> => {
 
 export const getAccessToken = async (): Promise<Result<User>> => {
   try {
-    const response = await api.get('/accounts/access-token');
+    const response = await api.get('/v1/accounts/access-token');
 
     return { type: 'success', value: response?.data };
   } catch (err) {

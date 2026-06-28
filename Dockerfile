@@ -7,8 +7,15 @@ ENV PORT=3000
 # Install dependencies needed for node-gyp and others if necessary
 RUN apk add --no-cache libc6-compat
 
-# Enable corepack for pnpm support
-RUN corepack enable pnpm
+# build-args inlined no bundle (build-time). O default e o ambiente de
+# desenvolvimento; o valor de cada ambiente vem via --build-arg no CI.
+ARG SERVICE_URL=http://localhost:8080/api
+ARG LOGIN_REDIRECT_URL
+ARG GITHUB_CLIENT_ID
+ENV SERVICE_URL=$SERVICE_URL
+ENV LOGIN_REDIRECT_URL=$LOGIN_REDIRECT_URL
+ENV GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
+ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /usr/src
 

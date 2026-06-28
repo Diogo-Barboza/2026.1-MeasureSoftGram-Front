@@ -213,5 +213,81 @@ describe('Auth Service', () => {
 
   // ... Fim dos testes
 
+  // Testes de versionamento de rotas (/v1)
+  describe('versiona rotas com /v1', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('signInCredentials calls api.post with /v1/accounts/login/', async () => {
+      const data = { email: 'user@user.com', password: 'pass' };
+      (api.post as jest.Mock).mockImplementation(() =>
+        Promise.resolve({ data: {} } as AxiosResponse)
+      );
+
+      await signInCredentials(data);
+
+      expect(api.post).toHaveBeenCalledWith('/v1/accounts/login/', data);
+    });
+
+    it('signInGithub calls api.post with /v1/accounts/github/login/', async () => {
+      const code = 'githubCode';
+      (api.post as jest.Mock).mockImplementation(() =>
+        Promise.resolve({ data: {} } as AxiosResponse)
+      );
+
+      await signInGithub(code);
+
+      expect(api.post).toHaveBeenCalledWith('/v1/accounts/github/login/', { code });
+    });
+
+    it('signUp calls api.post with /v1/accounts/signin/', async () => {
+      const data = {
+        username: 'teste123',
+        first_name: 'teste',
+        last_name: 'teste',
+        email: 'teste@user.com',
+        password: 'userteste',
+        confirmPassword: '12345'
+      };
+      (api.post as jest.Mock).mockImplementation(() =>
+        Promise.resolve({ data: {} } as AxiosResponse)
+      );
+
+      await signUp(data);
+
+      expect(api.post).toHaveBeenCalledWith('/v1/accounts/signin/', data);
+    });
+
+    it('signOut calls api.delete with /v1/accounts/logout/', async () => {
+      (api.delete as jest.Mock).mockImplementation(() =>
+        Promise.resolve({ data: {} } as AxiosResponse)
+      );
+
+      await signOut();
+
+      expect(api.delete).toHaveBeenCalledWith('/v1/accounts/logout/');
+    });
+
+    it('getUserInfo calls api.get with /v1/accounts/', async () => {
+      (api.get as jest.Mock).mockImplementation(() =>
+        Promise.resolve({ data: {} } as AxiosResponse)
+      );
+
+      await getUserInfo();
+
+      expect(api.get).toHaveBeenCalledWith('/v1/accounts/');
+    });
+
+    it('getAccessToken calls api.get with /v1/accounts/access-token', async () => {
+      (api.get as jest.Mock).mockImplementation(() =>
+        Promise.resolve({ data: {} } as AxiosResponse)
+      );
+
+      await getAccessToken();
+
+      expect(api.get).toHaveBeenCalledWith('/v1/accounts/access-token');
+    });
+  });
 
 });

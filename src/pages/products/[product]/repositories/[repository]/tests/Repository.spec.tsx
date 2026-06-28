@@ -26,6 +26,19 @@ jest.mock('next/router', () => ({
 }));
 
 describe('<Repository />', () => {
+  // O TsqmiBadge compara created_at do mock contra Date.now() pra decidir se a
+  // analise esta "stale" (> 30 dias). Sem fixar o relogio, o snapshot passa a
+  // renderizar o alerta de stale assim que a data real ultrapassa 30 dias do
+  // created_at do mock, quebrando o teste com o tempo. Fixamos o agora num
+  // ponto dentro da janela pra manter o render deterministico.
+  beforeAll(() => {
+    jest.spyOn(Date, 'now').mockReturnValue(new Date('2026-05-25T00:00:00Z').getTime());
+  });
+
+  afterAll(() => {
+    (Date.now as jest.Mock).mockRestore();
+  });
+
   it('Should render correctly', () => {
     const { container } = render(
       <OrganizationProvider>
