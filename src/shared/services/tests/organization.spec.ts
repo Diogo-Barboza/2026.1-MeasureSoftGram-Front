@@ -192,7 +192,7 @@ describe('Organization Service', () => {
 
     const result = await organizationQuery.getGithubOrganizations();
 
-    expect(api.get).toHaveBeenCalledWith('/accounts/github-organizations/', expect.any(Object));
+    expect(api.get).toHaveBeenCalledWith('/v1/accounts/github-organizations/', expect.any(Object));
     expect(result.type).toBe('success');
     expect((result as any).value).toEqual(mockGithubOrgs);
   });
@@ -209,7 +209,7 @@ describe('Organization Service', () => {
 
     const result = await organizationQuery.importOrganization('Org1');
 
-    expect(api.post).toHaveBeenCalledWith('/organizations/import/', { github_org_name: 'Org1' }, expect.any(Object));
+    expect(api.post).toHaveBeenCalledWith('/v1/organizations/import/', { github_org_name: 'Org1' }, expect.any(Object));
     expect(result.type).toBe('success');
     expect((result as any).value).toEqual({ id: '1', name: 'Org1' });
   });
@@ -227,7 +227,7 @@ describe('Organization Service', () => {
 
     const result = await organizationQuery.getGithubRepos('1');
 
-    expect(api.get).toHaveBeenCalledWith('/organizations/1/github-repos/', expect.any(Object));
+    expect(api.get).toHaveBeenCalledWith('/v1/organizations/1/github-repos/', expect.any(Object));
     expect(result.type).toBe('success');
     expect((result as any).value).toEqual(mockRepos);
   });

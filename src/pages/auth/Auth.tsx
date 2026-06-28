@@ -42,7 +42,7 @@ const Auth: NextPageWithLayout = () => {
             setLoading(true);
             try {
               const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/accounts/github/validate/`,
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'}/v1/accounts/github/validate/`,
                 {
                   method: 'POST',
                   headers: {

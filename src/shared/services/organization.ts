@@ -121,7 +121,7 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
   async getGithubOrganizations(): Promise<Result<GitHubOrganization[]>> {
     try {
       const headers = await this.getAuthHeaders();
-      const response = await api.get('/accounts/github-organizations/', { headers });
+      const response = await api.get('/v1/accounts/github-organizations/', { headers });
       return { type: 'success', value: response.data as GitHubOrganization[] };
     } catch (error) {
       return { type: 'error', error: error as AxiosError };
@@ -132,7 +132,7 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
     try {
       const headers = await this.getAuthHeaders();
       const response = await api.post(
-        '/organizations/import/',
+        '/v1/organizations/import/',
         { github_org_name: githubOrgName },
         { headers }
       );
@@ -145,7 +145,7 @@ async updateOrganization(id: string, data: OrganizationFormData): Promise<Result
   async getGithubRepos(orgId: string): Promise<Result<GitHubRepo[]>> {
     try {
       const headers = await this.getAuthHeaders();
-      const response = await api.get(`/organizations/${orgId}/github-repos/`, { headers });
+      const response = await api.get(`/v1/organizations/${orgId}/github-repos/`, { headers });
       return { type: 'success', value: response.data as GitHubRepo[] };
     } catch (error) {
       return { type: 'error', error: error as AxiosError };
