@@ -118,7 +118,7 @@ function SideMenu() {
 
             {isDashboardMenuOpen &&
               dashboardSubItems.map((item) => (
-                <Box key={item.text} sx={{ marginLeft: '20px' }}>
+                <Box key={item.text} sx={{ width: '100%', paddingLeft: '20px', boxSizing: 'border-box', overflow: 'hidden' }}>
                   <SideMenuItem
                     key={item.text}
                     {...item}
