@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import getLayout from '@components/Layout';
 import { productQuery } from '@services/product';
+import { grafanaService } from '@services/grafana';
 import { AccomplishedRepository, Characteristic, IReleases } from '@customTypes/product';
-import { Box, Card, Container, Grid, Skeleton, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Card, CircularProgress, Container, Grid, Skeleton, Tab, Tabs, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useTranslation } from "react-i18next";
 import { formatDate } from '@utils/formatDate';
+import { getPathId } from '@utils/pathDestructer';
 import Head from 'next/head';
+
+const PLANEJADO_VS_REALIZADO_PANEL_ID = 8;
+const VISAO_GERAL_UID = '5904a9de-7f42-453c-9a93-1175d1fe6918';
 
 const Release: any = () => {
   const router = useRouter();
@@ -20,28 +25,52 @@ const Release: any = () => {
   const [selectedRepository, setSelectedRepository] = useState<AccomplishedRepository>();
   const [isLoading, setIsLoading] = useState(true);
 
+  const [productRepos, setProductRepos] = useState<{ id: number; name: string }[]>([]);
+  const [panelUrl, setPanelUrl] = useState<string | null>(null);
+  const [panelLoading, setPanelLoading] = useState(false);
+
   useEffect(() => {
+    if (!router.isReady) return;
+
+    const [organizationId, productId] = getPathId(routerParams.product as string);
+    const releaseId = routerParams.release;
+
     setIsLoading(true);
 
-    if (router.isReady) {
-      const organizationId = routerParams.product.split('-')[0];
-      const productId = routerParams.product.split('-')[1];
-      const releaseId = routerParams.release;
-
-      productQuery.getReleaseAnalysisDataByReleaseId(
-        organizationId, productId, releaseId
-      ).then((res) => {
-        setAccomplisedResults(res.data.accomplished);
-        setPlanned(res.data.planned);
-        setRelease(res.data.release);
-        setIsLoading(false);
-      });
-    }
+    Promise.all([
+      productQuery.getReleaseAnalysisDataByReleaseId(organizationId, productId, releaseId),
+      productQuery.getAllRepositories(organizationId, productId),
+    ]).then(([releaseRes, reposRes]) => {
+      setAccomplisedResults(releaseRes.data.accomplished);
+      setPlanned(releaseRes.data.planned);
+      setRelease(releaseRes.data.release);
+      setProductRepos(reposRes.data.results.map((r: any) => ({ id: r.id, name: r.name })));
+      setIsLoading(false);
+    });
   }, [router.isReady, routerParams.product, routerParams.release]);
 
   useEffect(() => {
-    setSelectedRepository(accomplisedResults[selectedValue])
-  }, [selectedValue, accomplisedResults])
+    setSelectedRepository(accomplisedResults[selectedValue]);
+  }, [selectedValue, accomplisedResults]);
+
+  useEffect(() => {
+    if (!selectedRepository || productRepos.length === 0) return;
+
+    const [, productId] = getPathId(routerParams.product as string);
+    const matched = productRepos.find((r) => r.name === selectedRepository.repository_name);
+    if (!matched) return;
+
+    setPanelLoading(true);
+    setPanelUrl(null);
+
+    grafanaService
+      .getDashboardUrl(VISAO_GERAL_UID, Number(productId), matched.id)
+      .then((res) => {
+        setPanelUrl(`${res.data.grafana_url}&viewPanel=${PLANEJADO_VS_REALIZADO_PANEL_ID}`);
+        setPanelLoading(false);
+      })
+      .catch(() => setPanelLoading(false));
+  }, [selectedRepository, productRepos, routerParams.product]);
 
   const handleSelectionChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedValue(newValue);
@@ -69,9 +98,11 @@ const Release: any = () => {
               >
                 {accomplisedResults.map((repository: AccomplishedRepository) => (
                   <Tab
+                    key={repository.repository_name}
                     sx={{ fontSize: 13 }}
                     label={repository.repository_name}
-                    data-testid='repository-tab' />
+                    data-testid='repository-tab'
+                  />
                 ))}
               </Tabs>
             </Box>
@@ -79,12 +110,29 @@ const Release: any = () => {
         </Grid>
 
         <Grid item xs={10}>
-          <Box sx={{ width: '100%', height: '520px', overflow: 'hidden' }}>
-            <iframe
-              src="http://localhost:9000/d/5904a9de-7f42-453c-9a93-1175d1fe6918/1-visao-geral-de-qualidade?orgId=1&from=now-180d&to=now&timezone=browser&refresh=1m&viewPanel=panel-8&theme=light&kiosk"
-              title="Planejado vs Realizado"
-              style={{ width: '100%', height: '100%', border: 'none' }}
-            />
+          <Box
+            sx={{
+              width: '100%',
+              height: '520px',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid #d0d7de',
+              borderRadius: '8px',
+            }}
+          >
+            {panelLoading && <CircularProgress />}
+            {!panelLoading && !panelUrl && (
+              <Typography color="text.secondary">Selecione um repositório</Typography>
+            )}
+            {panelUrl && !panelLoading && (
+              <iframe
+                src={panelUrl}
+                title="Planejado vs Realizado"
+                style={{ width: '100%', height: '100%', border: 'none' }}
+              />
+            )}
           </Box>
         </Grid>
       </Grid>
