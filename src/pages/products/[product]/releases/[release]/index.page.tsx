@@ -7,7 +7,6 @@ import { useRouter } from 'next/router';
 import { useTranslation } from "react-i18next";
 import { formatDate } from '@utils/formatDate';
 import Head from 'next/head';
-import ReleaseChart from '@components/ReleaseChart';
 
 const Release: any = () => {
   const router = useRouter();
@@ -51,8 +50,8 @@ const Release: any = () => {
   const renderContent = () => (
     <Container>
       <Grid container mt={0.1} spacing={4}>
-        <Grid item xs={2} height={520} >
-          <Card sx={{ height: 'inherit' }} >
+        <Grid item xs={2} height={520}>
+          <Card sx={{ height: 'inherit' }}>
             <Box sx={{ display: 'flex', height: 'inherit' }}>
               <Tabs
                 orientation='vertical'
@@ -74,32 +73,36 @@ const Release: any = () => {
                     label={repository.repository_name}
                     data-testid='repository-tab' />
                 ))}
-
               </Tabs>
             </Box>
           </Card>
         </Grid>
 
         <Grid item xs={10}>
-          {selectedRepository && <ReleaseChart repository={selectedRepository} planned={planned} accomplised={selectedRepository.characteristics} normDiff={selectedRepository.norm_diff} />}
+          <Box sx={{ width: '100%', height: '520px', overflow: 'hidden' }}>
+            <iframe
+              src="http://localhost:9000/d/5904a9de-7f42-453c-9a93-1175d1fe6918/1-visao-geral-de-qualidade?orgId=1&from=now-180d&to=now&timezone=browser&refresh=1m&viewPanel=panel-8&theme=light&kiosk"
+              title="Planejado vs Realizado"
+              style={{ width: '100%', height: '100%', border: 'none' }}
+            />
+          </Box>
         </Grid>
       </Grid>
     </Container>
-  )
+  );
 
   const renderSkeleton = () => (
     <Container>
       <Grid container mt={0.1} spacing={4}>
-        <Grid item xs={2} >
+        <Grid item xs={2}>
           <Skeleton height={520} variant='rectangular' />
         </Grid>
-        <Grid item xs={10} >
+        <Grid item xs={10}>
           <Skeleton height={520} variant='rectangular' />
         </Grid>
       </Grid>
     </Container>
-  )
-
+  );
 
   return (
     <>
@@ -123,9 +126,7 @@ const Release: any = () => {
             </Typography>
           </Box>}
         </Box>
-        {
-          isLoading ? renderSkeleton() : renderContent()
-        }
+        {isLoading ? renderSkeleton() : renderContent()}
       </Container>
     </>
   );
