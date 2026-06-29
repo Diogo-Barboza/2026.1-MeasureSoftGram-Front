@@ -7,7 +7,7 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiPieChart,
-  FiTrendingUp
+  FiTrendingUp,
 } from 'react-icons/fi';
 import { useAuth } from '@contexts/Auth';
 import { useProductContext } from '@contexts/ProductProvider';
@@ -70,21 +70,21 @@ function SideMenu() {
 
   const dashboardSubItems: SideMenuItemType[] = [
     {
-      startIcon: <FiPieChart fontSize={24} />, // Ícone de gráfico de pizza para Visão Geral
+      startIcon: <FiPieChart fontSize={24} />,
       text: '1. Visão Geral de Qualidade',
       tooltip: 'Visão Geral de Qualidade',
       path: `/products/${currentOrganization?.id}-${currentProduct?.id}-${currentProduct?.name}/dashboards/overview`,
       disable: !currentProduct,
-      selected: router.pathname === '/products/[product]/dashboards/overview'
+      selected: router.pathname === '/products/[product]/dashboards/overview',
     },
     {
-      startIcon: <FiTrendingUp fontSize={24} />, // Ícone de tendência para Evolução Temporal
+      startIcon: <FiTrendingUp fontSize={24} />,
       text: '2. Evolução Temporal',
       tooltip: 'Evolução Temporal',
       path: `/products/${currentOrganization?.id}-${currentProduct?.id}-${currentProduct?.name}/dashboards/temporal`,
       disable: !currentProduct,
-      selected: router.pathname === '/products/[product]/dashboards/temporal'
-    }
+      selected: router.pathname === '/products/[product]/dashboards/temporal',
+    },
   ];
 
   const isAnyDashboardSelected = router.pathname.includes('/dashboards/');
