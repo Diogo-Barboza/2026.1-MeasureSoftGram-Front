@@ -1,18 +1,14 @@
 name: Publish Docker Image
 
 on:
-  pull_request:
+  push:
     branches:
       - develop
-    types:
-      - closed
+  workflow_dispatch:
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    # `closed` dispara tambem em PR fechado SEM merge. So buildar/publicar
-    # quando o PR foi de fato mergeado, senao um PR recusado publicaria imagem.
-    if: github.event.pull_request.merged == true
 
     steps:
       - name: Checkout do código

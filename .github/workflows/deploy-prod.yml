@@ -1,0 +1,80 @@
+name: Deploy Prod (SSH)
+
+# Deploy de producao do Front na VM do LAPPIS via SSH, a partir de um runner
+# cloud (ubuntu-latest). Dispara DEPOIS que a imagem do Front e publicada
+# (workflow_run sobre o "Publish Docker Image" deste repo), pra nunca dar pull
+# antes da imagem nova existir no DockerHub.
+#
+# Independente do Service: merge no Front redeploya o Front; merge no Service
+# redeploya o Service. Cada repo cuida do seu.
+#
+# O compose (docker-compose.prod.yml) e o nginx vivem no repo do Service e ja
+# estao na box em ~/msgram-deploy (mantidos frescos pelo deploy do Service e
+# pelo setup inicial da VM). Aqui so damos pull da imagem nova do front e
+# recriamos o container (--no-deps pra nao tocar service/db).
+#
+# OBS workflow_run: so dispara quando este arquivo ja esta no branch DEFAULT
+# (develop, confirmado). O proprio merge pra develop ja deixa o arquivo la.
+
+on:
+  workflow_run:
+    workflows: ["Publish Docker Image"]
+    types:
+      - completed
+    branches:
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Pull + up + smoke (SSH)
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Deploy (login + pull + up + smoke)
+        uses: appleboy/ssh-action@7eaf76671a0d7eec5d98ee897acda4f968735a17 # v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          fingerprint: ${{ secrets.SSH_KNOWN_HOST_FP }}
+          command_timeout: 15m
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          script: |
+            set -e
+            cd ~/msgram-deploy
+            # O compose mora no repo do Service. Se o Service nunca deployou
+            # nesta box (nem o setup inicial rodou), o arquivo nao existe.
+            [ -f docker-compose.prod.yml ] || {
+              echo "FALHA: ~/msgram-deploy/docker-compose.prod.yml ausente."
+              echo "Rode o setup inicial da VM ou um deploy do Service antes."
+              exit 1
+            }
+            export DOCKERHUB_USERNAME="$DOCKERHUB_USERNAME"
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+            # flock serializa com o deploy do Service na MESMA box (mutex
+            # cross-repo, que o concurrency do Actions nao cobre).
+            flock /tmp/msgram-deploy.lock -c '
+              docker compose -f docker-compose.prod.yml pull front
+              docker compose -f docker-compose.prod.yml up -d --no-deps front
+            '
+
+            # ----- smoke test (proxy interno publica :80 no host da VM) -----
+            ok=0
+            for i in $(seq 1 15); do
+              if curl -fsS http://localhost/ >/dev/null; then ok=1; break; fi
+              echo "front ainda nao respondeu (tentativa $i), aguardando..."
+              sleep 4
+            done
+            [ "$ok" = "1" ] || { echo "FALHA: Front nao respondeu na raiz"; exit 1; }
+            echo "OK: Front 200"
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
