@@ -20,7 +20,7 @@ const TemporalDashboard: NextPageWithLayout = () => {
 
           <Box sx={{ width: '100%', height: '80vh', border: '1px solid #d0d7de', borderRadius: '8px', overflow: 'hidden' }}>
             <iframe
-              src="http://localhost:9000/d/hierarquia-qualidade/evolucao-temporal-e28094-hierarquia-completa?orgId=1&from=now-6M&to=now&timezone=browser&var-repository=1&var-characteristic=3&var-subcharacteristic=$__all&var-measure=$__all&refresh=5m"
+              src="http://localhost:9000/d/hierarquia-qualidade/evolucao-temporal-e28094-hierarquia-completa?orgId=1&from=now-6M&to=now&timezone=browser&var-repository=1&var-characteristic=3&var-subcharacteristic=$__all&var-measure=$__all&refresh=5m&theme=light"
               title="Evolução Temporal"
               style={{ width: '100%', height: '100%', border: 'none' }}
             />

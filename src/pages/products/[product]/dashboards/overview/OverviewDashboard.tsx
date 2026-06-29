@@ -20,7 +20,7 @@ const OverviewDashboard: NextPageWithLayout = () => {
 
           <Box sx={{ width: '100%', height: '80vh', border: '1px solid #d0d7de', borderRadius: '8px', overflow: 'hidden' }}>
             <iframe
-              src="http://localhost:9000/public-dashboards/cdb4f5037da648fd85dd5e5816ce9c0a"
+              src="http://localhost:9000/public-dashboards/cdb4f5037da648fd85dd5e5816ce9c0a?theme=light"
               title="Visão Geral"
               style={{ width: '100%', height: '100%', border: 'none' }}
             />

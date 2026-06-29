@@ -7,8 +7,8 @@ import { NextPageWithLayout } from '@pages/_app.next';
 import getLayout from '@components/Layout';
 
 const dashboardUrls: Record<string, string> = {
-  '1': 'http://localhost:9000/public-dashboards/bef1bbffea924622b7c7db772aee2d51',
-  '2': 'http://localhost:9000/public-dashboards/cdb4f5037da648fd85dd5e5816ce9c0a',
+  '1': 'http://localhost:9000/public-dashboards/bef1bbffea924622b7c7db772aee2d51?theme=light',
+  '2': 'http://localhost:9000/public-dashboards/cdb4f5037da648fd85dd5e5816ce9c0a?theme=light',
 };
 
 const DashboardViewer: NextPageWithLayout = () => {
