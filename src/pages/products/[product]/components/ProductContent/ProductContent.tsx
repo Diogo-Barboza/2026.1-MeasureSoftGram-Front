@@ -5,9 +5,7 @@ import { ptBR } from 'date-fns/locale';
 
 import { Box, Button, Typography, Container } from '@mui/material';
 
-import { RepositoriesTsqmiHistory } from '@customTypes/product';
 
-import GraphicRepositoriesTsqmiHistory from '@components/GraphicRepositoriesTsqmiHistory';
 
 import { useProductContext } from '@contexts/ProductProvider';
 
@@ -16,11 +14,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import Skeleton from './Skeleton';
 
-interface Props {
-  repositoriesTsqmiHistory?: RepositoriesTsqmiHistory;
-}
-
-const ProductContent: React.FC<Props> = ({ repositoriesTsqmiHistory }) => {
+const ProductContent: React.FC = () => {
   const { currentProduct } = useProductContext();
 
   const [openCreateRelease, setOpenCreateRelease] = useState(false);
@@ -44,7 +38,7 @@ const ProductContent: React.FC<Props> = ({ repositoriesTsqmiHistory }) => {
       locale: ptBR
     });
 
-  if (!currentProduct || !repositoriesTsqmiHistory) {
+  if (!currentProduct) {
     return (
       <Container>
         <Skeleton />
@@ -72,7 +66,13 @@ const ProductContent: React.FC<Props> = ({ repositoriesTsqmiHistory }) => {
           </Box>
         </Box>
       </Box>
-      <GraphicRepositoriesTsqmiHistory history={repositoriesTsqmiHistory} />
+      <Box sx={{ width: '100%', height: '80vh', border: '1px solid #d0d7de', borderRadius: '8px', overflow: 'hidden' }}>
+        <iframe
+          src="http://localhost:9000/d/ad2c5q4/dashboard-de-pulso?orgId=1&from=1966-08-18T16:28:24.794Z&to=2086-04-01T08:28:24.794Z&timezone=browser&var-repository=9&var-date_from=2026-01-01&var-date_to=2026-12-01&theme=light"
+          title="Gráfico de Pulso"
+          style={{ width: '100%', height: '100%', border: 'none' }}
+        />
+      </Box>
     </Container>
   );
 };
