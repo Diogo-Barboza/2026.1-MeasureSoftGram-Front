@@ -6,8 +6,12 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 
+interface CopyBadgeModalProps {
+  badgeUrl?: string;
+  badgeLabel?: string;
+}
 
-function CopyBadgeModal() {
+function CopyBadgeModal({ badgeUrl, badgeLabel = 'MeasureSoftGram' }: CopyBadgeModalProps) {
   const { latestTSQMIBadgeUrl } = useRepositoryContext();
   const { t } = useTranslation('repositories');
 
@@ -21,7 +25,8 @@ function CopyBadgeModal() {
     setOpenModal(false);
   };
 
-  const badgeMarkdown = `![MeasureSoftGram](${latestTSQMIBadgeUrl})`;
+  const resolvedBadgeUrl = badgeUrl || latestTSQMIBadgeUrl;
+  const badgeMarkdown = `![${badgeLabel}](${resolvedBadgeUrl})`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(badgeMarkdown)
@@ -62,7 +67,7 @@ function CopyBadgeModal() {
             {t('repository.copy-badge', 'Copiar Badge')}
           </Typography>
           {
-            latestTSQMIBadgeUrl ?
+            resolvedBadgeUrl ?
               <>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   {t('repository.badge-instructions', 'Cole o código abaixo no README do seu repositório:')}
@@ -81,7 +86,7 @@ function CopyBadgeModal() {
                   {badgeMarkdown}
                 </Box>
                 <Box display="flex" justifyContent="center" mb={2}>
-                  <img src={latestTSQMIBadgeUrl} alt="Badge Preview" style={{ height: '20px' }} />
+                  <img src={resolvedBadgeUrl} alt="Badge Preview" style={{ height: '20px' }} />
                 </Box>
                 <Box
                   display="flex"

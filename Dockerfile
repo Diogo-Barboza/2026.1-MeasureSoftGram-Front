@@ -1,82 +1,64 @@
-# syntax=docker/dockerfile:1
-
-# =============================================================================
-# Dockerfile de PRODUCAO (multistage) - MeasureSoftGram Front (Next.js 12)
-# -----------------------------------------------------------------------------
-# Stages:
-#   base    -> imagem comum (Node 20 alpine + corepack/pnpm)
-#   deps    -> instala TODAS as dependencias (necessarias pro build)
-#   builder -> roda `pnpm build` (next build), com SERVICE_URL inlined
-#   runner  -> runtime enxuto que roda `next start` com deps de producao
+# ============================================================
+# Build de producao do Front (Next.js 12). Multi-stage:
+#   builder -> instala deps + next build (gera o .next otimizado)
+#   runner  -> NODE_ENV=production + next start (serve o build pronto)
 #
-# IMPORTANTE - SERVICE_URL e BUILD-TIME, NAO RUNTIME:
-#   next.config.js expoe SERVICE_URL via bloco `env:` e o codigo cliente
-#   (src/shared/services/api.ts) le `process.env.SERVICE_URL`. O Next.js
-#   INLINA esse valor no bundle do browser DURANTE O BUILD. Logo, a URL da API
-#   e fixada na imagem no momento do `pnpm build` e NAO pode ser trocada em
-#   runtime sem rebuildar. Por isso SERVICE_URL entra como build-arg (ARG/ENV
-#   no stage builder). Trocar a URL exige nova build da imagem.
-#   ignoreBuildErrors:true (next.config.js) e proposital: erros de TS antigos
-#   nao bloqueiam o build de producao - mantido como esta.
-# =============================================================================
+# Em producao o Next NAO compila pagina on-demand: a home responde de
+# imediato. O `next dev` que rodava aqui antes compilava `/` na primeira
+# request, estourava o proxy_read_timeout do nginx (504) e reprovava o
+# smoke test do deploy.
+# ============================================================
 
-# ---- base ----
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat
-# package.json declara packageManager pnpm@9.0.0 -> corepack resolve a versao
-RUN corepack enable
-WORKDIR /app
+# ---------- builder ----------
+FROM node:20-alpine AS builder
 
-# ---- deps ----
-# Instala todas as dependencias (dev + prod) - necessarias pro `next build`.
-FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-
-# ---- builder ----
-# Roda o build de producao. SERVICE_URL e demais envs publicos sao inlined aqui.
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-# build-args inlined no bundle (build-time). O default e o ambiente de
-# desenvolvimento; o valor de cada ambiente vem via --build-arg no CI.
-ARG SERVICE_URL=http://localhost:8080/api/v1
+# build-args inlined no bundle (next.config `env` + prefixo NEXT_PUBLIC_,
+# avaliados em build-time). Os defaults sao de desenvolvimento; cada ambiente
+# sobrescreve via --build-arg (ver .github/workflows/docker-publish.yml).
+# NEXT_PUBLIC_API_URL e a baseURL do axios no browser (src/shared/services/
+# api.ts); sem ela as chamadas de API caem no proprio dominio do front.
+ARG SERVICE_URL=http://localhost:8080/api
+ARG NEXT_PUBLIC_API_URL=http://localhost:8080/api
 ARG LOGIN_REDIRECT_URL
 ARG GITHUB_CLIENT_ID
 ENV SERVICE_URL=$SERVICE_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV LOGIN_REDIRECT_URL=$LOGIN_REDIRECT_URL
 ENV GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Dependencias nativas (node-gyp e afins).
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /usr/src
+
+# Camada de dependencias: so invalida quando o lockfile muda.
+COPY package.json pnpm-lock.yaml* ./
+RUN npm install -g pnpm@9.0.0 && pnpm install --frozen-lockfile
+
+# Codigo + build de producao.
+COPY . .
 RUN pnpm build
 
-# ---- prod-deps ----
-# node_modules apenas de producao, pra imagem final enxuta.
-FROM base AS prod-deps
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prod
+# ---------- runner ----------
+FROM node:20-alpine AS runner
 
-# ---- runner ----
-# Runtime: serve a app com `next start` (sem output:standalone; o projeto nao
-# usa SSR/getServerSideProps, mas next start cobre rotas dinamicas e assets).
-FROM base AS runner
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# usuario nao-root
-RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -G nodejs -S nextjs
+RUN apk add --no-cache libc6-compat && npm install -g pnpm@9.0.0
 
-COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=builder  /app/.next ./.next
-COPY --from=builder  /app/public ./public
-COPY --from=builder  /app/package.json ./package.json
-COPY --from=builder  /app/next.config.js ./next.config.js
+WORKDIR /usr/src
 
-USER nextjs
+# Artefatos que o `next start` precisa: build, deps, manifestos e estaticos.
+COPY --from=builder /usr/src/node_modules ./node_modules
+COPY --from=builder /usr/src/.next ./.next
+COPY --from=builder /usr/src/public ./public
+COPY --from=builder /usr/src/package.json ./package.json
+COPY --from=builder /usr/src/next.config.js ./next.config.js
 
 EXPOSE 3000
 
-# next start (package.json:9 -> "start": "next start")
+# Servidor de producao (paginas ja compiladas, sem on-demand).
 CMD ["pnpm", "start"]

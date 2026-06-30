@@ -20,7 +20,7 @@ const mockLatestTSQMI = {
 };
 
 const mockBadgeUrl = 'http://localhost:8000/organizations/1/products/1/repositories/1/latest-values/tsqmi/badge';
-const STALE_WARNING_TEXT = 'A última análise foi realizada há mais de 30 dias. A badge pode estar desatualizada.';
+const STALE_WARNING_LABEL = 'Badge desatualizada';
 
 describe('<TsqmiBadge />', () => {
   it('should render the badge image when latestTSQMIBadgeUrl is provided', () => {
@@ -68,9 +68,10 @@ describe('<TsqmiBadge />', () => {
     );
 
     expect(screen.queryByTestId('copy-badge-modal')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(STALE_WARNING_LABEL)).not.toBeInTheDocument();
   });
 
-  it('should show stale warning when analysis is older than 30 days', () => {
+  it('should show stale warning icon when analysis is older than 30 days', () => {
     const staleTSQMI = {
       id: 1,
       value: 0.75,
@@ -84,10 +85,10 @@ describe('<TsqmiBadge />', () => {
       />
     );
 
-    expect(screen.getByText(STALE_WARNING_TEXT)).toBeInTheDocument();
+    expect(screen.getByLabelText(STALE_WARNING_LABEL)).toBeInTheDocument();
   });
 
-  it('should not show stale warning when analysis is recent', () => {
+  it('should not show stale warning icon when analysis is recent', () => {
     const recentTSQMI = {
       id: 1,
       value: 0.75,
@@ -101,10 +102,10 @@ describe('<TsqmiBadge />', () => {
       />
     );
 
-    expect(screen.queryByText(STALE_WARNING_TEXT)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(STALE_WARNING_LABEL)).not.toBeInTheDocument();
   });
 
-  it('should show stale warning when latestTSQMI is null', () => {
+  it('should show stale warning icon when latestTSQMI is null', () => {
     render(
       <TsqmiBadge
         latestTSQMI={null}
@@ -112,6 +113,6 @@ describe('<TsqmiBadge />', () => {
       />
     );
 
-    expect(screen.getByText(STALE_WARNING_TEXT)).toBeInTheDocument();
+    expect(screen.getByLabelText(STALE_WARNING_LABEL)).toBeInTheDocument();
   });
 });

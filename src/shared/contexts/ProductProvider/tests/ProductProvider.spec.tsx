@@ -58,6 +58,7 @@ const TestComponents = () => {
 
 describe('ProductProvider', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     (useOrganizationContext as jest.Mock).mockReturnValue({
       currentOrganization: mockOrganization,
     });
@@ -128,4 +129,69 @@ describe('ProductProvider', () => {
     await waitFor(() => expect(productQuery.getAllProducts).toHaveBeenCalledWith(mockOrganization.id));
   });
 
+  it('throws error when useProductContext is used outside ProductProvider', () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    expect(() => render(<TestComponent />)).toThrow('useProductContext must be used within a ProductContext');
+    consoleSpy.mockRestore();
+  });
+
+  it('updates the productsList correctly when updateProductList is called', () => {
+    const { getByTestId, getByText } = render(
+      <ProductProvider>
+        <TestComponents />
+      </ProductProvider>
+    );
+
+    act(() => {
+      getByText('Update Products').click();
+    });
+
+    expect(getByTestId('product-0').textContent).toBe(mockProduct.name);
+  });
+
+  it('does not load products if currentOrganization is null', async () => {
+    (useOrganizationContext as jest.Mock).mockReturnValue({
+      currentOrganization: null,
+    });
+
+    render(
+      <ProductProvider>
+        <div>Test Child</div>
+      </ProductProvider>
+    );
+
+    expect(productQuery.getAllProducts).not.toHaveBeenCalled();
+  });
+
+  it('fallback options when results are in result.data', async () => {
+    (useOrganizationContext as jest.Mock).mockReturnValue({
+      currentOrganization: mockOrganization,
+    });
+    (productQuery.getAllProducts as jest.Mock).mockResolvedValue({
+      data: mockProducts,
+    });
+
+    render(
+      <ProductProvider>
+        <div>Test Child</div>
+      </ProductProvider>
+    );
+
+    await waitFor(() => expect(productQuery.getAllProducts).toHaveBeenCalled());
+  });
+
+  it('fallback options when results are empty/undefined', async () => {
+    (useOrganizationContext as jest.Mock).mockReturnValue({
+      currentOrganization: mockOrganization,
+    });
+    (productQuery.getAllProducts as jest.Mock).mockResolvedValue({});
+
+    render(
+      <ProductProvider>
+        <div>Test Child</div>
+      </ProductProvider>
+    );
+
+    await waitFor(() => expect(productQuery.getAllProducts).toHaveBeenCalled());
+  });
 });

@@ -1,6 +1,6 @@
+import { getAccessToken } from '@services/Auth';
 import api from '../api';
 import { organizationQuery } from '../organization'; // Ajuste o caminho se necessário
-import { getAccessToken } from '@services/Auth';
 
 jest.mock('../api');
 
@@ -12,6 +12,7 @@ jest.mock('@services/Auth', () => ({
 
 describe('Organization Service', () => {
   const mockPayload = { name: 'Nova Org', key: 'NOVA' };
+  const NETWORK_ERROR = 'Network error';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -33,11 +34,9 @@ describe('Organization Service', () => {
 
     const result = await organizationQuery.getAllOrganization();
 
-    expect(api.get).toHaveBeenCalled();
+    expect(api.get).toHaveBeenCalledWith('/v1/organizations/', expect.any(Object));
     expect(result.type).toEqual('success');
-    if (result.type === 'success') {
-      expect(result.value).toEqual(mockOrgs.results);
-    }
+    expect((result as any).value).toEqual(mockOrgs.results);
   });
 
   it('deve buscar uma organização por ID (GET)', async () => {
@@ -46,7 +45,7 @@ describe('Organization Service', () => {
 
     const result = await organizationQuery.getOrganizationById('1');
 
-    expect(api.get).toHaveBeenCalledWith('/organizations/1/', expect.any(Object));
+    expect(api.get).toHaveBeenCalledWith('/v1/organizations/1/', expect.any(Object));
     expect(result.type).toEqual('success');
   });
 
@@ -54,7 +53,7 @@ describe('Organization Service', () => {
     (api.post as jest.Mock).mockResolvedValue({ data: { id: '2', ...mockPayload } });
 
     const result = await organizationQuery.createOrganization(mockPayload);
-    expect(api.post).toHaveBeenCalled();
+    expect(api.post).toHaveBeenCalledWith('/v1/organizations/', mockPayload, expect.any(Object));
     expect(result.type).toEqual('success');
   });
 
@@ -62,7 +61,7 @@ describe('Organization Service', () => {
     (api.put as jest.Mock).mockResolvedValue({ data: mockPayload });
 
     const result = await organizationQuery.updateOrganization('1', mockPayload);
-    expect(api.put).toHaveBeenCalled();
+    expect(api.put).toHaveBeenCalledWith('/v1/organizations/1/', mockPayload, expect.any(Object));
     expect(result.type).toEqual('success');
   });
 
@@ -70,7 +69,7 @@ describe('Organization Service', () => {
     (api.delete as jest.Mock).mockResolvedValue({ status: 204 });
 
     const result = await organizationQuery.deleteOrganization('1');
-    expect(api.delete).toHaveBeenCalled();
+    expect(api.delete).toHaveBeenCalledWith('/v1/organizations/1/', expect.any(Object));
     expect(result.type).toEqual('success');
   });
 
@@ -85,25 +84,23 @@ describe('Organization Service', () => {
     const result = await organizationQuery.getAllOrganization();
 
     expect(result.type).toEqual('error');
-    if (result.type === 'error') {
-      expect(result.error.message).toBe('Token de acesso não encontrado.');
-    }
+    expect((result as any).error.message).toBe('Token de acesso não encontrado.');
   });
 
   it('deve lidar com falha genérica no getAllOrganization', async () => {
-    (api.get as jest.Mock).mockRejectedValue(new Error('Network error'));
+    (api.get as jest.Mock).mockRejectedValue(new Error(NETWORK_ERROR));
     const result = await organizationQuery.getAllOrganization();
     expect(result.type).toEqual('error');
   });
 
   it('deve lidar com falha genérica no getOrganizationById', async () => {
-    (api.get as jest.Mock).mockRejectedValue(new Error('Network error'));
+    (api.get as jest.Mock).mockRejectedValue(new Error(NETWORK_ERROR));
     const result = await organizationQuery.getOrganizationById('1');
     expect(result.type).toEqual('error');
   });
 
   it('deve lidar com falha genérica no deleteOrganization', async () => {
-    (api.delete as jest.Mock).mockRejectedValue(new Error('Network error'));
+    (api.delete as jest.Mock).mockRejectedValue(new Error(NETWORK_ERROR));
     const result = await organizationQuery.deleteOrganization('1');
     expect(result.type).toEqual('error');
   });
@@ -122,9 +119,7 @@ describe('Organization Service', () => {
     const result = await organizationQuery.createOrganization(mockPayload);
 
     expect(result.type).toEqual('error');
-    if (result.type === 'error') {
-      expect(result.error.message).toBe('Já existe uma organização com este nome.');
-    }
+    expect((result as any).error.message).toBe('Já existe uma organização com este nome.');
   });
 
   it('deve retornar erro de chave duplicada ao criar organização', async () => {
@@ -139,9 +134,7 @@ describe('Organization Service', () => {
     const result = await organizationQuery.createOrganization(mockPayload);
 
     expect(result.type).toEqual('error');
-    if (result.type === 'error') {
-      expect(result.error.message).toBe('Já existe uma organização com esta chave.');
-    }
+    expect((result as any).error.message).toBe('Já existe uma organização com esta chave.');
   });
 
   it('deve retornar erro genérico ao falhar na criação', async () => {
@@ -150,9 +143,7 @@ describe('Organization Service', () => {
     const result = await organizationQuery.createOrganization(mockPayload);
 
     expect(result.type).toEqual('error');
-    if (result.type === 'error') {
-      expect(result.error.message).toBe('Ocorreu um erro ao criar organização.');
-    }
+    expect((result as any).error.message).toBe('Ocorreu um erro ao criar organização.');
   });
 
   it('deve retornar erro de nome duplicado ao atualizar organização', async () => {
@@ -167,9 +158,7 @@ describe('Organization Service', () => {
     const result = await organizationQuery.updateOrganization('1', mockPayload);
 
     expect(result.type).toEqual('error');
-    if (result.type === 'error') {
-      expect(result.error.message).toBe('Já existe uma organização com este nome.');
-    }
+    expect((result as any).error.message).toBe('Já existe uma organização com este nome.');
   });
 
   it('deve retornar erro de chave duplicada ao atualizar organização', async () => {
@@ -184,9 +173,7 @@ describe('Organization Service', () => {
     const result = await organizationQuery.updateOrganization('1', mockPayload);
 
     expect(result.type).toEqual('error');
-    if (result.type === 'error') {
-      expect(result.error.message).toBe('Já existe uma organização com esta chave.');
-    }
+    expect((result as any).error.message).toBe('Já existe uma organização com esta chave.');
   });
 
   it('deve retornar erro genérico ao falhar na atualização', async () => {
@@ -195,8 +182,86 @@ describe('Organization Service', () => {
     const result = await organizationQuery.updateOrganization('1', mockPayload);
 
     expect(result.type).toEqual('error');
-    if (result.type === 'error') {
-      expect(result.error.message).toBe('Ocorreu um erro ao atualizar organização.');
-    }
+    expect((result as any).error.message).toBe('Ocorreu um erro ao atualizar organização.');
   });
+
+  // Testes de getGithubOrganizations
+  it('deve buscar organizações do GitHub (GET)', async () => {
+    const mockGithubOrgs = [{ github_org_id: 1, github_org_name: 'Org1' }];
+    (api.get as jest.Mock).mockResolvedValue({ data: mockGithubOrgs });
+
+    const result = await organizationQuery.getGithubOrganizations();
+
+    expect(api.get).toHaveBeenCalledWith('/v1/accounts/github-organizations/', expect.any(Object));
+    expect(result.type).toBe('success');
+    expect((result as any).value).toEqual(mockGithubOrgs);
+  });
+
+  it('deve retornar erro ao falhar buscar organizações do GitHub', async () => {
+    (api.get as jest.Mock).mockRejectedValue(new Error(NETWORK_ERROR));
+    const result = await organizationQuery.getGithubOrganizations();
+    expect(result.type).toBe('error');
+  });
+
+  // Testes de importOrganization
+  it('deve importar organização do GitHub (POST)', async () => {
+    (api.post as jest.Mock).mockResolvedValue({ data: { id: '1', name: 'Org1' } });
+
+    const result = await organizationQuery.importOrganization('Org1');
+
+    expect(api.post).toHaveBeenCalledWith('/v1/organizations/import/', { github_org_name: 'Org1' }, expect.any(Object));
+    expect(result.type).toBe('success');
+    expect((result as any).value).toEqual({ id: '1', name: 'Org1' });
+  });
+
+  it('deve retornar erro ao falhar importar organização do GitHub', async () => {
+    (api.post as jest.Mock).mockRejectedValue(new Error(NETWORK_ERROR));
+    const result = await organizationQuery.importOrganization('Org1');
+    expect(result.type).toBe('error');
+  });
+
+  // Testes de getGithubRepos
+  it('deve buscar repositórios do GitHub (GET)', async () => {
+    const mockRepos = [{ github_repo_id: 1, name: 'repo1' }];
+    (api.get as jest.Mock).mockResolvedValue({ data: mockRepos });
+
+    const result = await organizationQuery.getGithubRepos('1');
+
+    expect(api.get).toHaveBeenCalledWith('/v1/organizations/1/github-repos/', expect.any(Object));
+    expect(result.type).toBe('success');
+    expect((result as any).value).toEqual(mockRepos);
+  });
+
+  it('deve retornar erro ao falhar buscar repositórios do GitHub', async () => {
+    (api.get as jest.Mock).mockRejectedValue(new Error(NETWORK_ERROR));
+    const result = await organizationQuery.getGithubRepos('1');
+    expect(result.type).toBe('error');
+  });
+
+  // Teste de erro de token em outros métodos
+  it('deve retornar erro se o token de acesso não for encontrado para outros métodos', async () => {
+    (getAccessToken as jest.Mock).mockResolvedValue({ type: 'error' });
+
+    const createRes = await organizationQuery.createOrganization(mockPayload);
+    expect(createRes.type).toBe('error');
+
+    const getByIdRes = await organizationQuery.getOrganizationById('1');
+    expect(getByIdRes.type).toBe('error');
+
+    const updateRes = await organizationQuery.updateOrganization('1', mockPayload);
+    expect(updateRes.type).toBe('error');
+
+    const deleteRes = await organizationQuery.deleteOrganization('1');
+    expect(deleteRes.type).toBe('error');
+
+    const getGithubOrgsRes = await organizationQuery.getGithubOrganizations();
+    expect(getGithubOrgsRes.type).toBe('error');
+
+    const importRes = await organizationQuery.importOrganization('Org1');
+    expect(importRes.type).toBe('error');
+
+    const getReposRes = await organizationQuery.getGithubRepos('1');
+    expect(getReposRes.type).toBe('error');
+  });
+
 });

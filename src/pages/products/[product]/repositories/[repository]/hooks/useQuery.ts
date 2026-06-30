@@ -25,7 +25,8 @@ export const useQuery = () => {
     setMetrics,
     setHistoricalTSQMI,
     setLatestTSQMI,
-    setLatestTSQMIBadgeUrl
+    setLatestTSQMIBadgeUrl,
+    setCharacteristicBadgeUrls
   } = useRepositoryContext();
 
   const { setCurrentProduct, currentProduct } = useProductContext();
@@ -73,6 +74,13 @@ export const useQuery = () => {
       setMeasures(measures);
       setMetrics(metrics);
       setCheckedOptions(formatCheckedOptions(characteristics, subCharacteristics, measures, metrics));
+
+      // Build characteristic badge URLs
+      const badgeUrls: Record<string, string> = {};
+      characteristics.forEach((key: string) => {
+        badgeUrls[key] = repository.getCharacteristicBadgeUrl(organizationId, productId, repositoryId, key);
+      });
+      setCharacteristicBadgeUrls(badgeUrls);
     } catch (error) {
       // eslint-disable-next-line no-console
     }
@@ -211,6 +219,17 @@ export const useQuery = () => {
     if (query?.repository) {
       const [organizationId, productId] = getPathId(query?.product as string);
       const [repositoryId] = getPathId(query?.repository as string);
+
+      // Clear repository-scoped state first to avoid showing stale values while new data loads.
+      setCurrentRepository(undefined);
+      setCharacteristics([]);
+      setSubCharacteristics([]);
+      setMeasures([]);
+      setMetrics([]);
+      setHistoricalTSQMI(undefined);
+      setLatestTSQMI(undefined);
+      setLatestTSQMIBadgeUrl(undefined);
+      setCharacteristicBadgeUrls({});
 
       loadProduct(organizationId, productId);
       loadRepositoryInfo(organizationId, productId, repositoryId);

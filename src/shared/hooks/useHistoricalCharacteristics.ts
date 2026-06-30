@@ -14,7 +14,7 @@ export const useHistoricalCharacteristics = (repositoryId: string) => {
   const productId = currentProduct?.id;
 
   const { data, error } = useSWR<{ results: Historical[] }>(
-    `organizations/${organizationId}` +
+    `/v1/organizations/${organizationId}` +
       `/products/${productId}` +
       `/repositories/${repositoryId}` +
       `/historical-values/characteristics/`,
