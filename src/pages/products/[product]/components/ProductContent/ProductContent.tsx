@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
-
 import { formatRelative } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
 import { Box, Button, Typography, Container } from '@mui/material';
-
 import { RepositoriesTsqmiHistory } from '@customTypes/product';
-
 import GraphicRepositoriesTsqmiHistory from '@components/GraphicRepositoriesTsqmiHistory';
-
 import { useProductContext } from '@contexts/ProductProvider';
-
 import { getPathId } from '@utils/pathDestructer';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
