@@ -1,4 +1,5 @@
-import { Alert, Box, Tooltip } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,8 @@ function TsqmiBadge({ latestTSQMI, latestTSQMIBadgeUrl, showCopyButton = true }:
     return diffDays > BADGE_STALENESS_DAYS;
   }, [latestTSQMI]);
 
+  const shouldShowStaleWarning = showCopyButton && isStale;
+
   if (!latestTSQMIBadgeUrl) {
     return null;
   }
@@ -44,13 +47,22 @@ function TsqmiBadge({ latestTSQMI, latestTSQMIBadgeUrl, showCopyButton = true }:
             style={{ width: '158px', height: '20px' }}
           />
         </Tooltip>
+        {shouldShowStaleWarning && (
+          <Tooltip
+            title={t('repository.badge-stale-tooltip', 'Badge desatualizada. Execute uma nova análise para atualizar os dados.')}
+            placement="bottom"
+          >
+            <IconButton
+              size="small"
+              aria-label={t('repository.badge-stale-label', 'Badge desatualizada')}
+              color="warning"
+            >
+              <WarningAmberIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
         {showCopyButton && <CopyBadgeModal />}
       </Box>
-      {isStale && (
-        <Alert severity="warning" sx={{ fontSize: '0.75rem', py: 0, px: 1 }}>
-          {t('repository.badge-stale', 'A última análise foi realizada há mais de 30 dias. A badge pode estar desatualizada.')}
-        </Alert>
-      )}
     </Box>
   );
 }

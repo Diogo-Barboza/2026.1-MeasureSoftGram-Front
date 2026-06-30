@@ -52,6 +52,9 @@
     "badge-copy-btn": "Copiar",
     "badge-copy-error": "Falha ao copiar para a área de transferência.",
     "badge-stale": "A última análise foi realizada há mais de 30 dias. A badge pode estar desatualizada.",
-    "badge-error": "Ocorreu um erro ao tentar carregar as informações da badge."
+    "badge-stale-label": "Badge desatualizada",
+    "badge-stale-tooltip": "Badge desatualizada a mais de 30 dias. Reexecute o workflow do repositório para gerar a versão mais recente.",
+    "badge-error": "Ocorreu um erro ao tentar carregar as informações da badge.",
+    "characteristic-badges": "Badges de Características"
   }
 }

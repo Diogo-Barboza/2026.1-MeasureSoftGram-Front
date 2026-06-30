@@ -9,7 +9,7 @@ import SideMenuItem from '../SideMenuItem';
 import MSGSelectBox from '../../../../../components/idv/inputs/MSGSelectBox';
 
 function OrganizationSelector() {
-  const { organizationList, setCurrentOrganizations, currentOrganization, fetchOrganizations } = useOrganizationContext();
+  const { organizationList, setCurrentOrganizations, currentOrganization, fetchOrganizations, isLoading, hasFetched } = useOrganizationContext();
   const { isCollapsed, toggleCollapse } = useSideMenuContext();
 
   const onChange = (value: Organization) => {
@@ -24,10 +24,10 @@ function OrganizationSelector() {
   };
 
   useEffect(() => {
-    if (!organizationList.length) {
-      fetchOrganizations(true);
+    if (!hasFetched && !isLoading) {
+      fetchOrganizations();
     }
-  }, [fetchOrganizations, organizationList]);
+  }, [fetchOrganizations, hasFetched, isLoading]);
 
   const { t } = useTranslation('sidebar');
 
