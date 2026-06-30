@@ -1,4 +1,4 @@
-const PRIMARY_MAIN = 'primaryimport React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { NextPageWithLayout } from '@pages/_app.next';
 import { Button, Box, Typography, CircularProgress } from '@mui/material';
 import { GitHub } from '@mui/icons-material';
@@ -6,10 +6,10 @@ import { getGithubAuthUrl } from '@services/Auth';
 import { useRouter } from 'next/router';
 import { useAuth } from '@contexts/Auth';
 import { AuthLayout } from '@layouts/auth';
-import { AuthHeader } from './components/AuthHeader';
-import { SignInForm } from './components/SignInForm';
 import Image from 'next/image';
-import logoImage from '@public/images/svg/logo.svg';.main';
+import logoImage from '@public/images/svg/logo.svg';
+
+const PRIMARY_MAIN = 'primary.main';
 
 const Auth: NextPageWithLayout = () => {
   const router = useRouter();
