@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test';
+
 const nextJest = require('next/jest');
 
 // Carrega o ambiente do Next.js (lê next.config.js e arquivos .env)
@@ -45,6 +47,8 @@ const customJestConfig = {
   // Mapeia os aliases para os caminhos dos arquivos
   moduleNameMapper: {
     ...aliases,
+    '^react$': require.resolve('react'),         
+    '^react-dom$': require.resolve('react-dom'),  
     '\\.svg$': '<rootDir>/__mocks__/svgMock.js',
     '^next/image$': '<rootDir>/__mocks__/next/ImageMock.js'
   },

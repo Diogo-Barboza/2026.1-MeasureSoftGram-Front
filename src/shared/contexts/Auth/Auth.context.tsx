@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   );
 
 
-  useEffect(() => {
+useEffect(() => {
     const checkSessionTime = () => {
       const loginTime = localStorage.getItem('login_timestamp');
 
@@ -166,12 +166,13 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
       }
     };
 
-    // Checa a condição a cada 1 minuto
+    checkSessionTime();
+
+    // Checa a condição a cada 1 minuto para o caso do usuário ficar ocioso
     const interval = setInterval(checkSessionTime, 60000);
 
     return () => clearInterval(interval);
   }, [logout, session, token]);
-
   useEffect(() => {
     const params = new URLSearchParams(globalThis.location.search);
     const code = params.get('code');
