@@ -3,6 +3,7 @@ import { Organization } from '@customTypes/organization';
 import { organizationQuery } from '@services/organization';
 import { toast } from 'react-toastify';
 import { useAuth } from '@contexts/Auth';
+import { useLocalStorage } from '@hooks/useLocalStorage';
 
 interface Props {
   children: ReactNode;
@@ -28,6 +29,7 @@ export function OrganizationProvider({ children }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
   const hasAttemptedImport = useRef(false);
+  const { storedValue: storedOrgId, setValue: setStoredOrgId } = useLocalStorage<string | null>('selectedOrgId', null);
 
   const fetchOrganizations = async (forceFetch?: boolean) => {
     if (!session && !forceFetch) return;
@@ -105,18 +107,31 @@ export function OrganizationProvider({ children }: Props) {
   }, [session]);
 
   useEffect(() => {
-    if (organizationList.length > 0 && currentOrganizations.length === 0) {
-      setCurrentOrganizations([organizationList[0]]);
+    if (organizationList.length > 0) {
+      if (currentOrganizations.length === 0) {
+        if (storedOrgId) {
+          const found = organizationList.find(org => org.id === storedOrgId || org.id?.toString() === storedOrgId);
+          if (found) {
+            setCurrentOrganizations([found]);
+            return;
+          }
+        }
+        setCurrentOrganizations([organizationList[0]]);
+      }
     }
-  }, [organizationList, currentOrganizations]);
+  }, [organizationList, currentOrganizations, storedOrgId]);
 
   useEffect(() => {
     if (currentOrganizations.length > 0) {
       setCurrentOrganization(currentOrganizations[0]);
+      if (currentOrganizations[0].id) {
+        setStoredOrgId(currentOrganizations[0].id.toString());
+      }
     } else {
       setCurrentOrganization(null);
+      setStoredOrgId(null);
     }
-  }, [currentOrganizations]);
+  }, [currentOrganizations, setStoredOrgId]);
 
   const value = useMemo(() => ({
     currentOrganization,

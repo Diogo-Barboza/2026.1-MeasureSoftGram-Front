@@ -7,6 +7,7 @@ import { TextField, Button, Typography, Box, List, ListItem, ListItemText, Modal
 import { useTranslation } from 'react-i18next';
 import MSGButton from '../../components/idv/buttons/MSGButton';
 import { useOrganizationQuery } from './hooks/useOrganizationQuery';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import { Title, Container, Wrapper, Description, Form, Header } from './styles';
 
 interface OrganizationsType extends React.FC {
@@ -21,6 +22,7 @@ const Organizations: OrganizationsType = () => {
   const [membros, setMembros] = useState<string[]>([]);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const { createOrganization, getOrganizationById, updateOrganization } = useOrganizationQuery();
+  const { currentOrganizations, setCurrentOrganizations, fetchOrganizations } = useOrganizationContext();
   const [users, setUsers] = useState<User[]>([]);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
@@ -94,8 +96,7 @@ const Organizations: OrganizationsType = () => {
       if (result.type === 'success') {
         toast.success(t('toast.sucess-edit'));
         setTimeout(() => {
-          window.location.reload();
-          window.location.href = '/home';
+          router.push('/home');
         }, 2000);
       } else if (result.error.message === nameExist) {
         toast.error(nameExist);
@@ -108,9 +109,14 @@ const Organizations: OrganizationsType = () => {
       result = await createOrganization(novaOrganizacao);
       if (result.type === 'success') {
         toast.success(t('toast.sucess'));
+        const createdOrg = result.value as any;
+        if (createdOrg && createdOrg.id) {
+          localStorage.setItem('selectedOrgId', JSON.stringify(createdOrg.id.toString()));
+          setCurrentOrganizations([createdOrg]);
+        }
+        fetchOrganizations(true);
         setTimeout(() => {
-          window.location.reload();
-          window.location.href = '/home';
+          router.push('/home');
         }, 2000);
       } else if (result.error.message === nameExist) {
         toast.error(nameExist);

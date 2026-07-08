@@ -45,8 +45,8 @@ const Products: NextPageWithLayout = () => {
   const { t: to } = useTranslation('organization');
   const router = useRouter();
 
-  const { organizationList, setCurrentOrganizations, fetchOrganizations } = useOrganizationContext();
-  const { setCurrentProduct, updateProductList } = useProductContext();
+  const { organizationList, setCurrentOrganizations, fetchOrganizations, currentOrganization } = useOrganizationContext();
+  const { setCurrentProduct, updateProductList, currentProduct } = useProductContext();
   const { signInWithGithub } = useAuth();
 
   const [gitHubOrgs, setGitHubOrgs] = useState<GitHubOrganization[]>([]);
@@ -77,7 +77,44 @@ const Products: NextPageWithLayout = () => {
       if (res.type === 'success') {
         setGitHubOrgs(res.value);
         if (res.value.length > 0) {
-          setSelectedOrgName(res.value[0].github_org_name);
+          let targetOrg = currentOrganization;
+          if (!targetOrg) {
+            const savedOrgId = localStorage.getItem('selectedOrgId');
+            if (savedOrgId) {
+              const parsedId = JSON.parse(savedOrgId);
+              targetOrg = organizationList.find(o => String(o.id) === String(parsedId)) || null;
+              if (!targetOrg) {
+                try {
+                  const orgRes = await organizationQuery.getOrganizationById(parsedId);
+                  if (orgRes.type === 'success') {
+                    targetOrg = orgRes.value as any;
+                  }
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+            }
+          }
+
+          let defaultName = '';
+          if (targetOrg) {
+            const matchGo = res.value.find(go => {
+              const ghName = go.github_org_name.toLowerCase();
+              const dbName = targetOrg!.name.toLowerCase();
+              const dbKey = targetOrg!.key ? targetOrg!.key.toLowerCase() : '';
+              return ghName === dbName || 
+                     (dbKey && ghName === dbKey) ||
+                     (dbName.length > 3 && ghName.includes(dbName.replace(/[^a-z0-9]/g, '-'))) ||
+                     (dbName.length > 3 && ghName.includes(dbName.replace(/[^a-z0-9]/g, '')));
+            });
+            if (matchGo) {
+              defaultName = matchGo.github_org_name;
+            }
+          } else {
+            defaultName = res.value[0].github_org_name;
+          }
+          
+          setSelectedOrgName(defaultName);
         }
       } else {
         toast.error("Erro ao buscar organizações do GitHub.");
@@ -93,9 +130,15 @@ const Products: NextPageWithLayout = () => {
   const getBackendOrgId = async (orgName: string): Promise<string> => {
     const res = await organizationQuery.getAllOrganization();
     if (res.type !== 'success') return '';
-    const match = res.value.find(
-      (o: any) => o.name.toLowerCase() === orgName.toLowerCase() || (o.key && o.key.toLowerCase() === orgName.toLowerCase())
-    );
+    const ghName = orgName.toLowerCase();
+    const match = res.value.find((o: any) => {
+      const dbName = o.name.toLowerCase();
+      const dbKey = o.key ? o.key.toLowerCase() : '';
+      return dbName === ghName || 
+             (dbKey && dbKey === ghName) ||
+             (dbName.length > 3 && ghName.includes(dbName.replace(/[^a-z0-9]/g, '-'))) ||
+             (dbName.length > 3 && ghName.includes(dbName.replace(/[^a-z0-9]/g, '')));
+    });
     return match?.id || '';
   };
 
@@ -137,7 +180,12 @@ const Products: NextPageWithLayout = () => {
       setProducts(productList);
       updateProductList(productList as any);
       if (productList.length > 0) {
-        setSelectedProductId(String(productList[0].id));
+        let defaultProductId = String(productList[0].id);
+        if (currentProduct) {
+          const matchProduct = productList.find(p => String(p.id) === String(currentProduct.id));
+          if (matchProduct) defaultProductId = String(matchProduct.id);
+        }
+        setSelectedProductId(defaultProductId);
       } else {
         setSelectedProductId('');
       }
@@ -241,6 +289,33 @@ const Products: NextPageWithLayout = () => {
   }, [selectedOrgName]);
 
   useEffect(() => {
+    if (currentOrganization && gitHubOrgs.length > 0) {
+      const matchGo = gitHubOrgs.find(go => {
+        const ghName = go.github_org_name.toLowerCase();
+        const dbName = currentOrganization.name.toLowerCase();
+        const dbKey = currentOrganization.key ? currentOrganization.key.toLowerCase() : '';
+        
+        return ghName === dbName || 
+               (dbKey && ghName === dbKey) ||
+               (dbName.length > 3 && ghName.includes(dbName.replace(/[^a-z0-9]/g, '-'))) ||
+               (dbName.length > 3 && ghName.includes(dbName.replace(/[^a-z0-9]/g, '')));
+      });
+      if (matchGo) {
+        if (matchGo.github_org_name !== selectedOrgName) {
+          setSelectedOrgName(matchGo.github_org_name);
+        }
+      } else if (selectedOrgName !== '') {
+        setSelectedOrgName('');
+        setProducts([]);
+        setGitHubRepos([]);
+        setImportedRepoUrls([]);
+        setImportedRepos([]);
+        setSelectedProductId('');
+      }
+    }
+  }, [currentOrganization, gitHubOrgs]);
+
+  useEffect(() => {
     if (selectedOrgDbId && selectedProductId) {
       loadProductRepositories(selectedOrgDbId, selectedProductId);
     }
@@ -261,10 +336,16 @@ const Products: NextPageWithLayout = () => {
       if (match) {
         setCurrentProduct(match as any);
       }
-    } else {
-      setCurrentProduct(null);
     }
   }, [selectedProductId, products]);
+
+  useEffect(() => {
+    if (currentProduct && products.length > 0) {
+      if (String(currentProduct.id) !== selectedProductId) {
+        setSelectedProductId(String(currentProduct.id));
+      }
+    }
+  }, [currentProduct, products]);
 
   const filteredRepos = useMemo(
     () =>

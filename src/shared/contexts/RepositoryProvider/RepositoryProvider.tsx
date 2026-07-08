@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, ReactNode, useMemo } from '
 
 import { Repository, Historical } from '@customTypes/repository';
 import { RepositoriesLatestTsqmi, TsqmiValue } from '@customTypes/product';
+import { useLocalStorage } from '@hooks/useLocalStorage';
 
 interface Props {
   children: ReactNode;
@@ -37,6 +38,7 @@ const RepositoryContext = createContext<IRepositoryContext | undefined>(undefine
 export function RepositoryProvider({ children }: Props) {
   const [currentRepository, setCurrentRepository] = useState<Repository | undefined>();
   const [repositoryList, setRepositoryList] = useState<Repository[]>();
+  const { storedValue: storedRepoId, setValue: setStoredRepoId } = useLocalStorage<string | null>('selectedRepositoryId', null);
 
   const [characteristics, setCharacteristics] = useState<string[]>([]);
   const [subCharacteristics, setSubCharacteristics] = useState<string[]>([]);
@@ -47,6 +49,31 @@ export function RepositoryProvider({ children }: Props) {
   const [latestTSQMIBadgeUrl, setLatestTSQMIBadgeUrl] = useState<string>();
   const [characteristicBadgeUrls, setCharacteristicBadgeUrls] = useState<Record<string, string>>({});
   const [repositoriesLatestTsqmi, setRepositoriesLatestTsqmi] = useState<RepositoriesLatestTsqmi>();
+
+  React.useEffect(() => {
+    if (repositoryList && repositoryList.length > 0) {
+      if (currentRepository === undefined) {
+        if (storedRepoId) {
+          const found = repositoryList.find(r => r.id === Number(storedRepoId) || r.id === storedRepoId);
+          if (found) {
+            setCurrentRepository(found);
+            return;
+          }
+        }
+        setCurrentRepository(repositoryList[0]);
+      }
+    } else if (repositoryList && repositoryList.length === 0) {
+      setCurrentRepository(undefined);
+    }
+  }, [repositoryList, storedRepoId, currentRepository]);
+
+  React.useEffect(() => {
+    if (currentRepository && currentRepository.id) {
+      setStoredRepoId(currentRepository.id.toString());
+    } else if (currentRepository === undefined) {
+      setStoredRepoId(null);
+    }
+  }, [currentRepository, setStoredRepoId]);
 
 
   const value = useMemo(
