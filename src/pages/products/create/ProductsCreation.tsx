@@ -61,7 +61,8 @@ const ProductsCreation: OrganizationsType = () => {
     let result;
 
     if (!novoProduto.organizationId && currentOrganizationId) {
-      novoProduto.organizationId = parseInt(currentOrganizationId[0], 10);
+      const orgIdStr = Array.isArray(currentOrganizationId) ? currentOrganizationId[0] : currentOrganizationId;
+      novoProduto.organizationId = parseInt(orgIdStr, 10);
     }
 
     const nameExist = t('toast.name-exists')
