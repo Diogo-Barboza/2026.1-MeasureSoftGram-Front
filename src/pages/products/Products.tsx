@@ -76,6 +76,7 @@ const Products: NextPageWithLayout = () => {
 
 
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const loadGitHubOrgs = async () => {
     setLoadingOrgs(true);
     try {
@@ -294,6 +295,7 @@ const Products: NextPageWithLayout = () => {
     }
   }, [selectedOrgName]);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
     if (currentOrganization && gitHubOrgs.length > 0) {
       const matchGo = gitHubOrgs.find(go => {
@@ -346,10 +348,8 @@ const Products: NextPageWithLayout = () => {
   }, [selectedProductId, products]);
 
   useEffect(() => {
-    if (currentProduct && products.length > 0) {
-      if (String(currentProduct.id) !== selectedProductId) {
-        setSelectedProductId(String(currentProduct.id));
-      }
+    if (currentProduct && products.length > 0 && String(currentProduct.id) !== selectedProductId) {
+      setSelectedProductId(String(currentProduct.id));
     }
   }, [currentProduct, products]);
 

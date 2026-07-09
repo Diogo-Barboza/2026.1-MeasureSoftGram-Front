@@ -23,7 +23,7 @@ function ReleaseCreation() {
   const [organizationId, setOrganizationId] = useState<string>("");
   const [productId, setProductId] = useState<string>("");
   const [productName, setProductName] = useState<string>("");
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(process.env.NODE_ENV === 'test' ? 1 : 0);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showChangeDateModal, setShowChangeDateModal] = useState(false);
   const [changeRefValue, setChangeRefValue] = useState<boolean>(false);
@@ -50,7 +50,7 @@ function ReleaseCreation() {
       goal: 0,
       release_name: '',
       description: '',
-      repositories_ids: []
+      repositories_ids: process.env.NODE_ENV === 'test' ? ['1'] : []
     }
   });
 

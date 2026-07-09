@@ -77,7 +77,7 @@ describe('ProductProvider', () => {
     expect(testChildElement).toBeTruthy();
   });
 
-  it('atualiza o estado currentProduct corretamente', () => {
+  it('atualiza o estado currentProduct corretamente', async () => {
     const { getByTestId, getByText } = render(
       <ProductProvider>
         <TestComponent />
@@ -90,7 +90,7 @@ describe('ProductProvider', () => {
       getByText('Set Product').click();
     });
 
-    expect(getByTestId('currentProduct').textContent).toBe(mockProduct.name);
+    await waitFor(() => expect(getByTestId('currentProduct').textContent).toBe(mockProduct.name));
   });
 
 
@@ -135,7 +135,7 @@ describe('ProductProvider', () => {
     consoleSpy.mockRestore();
   });
 
-  it('updates the productsList correctly when updateProductList is called', () => {
+  it('updates the productsList correctly when updateProductList is called', async () => {
     const { getByTestId, getByText } = render(
       <ProductProvider>
         <TestComponents />
@@ -146,7 +146,7 @@ describe('ProductProvider', () => {
       getByText('Update Products').click();
     });
 
-    expect(getByTestId('product-0').textContent).toBe(mockProduct.name);
+    await waitFor(() => expect(getByTestId('product-0').textContent).toBe(mockProduct.name));
   });
 
   it('does not load products if currentOrganization is null', async () => {

@@ -49,6 +49,7 @@ const ProductsCreation: OrganizationsType = () => {
     }
   }, [router.query.id_product]);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 

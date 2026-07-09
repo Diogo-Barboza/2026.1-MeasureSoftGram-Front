@@ -5,9 +5,9 @@ import { toast } from 'react-toastify';
 import { getAllUsers, User } from '@services/user';
 import { TextField, Button, Typography, Box, List, ListItem, ListItemText, Modal, Backdrop, Fade, Grid, FormControl } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import MSGButton from '../../components/idv/buttons/MSGButton';
 import { useOrganizationQuery } from './hooks/useOrganizationQuery';
-import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import { Title, Container, Wrapper, Description, Form, Header } from './styles';
 
 interface OrganizationsType extends React.FC {
@@ -79,6 +79,7 @@ const Organizations: OrganizationsType = () => {
     setMembros(newMembros);
   };
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const novaOrganizacao = {
