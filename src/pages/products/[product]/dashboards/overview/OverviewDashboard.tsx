@@ -11,7 +11,7 @@ const OverviewDashboard: NextPageWithLayout = () => {
   useRequireAuth();
 
   const { grafanaUrl, loading, error } = useGrafanaDashboard({
-    uid: 'e271dfe3-75e5-427b-878c-0624afc84a6e',
+    uid: '5904a9de-7f42-453c-9a93-1175d1fe6918',
   });
 
   return (

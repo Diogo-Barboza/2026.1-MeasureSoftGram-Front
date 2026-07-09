@@ -20,7 +20,7 @@ const TemporalDashboard: NextPageWithLayout = () => {
   useRequireAuth();
 
   const { grafanaUrl, loading, error, repositories, selectedRepoId, setSelectedRepoId } =
-    useGrafanaDashboard({ uid: '09bad216-227e-4061-9e6f-c4f313f3b895', hasRepoSelector: true });
+    useGrafanaDashboard({ uid: 'hierarquia-qualidade', hasRepoSelector: true });
 
   return (
     <>

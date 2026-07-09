@@ -11,7 +11,7 @@ import { getPathId } from '@utils/pathDestructer';
 import Head from 'next/head';
 
 const PLANEJADO_VS_REALIZADO_PANEL_ID = 8;
-const VISAO_GERAL_UID = 'e271dfe3-75e5-427b-878c-0624afc84a6e';
+const VISAO_GERAL_UID = '5904a9de-7f42-453c-9a93-1175d1fe6918';
 
 const Release: any = () => {
   const router = useRouter();

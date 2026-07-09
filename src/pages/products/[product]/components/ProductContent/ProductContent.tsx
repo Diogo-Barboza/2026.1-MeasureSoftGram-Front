@@ -26,7 +26,7 @@ const ProductContent: React.FC = () => {
   }
 
   const { grafanaUrl, loading, error } = useGrafanaDashboard({
-    uid: 'dff0044e-e007-454c-8a74-3f3d2ecf807e',
+    uid: 'ad2c5q4',
   });
 
   const lastUpdateDate =

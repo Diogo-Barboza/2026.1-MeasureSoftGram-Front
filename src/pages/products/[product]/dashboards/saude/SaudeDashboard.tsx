@@ -20,7 +20,7 @@ const SaudeDashboard: NextPageWithLayout = () => {
   useRequireAuth();
 
   const { grafanaUrl, loading, error, repositories, selectedRepoId, setSelectedRepoId } =
-    useGrafanaDashboard({ uid: '841fdfc2-e393-4319-8695-50e0460ca9cd', hasRepoSelector: true });
+    useGrafanaDashboard({ uid: 'saude-qualidade-repo', hasRepoSelector: true });
 
   return (
     <>
