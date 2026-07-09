@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '@contexts/Auth';
 import { useTranslation } from 'react-i18next';
-import { ni18nConfig } from 'n18n.config';
 import About from '../index.page';
 
 describe('About', () => {

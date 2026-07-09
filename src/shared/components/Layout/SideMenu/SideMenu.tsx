@@ -87,7 +87,7 @@ function SideMenu() {
     },
   ];
 
-  const isAnyDashboardSelected = router.pathname.includes('/dashboards/');
+  const isAnyDashboardSelected = router.pathname?.includes('/dashboards/') ?? false;
 
   return (
     <SideMenuWrapper
