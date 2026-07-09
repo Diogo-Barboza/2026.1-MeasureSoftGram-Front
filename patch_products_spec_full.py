@@ -1,4 +1,6 @@
-import React from 'react';
+import os
+
+content = """import React from 'react';
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
 import Products from '../Products';
 import { organizationQuery } from '@services/organization';
@@ -198,14 +200,9 @@ describe('Products Component', () => {
     });
     
     await act(async () => { fireEvent.change(searchInput, { target: { value: '' } }); });
-    await act(async () => { fireEvent.click(todosTab); });
     
     // pagination - clicking page 2
-    let page2Button;
-    await waitFor(() => {
-      page2Button = screen.getByText('2');
-      expect(page2Button).toBeInTheDocument();
-    });
+    const page2Button = screen.getByLabelText('Go to page 2');
     await act(async () => { fireEvent.click(page2Button); });
     
     await waitFor(() => {
@@ -302,3 +299,7 @@ describe('Products Component', () => {
     expect(await screen.findByText('Org 3')).toBeInTheDocument();
   });
 });
+"""
+
+with open('src/pages/products/test/Products.spec.tsx', 'w') as f:
+    f.write(content)
