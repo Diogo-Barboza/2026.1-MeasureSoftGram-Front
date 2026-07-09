@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { getAllUsers } from '@services/user';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import Organizations from '../Organizations';
 import { useOrganizationQuery } from '../hooks/useOrganizationQuery';
-import { useOrganizationContext } from '@contexts/OrganizationProvider';
 
 const mockPush = jest.fn();
 jest.mock('next/router', () => ({
@@ -107,7 +107,7 @@ describe('Organizations Component', () => {
   });
 
   it('deve carregar os dados da organização caso esteja no modo de edição', async () => {
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush,  query: { edit: 'org-123' }, push: mockPush });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush, query: { edit: 'org-123' } });
     
     mockGetOrganizationById.mockResolvedValue({
       type: 'success',
@@ -189,7 +189,7 @@ fireEvent.change(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELE
 
   it('deve submeter o formulário de EDIÇÃO com sucesso', async () => {
     jest.useFakeTimers();
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush,  query: { edit: 'org-123' }, push: mockPush });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush, query: { edit: 'org-123' } });
     
     mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: ORG_EXISTING_NAME } });
     mockUpdateOrganization.mockResolvedValue({ type: 'success' });
@@ -212,7 +212,7 @@ fireEvent.change(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELE
   });
 
   it('deve exibir erros corretos ao falhar a EDIÇÃO', async () => {
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush,  query: { edit: 'org-123' }, push: mockPush });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush, query: { edit: 'org-123' } });
     
     mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: ORG_EXISTING_NAME } });
 
