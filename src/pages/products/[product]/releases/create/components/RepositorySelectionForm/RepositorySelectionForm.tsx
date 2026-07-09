@@ -34,7 +34,8 @@ export default function RepositorySelectionForm({ organizationId, productId, wat
           setLoading(false);
         });
     }
-  }, [organizationId, productId, repositories.length, selectedIds.length, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [organizationId, productId, setValue]);
 
   const handleToggle = (id: number) => {
     const currentIndex = selectedIds.indexOf(id);
