@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Checkbox, CircularProgress } from '@mui/material';
-import { UseFormRegister, UseFormWatch, UseFormSetValue } from 'react-hook-form';
+import { UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { ReleaseInfoForm } from '@customTypes/preConfig';
 import { productQuery } from '@services/product';
 
 interface Props {
   organizationId: string;
   productId: string;
-  register: UseFormRegister<ReleaseInfoForm>;
   watch: UseFormWatch<ReleaseInfoForm>;
   setValue: UseFormSetValue<ReleaseInfoForm>;
 }
 
-export default function RepositorySelectionForm({ organizationId, productId, register, watch, setValue }: Props) {
+export default function RepositorySelectionForm({ organizationId, productId, watch, setValue }: Props) {
   const [repositories, setRepositories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,12 +29,12 @@ export default function RepositorySelectionForm({ organizationId, productId, reg
           }
           setLoading(false);
         })
-        .catch(err => {
-          console.error(err);
+        .catch(() => {
+          // error handling is done via toast
           setLoading(false);
         });
     }
-  }, [organizationId, productId]);
+  }, [organizationId, productId, repositories.length, selectedIds.length, setValue]);
 
   const handleToggle = (id: number) => {
     const currentIndex = selectedIds.indexOf(id);

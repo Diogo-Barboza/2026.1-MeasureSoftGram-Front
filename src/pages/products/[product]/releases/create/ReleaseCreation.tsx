@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { format, addDays } from 'date-fns';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { Change, PreConfigEntitiesRelationship, ReleaseGoal } from '@customTypes/product';
+import { Change, ReleaseGoal } from '@customTypes/product';
 import getLayout from '@components/Layout';
 import { Characteristic, Measure, PreConfigData, ReleaseInfoForm, Subcharacteristic } from '@customTypes/preConfig';
 import { productQuery } from '@services/product';
@@ -33,7 +33,6 @@ function ReleaseCreation() {
   const [lastConfigPageData, setLastConfigPageData] = useState<PreConfigData>();
   const [configPageData, setConfigPageData] = useState<PreConfigData>();
   const [balanceMatrix, setBalanceMatrix] = useState<any>();
-  const [preConfigEntitiesRelationship, setPreConfigEntitiesRelationship] = useState<PreConfigEntitiesRelationship[]>();
   const [releaseGoal, setReleaseGoal] = useState<any>();
   const [releaseConflict, setReleaseConflict] = useState<string>();
   const { enqueueSnackbar } = useSnackbar()
@@ -93,6 +92,7 @@ function ReleaseCreation() {
 
       getPreConfig();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, routerParams.product]);
 
 
@@ -304,7 +304,7 @@ function ReleaseCreation() {
 
   async function handleNextButtonClick(): Promise<void> {
     switch (activeStep) {
-      case 0:
+      case 0: {
         const selectedRepos = getValues('repositories_ids');
         if (!selectedRepos || selectedRepos.length === 0) {
           enqueueSnackbar(t('Selecione pelo menos um repositório para a release.'), { autoHideDuration: 6000, variant: 'error' });
@@ -312,6 +312,7 @@ function ReleaseCreation() {
         }
         setActiveStep(activeStep + 1);
         break;
+      }
       case 1:
         await checkBasicValues();
         break;
