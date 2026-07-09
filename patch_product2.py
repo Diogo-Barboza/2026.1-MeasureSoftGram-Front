@@ -1,4 +1,6 @@
-import React from 'react';
+import os
+
+content = """import React from 'react';
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
 import { ProductProvider, useProductContext } from '../ProductProvider';
 import { productQuery } from '@services/product';
@@ -186,3 +188,7 @@ describe('ProductProvider', () => {
     consoleSpy.mockRestore();
   });
 });
+"""
+
+with open('src/shared/contexts/ProductProvider/tests/ProductProvider.spec.tsx', 'w') as f:
+    f.write(content)

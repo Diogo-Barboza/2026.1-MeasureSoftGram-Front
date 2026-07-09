@@ -127,11 +127,11 @@ export function OrganizationProvider({ children }: Props) {
       if (currentOrganizations[0].id) {
         setStoredOrgId(currentOrganizations[0].id.toString());
       }
-    } else {
+    } else if (organizationList.length === 0 && hasFetched) {
       setCurrentOrganization(null);
       setStoredOrgId(null);
     }
-  }, [currentOrganizations, setStoredOrgId]);
+  }, [currentOrganizations, organizationList, hasFetched, setStoredOrgId]);
 
   const value = useMemo(() => ({
     currentOrganization,
