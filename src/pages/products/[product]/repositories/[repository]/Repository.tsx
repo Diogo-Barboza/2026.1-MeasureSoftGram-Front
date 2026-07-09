@@ -17,7 +17,7 @@ const Repository: NextPageWithLayout = () => {
   const [repositoryId] = getPathId((query?.repository as string) ?? '');
 
   const { grafanaUrl, loading, error } = useGrafanaDashboard({
-    uid: 'saude-qualidade-repo',
+    uid: '841fdfc2-e393-4319-8695-50e0460ca9cd',
     repositoryId: repositoryId ? Number(repositoryId) : undefined,
   });
 

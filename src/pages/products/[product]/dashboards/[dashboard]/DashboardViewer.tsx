@@ -9,10 +9,10 @@ import useRequireAuth from '@hooks/useRequireAuth';
 import { useGrafanaDashboard } from '@hooks/useGrafanaDashboard';
 
 const DASHBOARD_UID_MAP: Record<string, string> = {
-  overview: '5904a9de-7f42-453c-9a93-1175d1fe6918',
-  temporal: 'hierarquia-qualidade',
-  saude: 'saude-qualidade-repo',
-  ecg: 'ad2c5q4',
+  overview: 'e271dfe3-75e5-427b-878c-0624afc84a6e',
+  temporal: '09bad216-227e-4061-9e6f-c4f313f3b895',
+  saude: '841fdfc2-e393-4319-8695-50e0460ca9cd',
+  ecg: 'dff0044e-e007-454c-8a74-3f3d2ecf807e',
 };
 
 const DashboardViewer: NextPageWithLayout = () => {
