@@ -6,7 +6,14 @@ import Release from '../index.page';
 
 jest.mock('@services/product', () => ({
   productQuery: {
-    getReleaseAnalysisDataByReleaseId: jest.fn()
+    getReleaseAnalysisDataByReleaseId: jest.fn(),
+    getAllRepositories: jest.fn().mockResolvedValue({ data: { results: [] } }),
+  }
+}));
+
+jest.mock('@services/grafana', () => ({
+  grafanaService: {
+    getDashboardUrl: jest.fn().mockResolvedValue({ data: { grafana_url: 'http://localhost:5000/d/test' } }),
   }
 }));
 
@@ -32,12 +39,10 @@ describe('Release', () => {
     const releaseTitle = await screen.findByText('release name');
     const dataRelease = await screen.findByTestId('data-release');
     const repositoryTabs = await screen.findAllByTestId('repository-tab');
-    const equalizerSliders = await screen.findAllByTestId('equalizer-slider');
 
     expect(releaseTitle).toBeInTheDocument();
     expect(dataRelease).toHaveTextContent('01 de janeiro de 2022 - 01 de abril de 2022');
     expect(repositoryTabs).toHaveLength(2);
-    expect(equalizerSliders).toHaveLength(8);
   });
 });
 

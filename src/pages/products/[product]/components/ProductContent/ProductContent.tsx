@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
 import { formatRelative } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Box, Button, Typography, Container } from '@mui/material';
-import { RepositoriesTsqmiHistory } from '@customTypes/product';
-import GraphicRepositoriesTsqmiHistory from '@components/GraphicRepositoriesTsqmiHistory';
+
+import { Box, CircularProgress, Container, Typography } from '@mui/material';
+
 import { useProductContext } from '@contexts/ProductProvider';
+import { useGrafanaDashboard } from '@hooks/useGrafanaDashboard';
+
 import { getPathId } from '@utils/pathDestructer';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import Skeleton from './Skeleton';
 
-interface Props {
-  repositoriesTsqmiHistory?: RepositoriesTsqmiHistory;
-}
-
-const ProductContent: React.FC<Props> = ({ repositoriesTsqmiHistory }) => {
+const ProductContent: React.FC = () => {
   const { currentProduct } = useProductContext();
-
-  const [openCreateRelease, setOpenCreateRelease] = useState(false);
   const [pathId, setPathId] = useState({} as { productId: string; organizationId: string });
 
   const { query } = useRouter();
@@ -28,24 +24,23 @@ const ProductContent: React.FC<Props> = ({ repositoriesTsqmiHistory }) => {
     setPathId({ organizationId, productId });
   }
 
-  const handleOpenCreateRelease = () => {
-    setOpenCreateRelease(true);
-  };
+  const { grafanaUrl, loading, error } = useGrafanaDashboard({
+    uid: 'ad2c5q4',
+  });
 
   const lastUpdateDate =
     currentProduct &&
     formatRelative(new Date(), new Date(), {
-      locale: ptBR
+      locale: ptBR,
     });
 
-  if (!currentProduct || !repositoriesTsqmiHistory) {
+  if (!currentProduct) {
     return (
       <Container>
         <Skeleton />
       </Container>
     );
   }
-
 
   return (
     <Container>
@@ -66,7 +61,31 @@ const ProductContent: React.FC<Props> = ({ repositoriesTsqmiHistory }) => {
           </Box>
         </Box>
       </Box>
-      <GraphicRepositoriesTsqmiHistory history={repositoriesTsqmiHistory} />
+
+      <Box
+        sx={{
+          width: '100%',
+          height: '80vh',
+          border: '1px solid #d0d7de',
+          borderRadius: '8px',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {loading && <CircularProgress />}
+        {error && (
+          <Typography color="error">Não foi possível carregar o dashboard.</Typography>
+        )}
+        {grafanaUrl && !loading && (
+          <iframe
+            src={grafanaUrl}
+            title="Dashboard de Pulso"
+            style={{ width: '100%', height: '100%', border: 'none' }}
+          />
+        )}
+      </Box>
     </Container>
   );
 };
