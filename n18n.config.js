@@ -5,6 +5,7 @@ export const ni18nConfig = {
   supportedLngs,
   ns: [
     'translation',
+    'landing',
     'home',
     'about',
     'sidebar',
