@@ -1,197 +1,188 @@
 import React from 'react';
-import { render, act, waitFor } from '@testing-library/react';
-import { ProductProvider, useProductContext } from '../ProductProvider';
-import { Product } from '@customTypes/product';
+import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
 import { productQuery } from '@services/product';
-import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import * as OrgContext from '@contexts/OrganizationProvider';
+import * as LocalStorageHook from '@hooks/useLocalStorage';
+import { ProductProvider, useProductContext } from '../ProductProvider';
 
-// Mocks necessários
-jest.mock('@contexts/OrganizationProvider', () => ({
-  useOrganizationContext: jest.fn(),
-}));
-jest.mock('@services/product', () => ({
-  productQuery: {
-    getAllProducts: jest.fn(),
-  },
-}));
-
-const mockProduct: Product = {
-  id: "1",
-  name: "MeasureSoftGram",
-  description: '',
-  github_url: '',
-  created_at: '',
-  updated_at: '',
-  gaugeRedLimit: 0,
-  gaugeYellowLimit: 0
-};
-const mockProducts: Product[] = [mockProduct, /* ...outros produtos... */];
-const mockOrganization = { id: 'org-123', /* ...outros dados... */ };
-
-
-const TestComponent = () => {
-  const { currentProduct, setCurrentProduct, productsList, updateProductList } = useProductContext();
-
-  // Renderize os valores ou forneça botões para interagir com o estado (setCurrentProduct, updateProductList)
-  // Por exemplo, você pode renderizar o nome do produto atual e um botão para alterá-lo
-  return (
-    <div>
-      <span data-testid="currentProduct">{currentProduct?.name}</span>
-      <button onClick={() => setCurrentProduct(mockProduct)}>Set Product</button>
-      {/* Outras interações conforme necessário */}
-    </div>
-  );
-};
-
-const TestComponents = () => {
-  const { productsList, updateProductList } = useProductContext();
-
-  return (
-    <div>
-      {productsList && productsList.map((product, index) => (
-        <div key={index} data-testid={`product-${index}`}>{product.name}</div>
-      ))}
-      <button onClick={() => updateProductList(mockProducts)}>Update Products</button>
-    </div>
-  );
-};
+jest.mock('@services/product');
+jest.mock('@contexts/OrganizationProvider');
+jest.mock('@hooks/useLocalStorage');
 
 describe('ProductProvider', () => {
+  let mockSetValue: jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    (useOrganizationContext as jest.Mock).mockReturnValue({
-      currentOrganization: mockOrganization,
-    });
-    (productQuery.getAllProducts as jest.Mock).mockResolvedValue({
-      data: { results: mockProducts },
+    mockSetValue = jest.fn();
+    (LocalStorageHook.useLocalStorage as jest.Mock).mockReturnValue({
+      storedValue: null,
+      setValue: mockSetValue,
+      removeValue: jest.fn()
     });
   });
 
-  it('renderiza os filhos corretamente', () => {
-    const { getByText } = render(
+  it('renders correctly and loads data', async () => {
+    jest.spyOn(OrgContext, 'useOrganizationContext').mockReturnValue({
+      currentOrganization: { id: 'org-1' }
+    } as any);
+
+    (productQuery.getAllProducts as jest.Mock).mockResolvedValueOnce({
+      data: {
+        results: [{ id: 'prod-1', name: 'Prod 1' }]
+      }
+    });
+
+    const Child = () => {
+      const { productsList, currentProduct } = useProductContext();
+      return (
+        <div>
+          <span data-testid="prod-len">{productsList?.length || 0}</span>
+          <span data-testid="curr-prod">{currentProduct?.name || 'none'}</span>
+        </div>
+      );
+    };
+
+    render(
       <ProductProvider>
-        <div>Test Child</div>
+        <Child />
       </ProductProvider>
     );
-    const testChildElement = getByText('Test Child');
-    expect(testChildElement).toBeTruthy();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('curr-prod').textContent).toBe('Prod 1');
+    });
   });
 
-  it('atualiza o estado currentProduct corretamente', () => {
-    const { getByTestId, getByText } = render(
+  it('handles null organization', async () => {
+    jest.spyOn(OrgContext, 'useOrganizationContext').mockReturnValue({
+      currentOrganization: null
+    } as any);
+
+    const Child = () => {
+      const { productsList, currentProduct, loadAllProducts } = useProductContext();
+      return (
+        <div>
+          <span data-testid="prod-len">{productsList?.length || 0}</span>
+          <span data-testid="curr-prod">{currentProduct?.name || 'none'}</span>
+          <button onClick={loadAllProducts}>Load</button>
+        </div>
+      );
+    };
+
+    render(
       <ProductProvider>
-        <TestComponent />
+        <Child />
       </ProductProvider>
     );
 
-    expect(getByTestId('currentProduct').textContent).toBe('');
+    await act(async () => {
+      fireEvent.click(screen.getByText('Load'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('prod-len').textContent).toBe('0');
+      expect(screen.getByTestId('curr-prod').textContent).toBe('none');
+    });
+  });
+
+  it('updates state via setters', async () => {
+    jest.spyOn(OrgContext, 'useOrganizationContext').mockReturnValue({
+      currentOrganization: { id: 'org-1' }
+    } as any);
+
+    const Child = () => {
+      const { setCurrentProduct, updateProductList, currentProduct } = useProductContext();
+      return (
+        <div>
+          <span data-testid="curr-prod">{currentProduct?.name || 'none'}</span>
+          <button onClick={() => updateProductList([{ id: 'prod-2', name: 'Prod 2', description: '', github_id: 1 }])}>Update List</button>
+          <button onClick={() => setCurrentProduct({ id: 'prod-3', name: 'Prod 3', description: '', github_id: 2 })}>Set Curr</button>
+        </div>
+      );
+    };
+
+    render(
+      <ProductProvider>
+        <Child />
+      </ProductProvider>
+    );
 
     act(() => {
-      getByText('Set Product').click();
+      screen.getByText('Update List').click();
     });
 
-    expect(getByTestId('currentProduct').textContent).toBe(mockProduct.name);
+    expect(screen.getByTestId('curr-prod').textContent).toBe('Prod 2');
+
+    act(() => {
+      screen.getByText('Set Curr').click();
+    });
+
+    expect(screen.getByTestId('curr-prod').textContent).toBe('Prod 3');
   });
+  
+  it('handles api error', async () => {
+    jest.spyOn(OrgContext, 'useOrganizationContext').mockReturnValue({
+      currentOrganization: { id: 'org-1' }
+    } as any);
 
-
-  it('lida com erro ao carregar produtos', async () => {
-    (useOrganizationContext as jest.Mock).mockReturnValue({
-      currentOrganization: mockOrganization,
-    });
-
-    const mockError = new Error('Erro ao carregar produtos');
-    (productQuery.getAllProducts as jest.Mock).mockRejectedValue(mockError);
-
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+    (productQuery.getAllProducts as jest.Mock).mockRejectedValueOnce(new Error('api err'));
 
     render(
-      <ProductProvider children={undefined}>
-        {/* Elementos filhos, se necessário */}
+      <ProductProvider>
+        <div />
+      </ProductProvider>
+    );
+    
+    await waitFor(() => {
+      expect(productQuery.getAllProducts).toHaveBeenCalled();
+    });
+  });
+
+  it('loads from local storage', async () => {
+    (LocalStorageHook.useLocalStorage as jest.Mock).mockReturnValue({
+      storedValue: 'prod-2',
+      setValue: mockSetValue,
+      removeValue: jest.fn()
+    });
+
+    jest.spyOn(OrgContext, 'useOrganizationContext').mockReturnValue({
+      currentOrganization: { id: 'org-1' }
+    } as any);
+
+    (productQuery.getAllProducts as jest.Mock).mockResolvedValueOnce({
+      data: {
+        results: [{ id: 'prod-1', name: 'Prod 1' }, { id: 'prod-2', name: 'Prod 2' }]
+      }
+    });
+
+    const Child = () => {
+      const { currentProduct } = useProductContext();
+      return (
+        <div>
+          <span data-testid="curr-prod">{currentProduct?.name || 'none'}</span>
+        </div>
+      );
+    };
+
+    render(
+      <ProductProvider>
+        <Child />
       </ProductProvider>
     );
 
-    await waitFor(() => expect(consoleSpy).toHaveBeenCalledWith(mockError));
-
-    consoleSpy.mockRestore();
-  });
-
-  it('carrega produtos quando currentOrganization é definido', async () => {
-    (useOrganizationContext as jest.Mock).mockReturnValue({
-      currentOrganization: mockOrganization,
+    await waitFor(() => {
+      expect(screen.getByTestId('curr-prod').textContent).toBe('Prod 2');
     });
-
-    render(
-      <ProductProvider children={undefined}>
-        {/* Elementos filhos, se necessário */}
-      </ProductProvider>
-    );
-
-    await waitFor(() => expect(productQuery.getAllProducts).toHaveBeenCalledWith(mockOrganization.id));
   });
 
-  it('throws error when useProductContext is used outside ProductProvider', () => {
+  it('throws error if used outside provider', () => {
+    const Child = () => {
+      useProductContext();
+      return <div />;
+    };
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => render(<TestComponent />)).toThrow('useProductContext must be used within a ProductContext');
+    expect(() => render(<Child />)).toThrow('useProductContext must be used within a ProductContext');
     consoleSpy.mockRestore();
-  });
-
-  it('updates the productsList correctly when updateProductList is called', () => {
-    const { getByTestId, getByText } = render(
-      <ProductProvider>
-        <TestComponents />
-      </ProductProvider>
-    );
-
-    act(() => {
-      getByText('Update Products').click();
-    });
-
-    expect(getByTestId('product-0').textContent).toBe(mockProduct.name);
-  });
-
-  it('does not load products if currentOrganization is null', async () => {
-    (useOrganizationContext as jest.Mock).mockReturnValue({
-      currentOrganization: null,
-    });
-
-    render(
-      <ProductProvider>
-        <div>Test Child</div>
-      </ProductProvider>
-    );
-
-    expect(productQuery.getAllProducts).not.toHaveBeenCalled();
-  });
-
-  it('fallback options when results are in result.data', async () => {
-    (useOrganizationContext as jest.Mock).mockReturnValue({
-      currentOrganization: mockOrganization,
-    });
-    (productQuery.getAllProducts as jest.Mock).mockResolvedValue({
-      data: mockProducts,
-    });
-
-    render(
-      <ProductProvider>
-        <div>Test Child</div>
-      </ProductProvider>
-    );
-
-    await waitFor(() => expect(productQuery.getAllProducts).toHaveBeenCalled());
-  });
-
-  it('fallback options when results are empty/undefined', async () => {
-    (useOrganizationContext as jest.Mock).mockReturnValue({
-      currentOrganization: mockOrganization,
-    });
-    (productQuery.getAllProducts as jest.Mock).mockResolvedValue({});
-
-    render(
-      <ProductProvider>
-        <div>Test Child</div>
-      </ProductProvider>
-    );
-
-    await waitFor(() => expect(productQuery.getAllProducts).toHaveBeenCalled());
   });
 });

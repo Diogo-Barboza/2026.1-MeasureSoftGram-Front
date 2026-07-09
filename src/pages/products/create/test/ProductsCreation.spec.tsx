@@ -19,7 +19,16 @@ jest.mock('next/router', () => ({
 jest.mock('@contexts/OrganizationProvider', () => ({
   useOrganizationContext: () => ({
     organizationList: [{ id: 123, name: 'Organization 1' }],
+    setCurrentOrganizations: jest.fn(),
   }),
+}));
+
+jest.mock('@contexts/ProductProvider', () => ({
+  useProductContext: jest.fn(() => ({
+    currentProduct: { id: '456', name: 'mocked' },
+    setCurrentProduct: jest.fn(),
+    loadAllProducts: jest.fn().mockResolvedValue(true),
+  })),
 }));
 
 const mockCreateProduct = jest.fn();
@@ -107,8 +116,7 @@ describe('ProductsCreation Component', () => {
         organizationId: 123,
       });
       expect(toast.success).toHaveBeenCalled();
-      expect(window.location.reload).toHaveBeenCalled();
-      expect(window.location.href).toBe('/products');
+      expect(mockPush).toHaveBeenCalledWith('/products');
     });
   });
 

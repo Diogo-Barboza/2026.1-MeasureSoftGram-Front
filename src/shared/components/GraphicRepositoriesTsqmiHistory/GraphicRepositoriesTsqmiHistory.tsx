@@ -1,25 +1,25 @@
 import React, { ComponentRef, useRef } from 'react';
 
 import formatRepositoriesTsqmiHistory from '@utils/formatRepositoriesTsqmiHistory';
-import { RepositoriesTsqmiHistory } from '@customTypes/product';
+import { RepositoriesTsqmiHistory , HistoryDateRange } from '@customTypes/product';
 
 import dynamic from 'next/dynamic';
 import type ReactEchartsType from 'echarts-for-react';
-const ReactEcharts = dynamic(() => import('echarts-for-react'), { ssr: false });
-import * as Styles from './styles';
-import { HistoryDateRange } from '@customTypes/product';
 import { CSVFilter } from '@utils/convertToCsv';
+import * as Styles from './styles';
+
+const ReactEcharts = dynamic(() => import('echarts-for-react'), { ssr: false });
 
 interface Props {
   history?: RepositoriesTsqmiHistory;
 }
 
 const GraphicRepositoriesTsqmiHistory = ({ history }: Props) => {
+  const echartsRef = useRef<any>(null);
+
   if (!history) {
     return null;
   }
-
-  const echartsRef = useRef<any>(null);
 
   const dateRange: HistoryDateRange = {
     startDate: null,
@@ -27,21 +27,19 @@ const GraphicRepositoriesTsqmiHistory = ({ history }: Props) => {
   };
 
   const csvFilters: CSVFilter = {
-    dateRange: dateRange
+    dateRange
   }
 
   const { options, onEvents } = formatRepositoriesTsqmiHistory({ history, csvFilters, ref: echartsRef });
 
   return (
-    <>
-      <Styles.GraphicContainer>
+    <Styles.GraphicContainer>
         <ReactEcharts
           // @ts-ignore
           ref={echartsRef}
           onEvents={onEvents}
           option={options} style={{ height: '450px', width: '100%' }} />
       </Styles.GraphicContainer>
-    </>
   );
 };
 

@@ -11,7 +11,7 @@ jest.mock('react-toastify', () => ({
 }));
 
 const mockPush = jest.fn();
-let mockPathname = '/';
+const mockPathname = '/';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
@@ -37,7 +37,7 @@ describe('useRequireAuth', () => {
   });
 
   describe('when user is authorized', () => {
-    let mockSession = {
+    const mockSession = {
       user: {
         id: 1,
         name: 'Fake name',
@@ -83,7 +83,7 @@ describe('useRequireAuth', () => {
   });
 
   describe('when user is not authorized', () => {
-    let mockSession:any = null;
+    const mockSession:any = null;
 
     const testCases = [
       { pathname: '/products', loading: 'loaded', redirect: true, displayToast: true },

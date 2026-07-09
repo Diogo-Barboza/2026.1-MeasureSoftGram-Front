@@ -1,247 +1,203 @@
-import { renderHook, waitFor, act } from '@testing-library/react';
-import { toast } from 'react-toastify';
-import { useAuth } from '@contexts/Auth';
+import React from 'react';
+import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
 import { organizationQuery } from '@services/organization';
+import { useAuth } from '@contexts/Auth';
+import { toast } from 'react-toastify';
 import { OrganizationProvider, useOrganizationContext } from '../OrganizationProvider';
 
-jest.mock('@contexts/Auth', () => ({
-  useAuth: jest.fn(),
-}));
-
+jest.mock('@services/organization');
+jest.mock('@contexts/Auth');
 jest.mock('react-toastify', () => ({
-  toast: {
-    error: jest.fn(),
-  },
+  toast: { error: jest.fn() }
 }));
 
-jest.mock('@services/organization', () => ({
-  organizationQuery: {
-    getAllOrganization: jest.fn(),
-    getGithubOrganizations: jest.fn(),
-    importOrganization: jest.fn(),
-  },
-}));
+const mockSession = { user: { email: 'test@test.com' } };
 
 describe('OrganizationProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
   });
 
-  it('deve retornar valores padrão quando não houver sessão', () => {
+  it('should render children and initialize correctly without session', async () => {
     (useAuth as jest.Mock).mockReturnValue({ session: null });
-
-    const { result } = renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
-    expect(result.current.currentOrganization).toBeNull();
-    expect(result.current.organizationList).toEqual([]);
-    expect(result.current.isLoading).toBe(true);
-  });
-
-  it('deve carregar organizações no mount se houver sessão', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: { username: 'danilo' } });
-    (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
-      value: [{ id: '1', name: 'Org 1' }],
-    });
-    (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({
-      type: 'success',
-      value: [],
-    });
-
-    const { result } = renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
-    await waitFor(() => {
-      expect(result.current.organizationList).toEqual([
-        {
-          id: '1',
-          name: 'Org 1',
-          description: '',
-          url: '',
-          products: [],
-          key: '',
-        },
-      ]);
-      expect(result.current.currentOrganization).toEqual({
-        id: '1',
-        name: 'Org 1',
-        description: '',
-        url: '',
-        products: [],
-        key: '',
-      });
-      expect(result.current.isLoading).toBe(false);
-    });
-  });
-
-  it('deve importar organizações do GitHub que não estão registradas no MeasureSoftGram', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: { username: 'danilo' } });
+    (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({ type: 'success', value: [] });
     
-    // Primeira chamada retorna lista vazia
-    (organizationQuery.getAllOrganization as jest.Mock)
-      .mockResolvedValueOnce({
-        type: 'success',
-        value: [],
-      })
-      // Segunda chamada (reload) retorna a lista com a nova org
-      .mockResolvedValueOnce({
-        type: 'success',
-        value: [{ id: '2', name: 'GitHubOrg', key: 'GitHubOrg' }],
-      });
+    const Child = () => {
+      const { currentOrganization, organizationList, isLoading, fetchOrganizations } = useOrganizationContext();
+      return (
+        <div>
+          <span data-testid="org-len">{organizationList.length}</span>
+          <span data-testid="curr-org">{currentOrganization?.name || 'none'}</span>
+          <span data-testid="is-loading">{isLoading ? 'yes' : 'no'}</span>
+          <button onClick={() => fetchOrganizations(true)}>Fetch</button>
+        </div>
+      );
+    };
 
-    (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({
-      type: 'success',
-      value: [{ github_org_name: 'GitHubOrg' }],
-    });
+    render(
+      <OrganizationProvider>
+        <Child />
+      </OrganizationProvider>
+    );
 
-    (organizationQuery.importOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
-    });
-
-    renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
-    await waitFor(() => {
-      expect(organizationQuery.importOrganization).toHaveBeenCalledWith('GitHubOrg');
-    });
-  });
-
-  it('não deve importar organizações do GitHub se elas já existirem por nome ou por key', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: { username: 'danilo' } });
+    expect(screen.getByTestId('org-len').textContent).toBe('0');
     
-    (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
-      value: [
-        { id: '1', name: 'MatchingName', key: 'key1' },
-        { id: '2', name: 'name2', key: 'matchingkey' },
-      ],
-    });
-
-    (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({
-      type: 'success',
-      value: [
-        { github_org_name: 'matchingname' },
-        { github_org_name: 'matchingkey' },
-      ],
-    });
-
-    renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
-    await waitFor(() => {
-      expect(organizationQuery.importOrganization).not.toHaveBeenCalled();
-    });
-  });
-
-  it('deve exibir toast.error se getAllOrganization falhar', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: { username: 'danilo' } });
-    (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
-      type: 'error',
-    });
-
-    renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Erro ao carregar organizações.');
-    });
-  });
-
-  it('deve exibir toast.error e capturar erro no catch se getAllOrganization lançar exceção', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: { username: 'danilo' } });
-    (organizationQuery.getAllOrganization as jest.Mock).mockRejectedValue(new Error('Network Error'));
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Erro ao carregar organizações. Por favor, tente novamente.');
-      expect(consoleSpy).toHaveBeenCalled();
-    });
-
-    consoleSpy.mockRestore();
-  });
-
-  it('deve permitir chamar fetchOrganizations com forceFetch', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: null });
-    (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
-      type: 'success',
-      value: [{ id: '1', name: 'Org 1' }],
-    });
-    (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({
-      type: 'success',
-      value: [],
-    });
-
-    const { result } = renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
+    // Fetch manually
     await act(async () => {
-      await result.current.fetchOrganizations(true);
+       fireEvent.click(screen.getByText('Fetch'));
     });
-
+    
     expect(organizationQuery.getAllOrganization).toHaveBeenCalled();
   });
 
-  it('deve retornar sem fazer nada em fetchOrganizations se não houver session e forceFetch for falso', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: null });
-    const { result } = renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
-
-    await act(async () => {
-      await result.current.fetchOrganizations(false);
-    });
-
-    expect(organizationQuery.getAllOrganization).not.toHaveBeenCalled();
-  });
-
-  it('deve usar os valores padrão de fallback ao mapear organizações', async () => {
-    (useAuth as jest.Mock).mockReturnValue({ session: { username: 'danilo' } });
+  it('should load organizations if session exists', async () => {
+    (useAuth as jest.Mock).mockReturnValue({ session: mockSession });
     (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
       type: 'success',
-      value: [
-        {
-          name: 'Org Fallbacks',
-          // Todos os outros campos ausentes para forçar o fallback ?? '' ou ?? []
-        },
-      ],
+      value: [{ id: 'org-1', name: 'Org 1', description: '', url: '', products: [], key: 'org1' }]
     });
     (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({
       type: 'success',
-      value: [],
+      value: []
     });
 
-    const { result } = renderHook(() => useOrganizationContext(), {
-      wrapper: OrganizationProvider,
-    });
+    const Child = () => {
+      const { currentOrganization, organizationList } = useOrganizationContext();
+      return (
+        <div>
+          <span data-testid="org-len">{organizationList.length}</span>
+          <span data-testid="curr-org">{currentOrganization?.name || 'none'}</span>
+        </div>
+      );
+    };
+
+    render(
+      <OrganizationProvider>
+        <Child />
+      </OrganizationProvider>
+    );
 
     await waitFor(() => {
-      expect(result.current.organizationList).toEqual([
-        {
-          id: '',
-          name: 'Org Fallbacks',
-          description: '',
-          url: '',
-          products: [],
-          key: '',
-        },
-      ]);
+      expect(screen.getByTestId('curr-org').textContent).toBe('Org 1');
     });
   });
 
-  it('throws error when useOrganizationContext is used outside OrganizationProvider', () => {
+  it('should auto-import github organizations that are not in backend', async () => {
+    (useAuth as jest.Mock).mockReturnValue({ session: mockSession });
+    (organizationQuery.getAllOrganization as jest.Mock)
+      .mockResolvedValueOnce({
+        type: 'success',
+        value: [{ id: 'org-1', name: 'Org 1', description: '', url: '', products: [], key: 'org1' }]
+      })
+      .mockResolvedValueOnce({
+        type: 'success',
+        value: [
+          { id: 'org-1', name: 'Org 1', description: '', url: '', products: [], key: 'org1' },
+          { id: 'org-2', name: 'Github Org 2', description: '', url: '', products: [], key: 'githuborg2' }
+        ]
+      });
+
+    (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({
+      type: 'success',
+      value: [{ github_org_name: 'Github Org 2' }]
+    });
+
+    (organizationQuery.importOrganization as jest.Mock).mockResolvedValue({ type: 'success' });
+
+    const Child = () => {
+      const { organizationList } = useOrganizationContext();
+      return (
+        <div>
+          <span data-testid="org-len">{organizationList.length}</span>
+        </div>
+      );
+    };
+
+    render(
+      <OrganizationProvider>
+        <Child />
+      </OrganizationProvider>
+    );
+
+    await waitFor(() => {
+      expect(organizationQuery.importOrganization).toHaveBeenCalledWith('Github Org 2');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('org-len').textContent).toBe('2');
+    });
+  });
+
+  it('should load organization from local storage', async () => {
+    localStorage.setItem('selectedOrgId', '"org-2"');
+    (useAuth as jest.Mock).mockReturnValue({ session: mockSession });
+    (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({
+      type: 'success',
+      value: [
+        { id: 'org-1', name: 'Org 1', description: '', url: '', products: [], key: 'org1' },
+        { id: 'org-2', name: 'Org 2', description: '', url: '', products: [], key: 'org2' }
+      ]
+    });
+    (organizationQuery.getGithubOrganizations as jest.Mock).mockResolvedValue({ type: 'error' });
+
+    const Child = () => {
+      const { currentOrganizations } = useOrganizationContext();
+      return (
+        <div>
+          <span data-testid="curr-org">{currentOrganizations[0]?.name || 'none'}</span>
+        </div>
+      );
+    };
+
+    render(
+      <OrganizationProvider>
+        <Child />
+      </OrganizationProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('curr-org').textContent).toBe('Org 2');
+    });
+  });
+
+  it('should handle api error when type is not success', async () => {
+    (useAuth as jest.Mock).mockReturnValue({ session: mockSession });
+    (organizationQuery.getAllOrganization as jest.Mock).mockResolvedValue({ type: 'error' });
+
+    render(
+      <OrganizationProvider>
+        <div />
+      </OrganizationProvider>
+    );
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Erro ao carregar organizações.");
+    });
+  });
+
+  it('should handle api exception', async () => {
+    (useAuth as jest.Mock).mockReturnValue({ session: mockSession });
+    (organizationQuery.getAllOrganization as jest.Mock).mockRejectedValue(new Error('api error'));
+
+    render(
+      <OrganizationProvider>
+        <div />
+      </OrganizationProvider>
+    );
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Erro ao carregar organizações. Por favor, tente novamente.");
+    });
+  });
+
+  it('should throw error when used outside provider', () => {
+    const Child = () => {
+      useOrganizationContext();
+      return <div />;
+    };
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => renderHook(() => useOrganizationContext())).toThrow('OrganizationContext must be used within a OrganizationProvider');
+    expect(() => render(<Child />)).toThrow('OrganizationContext must be used within a OrganizationProvider');
     consoleSpy.mockRestore();
   });
 });

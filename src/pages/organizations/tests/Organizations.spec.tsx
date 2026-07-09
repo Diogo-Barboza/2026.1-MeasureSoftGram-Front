@@ -3,11 +3,13 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { getAllUsers } from '@services/user';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import Organizations from '../Organizations';
 import { useOrganizationQuery } from '../hooks/useOrganizationQuery';
 
+const mockPush = jest.fn();
 jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
+  useRouter: jest.fn(() => ({ query: { id: '' }, push: mockPush })),
 }));
 
 jest.mock('react-toastify', () => ({
@@ -27,6 +29,10 @@ jest.mock('@services/user', () => ({
 
 jest.mock('../hooks/useOrganizationQuery', () => ({
   useOrganizationQuery: jest.fn(),
+}));
+
+jest.mock('@contexts/OrganizationProvider', () => ({
+  useOrganizationContext: jest.fn(),
 }));
 
 describe('Organizations Component', () => {
@@ -65,14 +71,20 @@ describe('Organizations Component', () => {
     jest.clearAllMocks();
     jest.useRealTimers();
 
-    (useRouter as jest.Mock).mockReturnValue({
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush, 
       query: {},
     });
 
-    (useOrganizationQuery as jest.Mock).mockReturnValue({
+    (useOrganizationQuery as jest.Mock).mockReturnValue({ push: mockPush, 
       createOrganization: mockCreateOrganization,
       getOrganizationById: mockGetOrganizationById,
       updateOrganization: mockUpdateOrganization,
+    });
+
+    (useOrganizationContext as jest.Mock).mockReturnValue({ push: mockPush, 
+      currentOrganizations: [],
+      setCurrentOrganizations: jest.fn(),
+      fetchOrganizations: jest.fn(),
     });
 
     (getAllUsers as jest.Mock).mockResolvedValue({
@@ -95,7 +107,7 @@ describe('Organizations Component', () => {
   });
 
   it('deve carregar os dados da organização caso esteja no modo de edição', async () => {
-    (useRouter as jest.Mock).mockReturnValue({ query: { edit: 'org-123' } });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush, query: { edit: 'org-123' } });
     
     mockGetOrganizationById.mockResolvedValue({
       type: 'success',
@@ -153,7 +165,7 @@ fireEvent.change(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELE
     });
 
     act(() => { jest.runAllTimers(); });
-    expect(window.location.reload).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/home');
   });
 
   it('deve exibir erros corretos ao falhar a CRIAÇÃO', async () => {
@@ -177,7 +189,7 @@ fireEvent.change(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELE
 
   it('deve submeter o formulário de EDIÇÃO com sucesso', async () => {
     jest.useFakeTimers();
-    (useRouter as jest.Mock).mockReturnValue({ query: { edit: 'org-123' } });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush, query: { edit: 'org-123' } });
     
     mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: ORG_EXISTING_NAME } });
     mockUpdateOrganization.mockResolvedValue({ type: 'success' });
@@ -196,11 +208,11 @@ fireEvent.change(screen.getByTestId(INPUT_NAME_TEST_ID).querySelector(INPUT_SELE
     });
 
     act(() => { jest.runAllTimers(); });
-    expect(window.location.reload).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/home');
   });
 
   it('deve exibir erros corretos ao falhar a EDIÇÃO', async () => {
-    (useRouter as jest.Mock).mockReturnValue({ query: { edit: 'org-123' } });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush, query: { edit: 'org-123' } });
     
     mockGetOrganizationById.mockResolvedValue({ type: 'success', value: { name: ORG_EXISTING_NAME } });
 

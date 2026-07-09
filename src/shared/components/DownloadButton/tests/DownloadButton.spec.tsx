@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Download from '../DownloadButton';
 import convertToCsv from '@utils/convertToCsv';
+import Download from '../DownloadButton';
 
 jest.mock('@utils/convertToCsv', () => jest.fn());
 

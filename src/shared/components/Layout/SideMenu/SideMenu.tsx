@@ -14,10 +14,10 @@ import { useProductContext } from '@contexts/ProductProvider';
 import { useRouter } from 'next/router';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import { useTranslation } from 'react-i18next';
+import { Box } from '@mui/material';
 import SideMenuItem from './SideMenuItem/SideMenuItem';
 import SideMenuWrapper from './SideMenuWrapper';
 import UserMenu from './UserMenu';
-import { Box } from '@mui/material';
 
 export type SideMenuItemType = {
   startIcon: React.ReactElement;

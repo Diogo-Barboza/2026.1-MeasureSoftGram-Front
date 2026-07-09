@@ -28,7 +28,7 @@ const Auth: NextPageWithLayout = () => {
             MeasureSoftGram
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Acesse o seu dashboard utilizando sua conta do GitHub
+            Venha conferir a saúde do seu produto de software
           </Typography>
         </Box>
 

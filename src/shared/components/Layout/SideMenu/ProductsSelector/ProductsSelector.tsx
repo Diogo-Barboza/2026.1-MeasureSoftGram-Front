@@ -6,9 +6,9 @@ import { useRouter } from 'next/router';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import { useSideMenuContext } from '@contexts/SidebarProvider/SideMenuProvider';
 import { useTranslation } from 'react-i18next';
+import { Product } from '@customTypes/product';
 import SideMenuItem from '../SideMenuItem';
 import MSGSelectBox from '../../../../../components/idv/inputs/MSGSelectBox';
-import { Product } from '@customTypes/product';
 
 function ProductSelector() {
   const { currentOrganization } = useOrganizationContext();
