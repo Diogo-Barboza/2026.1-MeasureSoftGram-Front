@@ -1,4 +1,4 @@
-import React from 'react';
+content = """import React from 'react';
 import { render, screen, act, waitFor } from '@testing-library/react';
 import { ProductProvider, useProductContext } from '../ProductProvider';
 import { productQuery } from '@services/product';
@@ -81,7 +81,11 @@ describe('ProductProvider', () => {
       return <div />;
     };
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => render(<Child />)).toThrow('useProductContext must be used within a ProductContext');
+    expect(() => render(<Child />)).toThrow('useProductContext must be used within a ProductProvider');
     consoleSpy.mockRestore();
   });
 });
+"""
+
+with open('src/shared/contexts/ProductProvider/tests/ProductProvider.spec.tsx', 'w') as f:
+    f.write(content)

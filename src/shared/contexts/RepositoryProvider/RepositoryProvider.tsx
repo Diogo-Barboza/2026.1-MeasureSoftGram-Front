@@ -70,10 +70,10 @@ export function RepositoryProvider({ children }: Props) {
   React.useEffect(() => {
     if (currentRepository && currentRepository.id) {
       setStoredRepoId(currentRepository.id.toString());
-    } else if (currentRepository === undefined) {
+    } else if (currentRepository === undefined && repositoryList && repositoryList.length === 0) {
       setStoredRepoId(null);
     }
-  }, [currentRepository, setStoredRepoId]);
+  }, [currentRepository, repositoryList, setStoredRepoId]);
 
 
   const value = useMemo(

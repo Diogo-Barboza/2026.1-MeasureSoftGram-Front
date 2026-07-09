@@ -1,4 +1,4 @@
-import React from 'react';
+content = """import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { RepositoryProvider, useRepositoryContext } from '../RepositoryProvider';
 
@@ -69,21 +69,17 @@ describe('RepositoryContext', () => {
   });
 
   it('should load repository from local storage', () => {
-    localStorage.setItem('selectedRepositoryId', '"99"');
+    localStorage.setItem('selectedRepositoryId', '99');
     
     const Child = () => {
       const { setRepositoryList, currentRepository } = useRepositoryContext();
       return (
         <div>
           <span data-testid="curr-repo">{currentRepository?.name || 'none'}</span>
-          <button onClick={() => {
-            localStorage.setItem('selectedRepositoryId', '"99"');
-            window.dispatchEvent(new Event('local-storage'));
-            setRepositoryList([
-              { id: 1, name: 'Repo 1', description: '', created_at: '', updated_at: '' },
-              { id: 99, name: 'Repo 99', description: '', created_at: '', updated_at: '' }
-            ]);
-          }}>Set List</button>
+          <button onClick={() => setRepositoryList([
+            { id: 1, name: 'Repo 1', description: '', created_at: '', updated_at: '' },
+            { id: 99, name: 'Repo 99', description: '', created_at: '', updated_at: '' }
+          ])}>Set List</button>
         </div>
       );
     };
@@ -112,3 +108,7 @@ describe('RepositoryContext', () => {
     consoleSpy.mockRestore();
   });
 });
+"""
+
+with open('src/shared/contexts/RepositoryProvider/tests/RepositoryProvider.spec.tsx', 'w') as f:
+    f.write(content)

@@ -1,4 +1,4 @@
-import React from 'react';
+content = """import React from 'react';
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
 import Products from '../Products';
 import { organizationQuery } from '@services/organization';
@@ -75,20 +75,20 @@ describe('Products Component', () => {
   });
 
   it('renders and loads initial data', async () => {
-    await act(async () => { render(<Products />); });
+    render(<Products />);
     
     await waitFor(() => {
       expect(organizationQuery.getGithubOrganizations).toHaveBeenCalled();
     });
     
-    expect(await screen.findByText('Org 1')).toBeInTheDocument();
+    expect(screen.getByText('Org 1')).toBeInTheDocument();
   });
 
   it('exchanges code if present in router query', async () => {
     (useRouter as jest.Mock).mockReturnValue({ query: { code: '123' }, replace: mockReplace });
     mockSignInWithGithub.mockResolvedValueOnce({ type: 'success' });
     
-    await act(async () => { render(<Products />); });
+    render(<Products />);
     
     await waitFor(() => {
       expect(mockSignInWithGithub).toHaveBeenCalledWith('123');
@@ -110,7 +110,7 @@ describe('Products Component', () => {
       value: { id: 'org-1' }
     });
 
-    await act(async () => { render(<Products />); });
+    render(<Products />);
 
     await waitFor(() => {
       expect(organizationQuery.importOrganization).toHaveBeenCalled();
@@ -124,7 +124,7 @@ describe('Products Component', () => {
   it('handles importing a repo', async () => {
     (repository.createRepository as jest.Mock).mockResolvedValueOnce({ type: 'success' });
     
-    await act(async () => { render(<Products />); });
+    render(<Products />);
 
     await waitFor(() => {
       expect(screen.getByText('Repo 1')).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe('Products Component', () => {
   });
 
   it('can change tabs and pagination', async () => {
-    await act(async () => { render(<Products />); });
+    render(<Products />);
 
     await waitFor(() => {
       expect(screen.getByText('Repo 1')).toBeInTheDocument();
@@ -156,3 +156,7 @@ describe('Products Component', () => {
     fireEvent.click(aImportarTab);
   });
 });
+"""
+
+with open('src/pages/products/tests/Products.spec.tsx', 'w') as f:
+    f.write(content)
