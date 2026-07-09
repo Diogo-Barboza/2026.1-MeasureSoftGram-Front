@@ -19,7 +19,8 @@ import {
   Paper,
   InputAdornment,
   CircularProgress,
-  Link
+  Link,
+  Pagination
 } from "@mui/material";
 import { Search, CheckCircle, AddCircle, GitHub, FolderSpecial } from "@mui/icons-material";
 import { NextPageWithLayout } from "@pages/_app.next";
@@ -57,15 +58,20 @@ const Products: NextPageWithLayout = () => {
   const [selectedProductId, setSelectedProductId] = useState<string>('');
 
   const [gitHubRepos, setGitHubRepos] = useState<GitHubRepo[]>([]);
-  const [importedRepoUrls, setImportedRepoUrls] = useState<string[]>([]);
   const [importedRepos, setImportedRepos] = useState<any[]>([]);
-
-  const [loadingOrgs, setLoadingOrgs] = useState(false);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [loadingRepos, setLoadingRepos] = useState(false);
-
-  const [search, setSearch] = useState('');
+  const [importedRepoUrls, setImportedRepoUrls] = useState<string[]>([]);
+  const [loadingOrgs, setLoadingOrgs] = useState<boolean>(true);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
+  const [loadingRepos, setLoadingRepos] = useState<boolean>(false);
+  const [search, setSearch] = useState("");
   const [tabValue, setTabValue] = useState(0);
+
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, tabValue, gitHubRepos]);
   const lastLoadedProductIdRef = useRef<string>('');
 
 
@@ -494,7 +500,7 @@ const Products: NextPageWithLayout = () => {
               ) : (
                 <List sx={{ padding: 0 }}>
                   {filteredRepos.length > 0 ? (
-                    filteredRepos.map((repo) => {
+                    filteredRepos.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((repo) => {
                       const isAlreadyImported = importedRepoUrls.some(
                         url => url === repo.url || url.toLowerCase() === repo.url.toLowerCase()
                       );
@@ -563,6 +569,17 @@ const Products: NextPageWithLayout = () => {
                     </Box>
                   )}
                 </List>
+              )}
+
+              {!loadingRepos && filteredRepos.length > 0 && (
+                <Box display="flex" justifyContent="center" padding="2rem">
+                  <Pagination
+                    count={Math.ceil(filteredRepos.length / itemsPerPage)}
+                    page={page}
+                    onChange={(e, value) => setPage(value)}
+                    color="primary"
+                  />
+                </Box>
               )}
             </Paper>
           ) : (
