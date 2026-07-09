@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
-import { OrganizationProvider, useOrganizationContext } from '../OrganizationProvider';
 import { organizationQuery } from '@services/organization';
 import { useAuth } from '@contexts/Auth';
 import { toast } from 'react-toastify';
+import { OrganizationProvider, useOrganizationContext } from '../OrganizationProvider';
 
 jest.mock('@services/organization');
 jest.mock('@contexts/Auth');

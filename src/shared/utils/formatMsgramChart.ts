@@ -1,9 +1,9 @@
-import convertToCsv, { CSVFilter } from './convertToCsv';
 import { Historical } from '@customTypes/repository';
 import { format } from 'date-fns';
 import _ from 'lodash';
 import ReactEcharts from 'echarts-for-react';
 import { ComponentRef } from 'react';
+import convertToCsv, { CSVFilter } from './convertToCsv';
 
 interface Props {
   historical: Historical[];

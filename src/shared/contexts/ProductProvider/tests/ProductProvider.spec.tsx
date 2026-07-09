@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
-import { ProductProvider, useProductContext } from '../ProductProvider';
 import { productQuery } from '@services/product';
 import * as OrgContext from '@contexts/OrganizationProvider';
 import * as LocalStorageHook from '@hooks/useLocalStorage';
+import { ProductProvider, useProductContext } from '../ProductProvider';
 
 jest.mock('@services/product');
 jest.mock('@contexts/OrganizationProvider');

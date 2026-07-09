@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, waitFor, act, fireEvent, renderHook } from '@testing-library/react';
-import { AuthProvider, useAuth } from '../Auth.context';
 import { getUserInfo, signInCredentials, signOut } from '@services/Auth';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
+import { AuthProvider, useAuth } from '../Auth.context';
 
 const localStorageMock: Record<string, any> = {};
 
@@ -28,8 +28,7 @@ jest.mock('next/router', () => ({
 }));
 
 // Mock simples para o ConfirmModal para focar na lógica do Contexto
-jest.mock('@components/ConfirmModal/ConfirmModal', () => {
-  return function MockConfirmModal({ isModalOpen, btnConfirmText, btnDismissText, handleConfirmBtnClick, handleDismissBtnClick, text }: any) {
+jest.mock('@components/ConfirmModal/ConfirmModal', () => function MockConfirmModal({ isModalOpen, btnConfirmText, btnDismissText, handleConfirmBtnClick, handleDismissBtnClick, text }: any) {
     if (!isModalOpen) return null;
     return (
       <div data-testid="confirm-modal">
@@ -38,8 +37,7 @@ jest.mock('@components/ConfirmModal/ConfirmModal', () => {
         <button onClick={handleDismissBtnClick}>{btnDismissText}</button>
       </div>
     );
-  };
-});
+  });
 
 // Mock do hook useLocalStorage para controlar os estados internos facilmente
 jest.mock('@hooks/useLocalStorage', () => ({
@@ -172,7 +170,7 @@ describe('AuthContext', () => {
       value: { username: 'testuser', email: 'test@test.com' },
     });
 
-    localStorageMock['token'] = 'fake-token';
+    localStorageMock.token = 'fake-token';
 
     Object.defineProperty(globalThis, 'location', {
       value: {
@@ -201,7 +199,7 @@ describe('AuthContext', () => {
       value: { key: 'fake-key' },
     });
 
-    localStorageMock['provider'] = 'github';
+    localStorageMock.provider = 'github';
 
     Object.defineProperty(globalThis, 'location', {
       value: {

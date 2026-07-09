@@ -37,14 +37,14 @@ const Download = ({ product, kind, startDate, endDate, checkedOptions }: Downloa
       const res = await fetch(product.historical_values[kind]).then((response) => response.json());
       const { results } = res;
 
-      const d_start = parse(startDate, 'dd/MM/yyyy', new Date());
-      const d_end = parse(endDate, 'dd/MM/yyyy', new Date());
+      const dStart = parse(startDate, 'dd/MM/yyyy', new Date());
+      const dEnd = parse(endDate, 'dd/MM/yyyy', new Date());
       const parsedStartDate =
-        d_start instanceof Date && !isNaN(d_start)
+        dStart instanceof Date && !isNaN(dStart as any)
           ? parse(startDate, 'dd/MM/yyyy', new Date())
           : parse(res.results[0].history[0].created_at, "yyyy-MM-dd'T'HH:mm:ssxxx", new Date());
       const parsedEndDate =
-        d_end instanceof Date && !isNaN(d_end)
+        dEnd instanceof Date && !isNaN(dEnd as any)
           ? parse(endDate, 'dd/MM/yyyy', new Date())
           : parse(
             res.results[0].history[res.results[0].history.length - 1].created_at,

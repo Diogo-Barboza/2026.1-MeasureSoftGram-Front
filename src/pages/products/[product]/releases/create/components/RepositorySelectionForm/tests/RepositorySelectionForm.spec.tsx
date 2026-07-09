@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import RepositorySelectionForm from '../RepositorySelectionForm';
 import { productQuery } from '@services/product';
+import RepositorySelectionForm from '../RepositorySelectionForm';
 
 jest.mock('@services/product');
 

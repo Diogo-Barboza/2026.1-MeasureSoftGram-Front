@@ -143,7 +143,7 @@ const formattedData = [
 describe("useProductCurrentPreConfig", () => {
   it("should return the current pre config", async () => {
     api.get.mockResolvedValue({
-      data: data
+      data
     });
 
     const { result, rerender } = renderHook(() => useProductCurrentPreConfig(), {

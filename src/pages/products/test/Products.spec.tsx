@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
-import Products from '../Products';
 import { organizationQuery } from '@services/organization';
 import { productQuery } from '@services/product';
 import { repository } from '@services/repository';
@@ -9,6 +8,7 @@ import { useProductContext } from '@contexts/ProductProvider';
 import { useAuth } from '@contexts/Auth';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import Products from '../Products';
 
 jest.mock('@services/organization');
 jest.mock('@services/product');

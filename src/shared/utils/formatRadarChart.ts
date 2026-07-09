@@ -1,6 +1,6 @@
-import convertToCsv from './convertToCsv';
 import { Historical } from '@customTypes/repository';
 import _ from 'lodash';
+import convertToCsv from './convertToCsv';
 
 export interface FormatRadarChartType {
   historical?: Historical[];

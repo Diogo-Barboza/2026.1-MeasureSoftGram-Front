@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { useLocalStorage } from '@hooks/useLocalStorage';
 import ConfirmModal from '@components/ConfirmModal/ConfirmModal';
+
 export const authContextDefaultValues: authContextType = {
   session: null,
   loading: 'loading',
