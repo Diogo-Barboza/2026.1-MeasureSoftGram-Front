@@ -44,6 +44,7 @@ export interface ReleaseInfoForm {
   start_at: string;
   end_at: string;
   goal: number;
+  repositories_ids: number[];
 }
 
 export type PreConfigAttribute = Measure | Subcharacteristic | Characteristic;

@@ -17,6 +17,7 @@ import BasicInfoForm from './components/BasicInfoForm/BasicInfoForm';
 import ModelConfigForm from './components/ModelConfigForm/ModelConfigForm';
 import ReferenceValuesForm from './components/ReferenceValuesForm/ReferenceValuesForm';
 import CharacteristicsBalanceForm from './components/CharacteristicsBalanceForm/CharacteristicsBalanceForm';
+import RepositorySelectionForm from './components/RepositorySelectionForm/RepositorySelectionForm';
 
 function ReleaseCreation() {
   const [organizationId, setOrganizationId] = useState<string>("");
@@ -42,7 +43,7 @@ function ReleaseCreation() {
 
   const { t } = useTranslation('plan_release');
 
-  const { register, handleSubmit, formState: { errors }, getValues, watch, trigger } = useForm<ReleaseInfoForm>({
+  const { register, handleSubmit, formState: { errors }, getValues, watch, trigger, setValue } = useForm<ReleaseInfoForm>({
     mode: "all",
     defaultValues: {
       end_at: format(addDays(new Date(), 7), 'yyyy-MM-dd'),
@@ -50,6 +51,7 @@ function ReleaseCreation() {
       goal: 0,
       release_name: '',
       description: '',
+      repositories_ids: []
     }
   });
 
@@ -225,13 +227,15 @@ function ReleaseCreation() {
 
   function renderStep(): React.ReactNode {
     switch (activeStep) {
-      case 0:// eslint-disable-next-line react/jsx-no-bind
-        return <BasicInfoForm configPageData={configPageData!} trigger={trigger} register={register} errors={errors} watch={watch} followLastConfig={followLastConfig} setFollowLastConfig={handleSetFollowLastConfig} />
+      case 0:
+        return <RepositorySelectionForm organizationId={organizationId} productId={productId} register={register} watch={watch} setValue={setValue} />
       case 1:// eslint-disable-next-line react/jsx-no-bind
-        return <ModelConfigForm changeRefValue={changeRefValue} setChangeRefValue={handleChangeRefValue} configPageData={configPageData!} setConfigPageData={setConfigPageData} />
+        return <BasicInfoForm configPageData={configPageData!} trigger={trigger} register={register} errors={errors} watch={watch} followLastConfig={followLastConfig} setFollowLastConfig={handleSetFollowLastConfig} />
       case 2:// eslint-disable-next-line react/jsx-no-bind
-        return <ReferenceValuesForm configPageData={configPageData!} defaultPageData={defaultPageData!} setConfigPageData={setConfigPageData} />
+        return <ModelConfigForm changeRefValue={changeRefValue} setChangeRefValue={handleChangeRefValue} configPageData={configPageData!} setConfigPageData={setConfigPageData} />
       case 3:// eslint-disable-next-line react/jsx-no-bind
+        return <ReferenceValuesForm configPageData={configPageData!} defaultPageData={defaultPageData!} setConfigPageData={setConfigPageData} />
+      case 4:// eslint-disable-next-line react/jsx-no-bind
         return <CharacteristicsBalanceForm characteristicRelations={balanceMatrix} configPageData={configPageData!} setConfigPageData={setConfigPageData} dinamicBalance={dinamicBalance} setDinamicBalance={handleChangeDinamicBalance} />
       default:
         break
@@ -239,7 +243,7 @@ function ReleaseCreation() {
   }
 
   function handlePreviousButtonClick(): void {
-    if (activeStep === 3 && !changeRefValue)
+    if (activeStep === 4 && !changeRefValue)
       setActiveStep(activeStep - 2);
     else if (activeStep > 0)
       setActiveStep(activeStep - 1);
@@ -301,18 +305,26 @@ function ReleaseCreation() {
   async function handleNextButtonClick(): Promise<void> {
     switch (activeStep) {
       case 0:
-        await checkBasicValues();
+        const selectedRepos = getValues('repositories_ids');
+        if (!selectedRepos || selectedRepos.length === 0) {
+          enqueueSnackbar(t('Selecione pelo menos um repositório para a release.'), { autoHideDuration: 6000, variant: 'error' });
+          break;
+        }
+        setActiveStep(activeStep + 1);
         break;
       case 1:
+        await checkBasicValues();
+        break;
+      case 2:
         if (!isConfigDataWeightValid()) break;
 
         if (!changeRefValue) setActiveStep(activeStep + 2);
         else setActiveStep(activeStep + 1);
         break;
-      case 2:
+      case 3:
         setActiveStep(activeStep + 1);
         break;
-      case 3:
+      case 4:
         submitRelease();
         break;
       default:
@@ -401,7 +413,7 @@ function ReleaseCreation() {
   }
 
   function handleModalBtnClick() {
-    if (activeStep === 1)
+    if (activeStep === 2)
       handleChangeRefValue(true);
     else
       handleChangeDinamicBalance(true)
@@ -410,7 +422,7 @@ function ReleaseCreation() {
   }
 
   function renderBreadcrumb(label: string, step: number): any {
-    if (step === 2 && !changeRefValue) return
+    if (step === 3 && !changeRefValue) return
 
     return <Button
       key={step}
@@ -437,10 +449,11 @@ function ReleaseCreation() {
           sx={{ fontSize: '14px' }}
         >
           {[
-            { label: t('createRelease'), step: 0 },
-            { label: t('defineConfiguration'), step: 1 },
-            { label: t('changeRefValue'), step: 2 },
-            { label: t('balanceCharacteristics'), step: 3 },
+            { label: 'Selecionar Repositórios', step: 0 },
+            { label: t('createRelease'), step: 1 },
+            { label: t('defineConfiguration'), step: 2 },
+            { label: t('changeRefValue'), step: 3 },
+            { label: t('balanceCharacteristics'), step: 4 },
           ].map(({ label, step }) => renderBreadcrumb(label, step))}
         </Breadcrumbs>
       </Styles.Header>
@@ -462,7 +475,7 @@ function ReleaseCreation() {
                 </Button>
               }
               <Button type="submit" variant="contained">
-                {activeStep < 3 ? t('next') : t('end')}
+                {activeStep < 4 ? t('next') : t('end')}
               </Button>
             </Box>
           </form>
@@ -482,14 +495,14 @@ function ReleaseCreation() {
       <ConfirmModal
         // eslint-disable-next-line react/jsx-no-bind
         setIsModalOpen={setShowConfirmationModal}
-        text={activeStep === 1 ? t('alertRefValue') : t('alertDinamicBalance')}
+        text={activeStep === 2 ? t('alertRefValue') : t('alertDinamicBalance')}
         btnConfirmText={t('continue')}
         btnDismissText={t('back')}
         isModalOpen={showConfirmationModal}
         /* eslint-disable no-unused-expressions */
         handleDismissBtnClick={() => {
           setShowConfirmationModal(false)
-          activeStep === 1 ? setChangeRefValue(false) : setDinamicBalance(false)
+          activeStep === 2 ? setChangeRefValue(false) : setDinamicBalance(false)
         }}
         // eslint-disable-next-line react/jsx-no-bind
         handleConfirmBtnClick={handleModalBtnClick} />
