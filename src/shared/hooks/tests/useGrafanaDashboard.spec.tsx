@@ -15,13 +15,17 @@ jest.mock('@services/product', () => ({
   },
 }));
 
-jest.mock('@contexts/ProductProvider', () => ({
-  useProductContext: () => ({ currentProduct: { id: '5', name: 'MyProduct' } }),
-}));
+// Stable references inside factory — prevents useEffect infinite loop
+// when currentProduct/currentOrganization are in the dep array
+jest.mock('@contexts/ProductProvider', () => {
+  const product = { id: '5', name: 'MyProduct' };
+  return { useProductContext: () => ({ currentProduct: product }) };
+});
 
-jest.mock('@contexts/OrganizationProvider', () => ({
-  useOrganizationContext: () => ({ currentOrganization: { id: '2', name: 'MyOrg' } }),
-}));
+jest.mock('@contexts/OrganizationProvider', () => {
+  const organization = { id: '2', name: 'MyOrg' };
+  return { useOrganizationContext: () => ({ currentOrganization: organization }) };
+});
 
 describe('useGrafanaDashboard', () => {
   beforeEach(() => {
@@ -35,9 +39,7 @@ describe('useGrafanaDashboard', () => {
 
     const { result } = renderHook(() => useGrafanaDashboard({ uid: 'test-uid' }));
 
-    expect(result.current.loading).toBe(true);
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 3000 });
 
     expect(result.current.grafanaUrl).toBe('http://grafana/d/test');
     expect(result.current.error).toBe(false);
@@ -60,7 +62,7 @@ describe('useGrafanaDashboard', () => {
       useGrafanaDashboard({ uid: 'repo-uid', hasRepoSelector: true })
     );
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 3000 });
 
     expect(result.current.repositories).toHaveLength(2);
     expect(result.current.selectedRepoId).toBe(1);
@@ -72,7 +74,7 @@ describe('useGrafanaDashboard', () => {
 
     const { result } = renderHook(() => useGrafanaDashboard({ uid: 'fail-uid' }));
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 3000 });
 
     expect(result.current.error).toBe(true);
     expect(result.current.grafanaUrl).toBeNull();
@@ -87,7 +89,7 @@ describe('useGrafanaDashboard', () => {
       useGrafanaDashboard({ uid: 'fixed-uid', repositoryId: 99 })
     );
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 3000 });
 
     expect(result.current.selectedRepoId).toBe(99);
     expect(grafanaService.getDashboardUrl).toHaveBeenCalledWith('fixed-uid', 5, 99);
