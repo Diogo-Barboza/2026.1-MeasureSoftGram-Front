@@ -6,6 +6,8 @@
   "nav": {
     "howItWorks": "Como funciona",
     "value": "Por que usar",
+    "integrations": "Integrações",
+    "publications": "Publicações",
     "docs": "Documentação",
     "enter": "Entrar"
   },
@@ -55,6 +57,37 @@
         "description": "Defina valores de referência e acompanhe se cada release se aproxima ou se afasta da meta de qualidade."
       }
     }
+  },
+  "integrations": {
+    "title": "Integra com o seu fluxo de trabalho",
+    "subtitle": "O MeasureSoftGram se conecta às ferramentas que o seu time já usa para coletar métricas, visualizar resultados e agir sobre eles.",
+    "items": {
+      "sonar": {
+        "title": "SonarQube e SonarCloud",
+        "description": "Importa as métricas de qualidade de código já analisadas no seu pipeline, sem recoletar nada."
+      },
+      "github": {
+        "title": "GitHub",
+        "description": "Login social, leitura dos repositórios e coleta de métricas de processo direto do fluxo de CI."
+      },
+      "ai": {
+        "title": "Assistentes de IA via MCP",
+        "description": "Um servidor Model Context Protocol expõe a qualidade dos seus produtos a qualquer cliente compatível: Claude, editores e outros assistentes, não só um."
+      },
+      "grafana": {
+        "title": "Grafana",
+        "description": "Leva os indicadores do modelo de qualidade para os seus painéis de observabilidade e acompanhamento."
+      },
+      "vscode": {
+        "title": "VS Code",
+        "description": "Consulta a qualidade das releases sem sair do editor, pela integração via Model Context Protocol."
+      }
+    }
+  },
+  "publications": {
+    "title": "Base científica do projeto",
+    "subtitle": "O MeasureSoftGram nasce de pesquisa acadêmica revisada por pares. Leia os artigos que fundamentam o modelo de qualidade.",
+    "cta": "Ler no ACM"
   },
   "community": {
     "title": "Conheça mais sobre o projeto",

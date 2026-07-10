@@ -41,6 +41,12 @@ export const LandingHeader: React.FC = () => {
             <MuiLink href="#value" underline="none" sx={{ color: '#4a4a4a', fontWeight: 500 }}>
               {t('nav.value')}
             </MuiLink>
+            <MuiLink href="#integrations" underline="none" sx={{ color: '#4a4a4a', fontWeight: 500 }}>
+              {t('nav.integrations')}
+            </MuiLink>
+            <MuiLink href="#publications" underline="none" sx={{ color: '#4a4a4a', fontWeight: 500 }}>
+              {t('nav.publications')}
+            </MuiLink>
             <MuiLink
               href={EXTERNAL_LINKS.docs}
               target="_blank"
