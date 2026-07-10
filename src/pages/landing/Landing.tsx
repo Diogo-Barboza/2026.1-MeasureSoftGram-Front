@@ -9,6 +9,8 @@ import { LandingHeader } from './components/LandingHeader';
 import { HeroSection } from './components/HeroSection';
 import { HowItWorksSection } from './components/HowItWorksSection';
 import { ValuePropsSection } from './components/ValuePropsSection';
+import { IntegrationsSection } from './components/IntegrationsSection';
+import { PublicationsSection } from './components/PublicationsSection';
 import { CommunitySection } from './components/CommunitySection';
 import { LandingFooter } from './components/LandingFooter';
 import { SITE_URL, OG_IMAGE_PATH } from './constants';
@@ -58,6 +60,8 @@ const Landing: React.FC<LandingProps> = ({ meta }) => {
         <HeroSection />
         <HowItWorksSection />
         <ValuePropsSection />
+        <IntegrationsSection />
+        <PublicationsSection />
         <CommunitySection />
         <LandingFooter />
       </Box>
