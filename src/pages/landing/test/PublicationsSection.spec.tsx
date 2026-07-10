@@ -19,10 +19,19 @@ describe('PublicationsSection', () => {
   it('lista o titulo e os autores de cada publicacao', () => {
     render(<PublicationsSection />);
 
+    // Titulos sao unicos por publicacao.
     PUBLICATIONS.forEach((pub) => {
       expect(screen.getByText(pub.title)).toBeInTheDocument();
-      expect(screen.getByText(pub.authors)).toBeInTheDocument();
     });
+
+    // As duas publicacoes tem os mesmos autores; o nome aparece uma vez por
+    // cartao, entao esperamos uma ocorrencia para cada item da lista.
+    PUBLICATIONS.forEach((pub) => {
+      expect(screen.getAllByText(pub.authors).length).toBeGreaterThanOrEqual(1);
+    });
+    expect(screen.getAllByText(PUBLICATIONS[0].authors)).toHaveLength(
+      PUBLICATIONS.length
+    );
   });
 
   it('cada CTA aponta para o DOI no ACM, em nova aba e com rel seguro', () => {

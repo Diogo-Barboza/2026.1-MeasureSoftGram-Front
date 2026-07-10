@@ -38,7 +38,7 @@ export const PUBLICATIONS = [
   {
     key: 'multidimensional',
     title: "Software Quality is Multidimensional: Let's play with Tensors",
-    authors: 'Hilmer R. Neri, Guilherme H. Travassos',
+    authors: 'Hilmer Rodrigues Neri, Guilherme Horta Travassos',
     venue: 'Brazilian Symposium on Software Engineering (SBES)',
     year: 2020,
     url: 'https://doi.org/10.1145/3422392.3422450',
