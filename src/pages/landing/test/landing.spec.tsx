@@ -77,7 +77,9 @@ describe('Landing', () => {
 
     expect(screen.getByText('hero.title')).toBeInTheDocument();
     expect(screen.getByText('howItWorks.title')).toBeInTheDocument();
+    expect(screen.getByText('integrations.title')).toBeInTheDocument();
     expect(screen.getByText('value.title')).toBeInTheDocument();
+    expect(screen.getByText('publications.title')).toBeInTheDocument();
     expect(screen.getByText('community.title')).toBeInTheDocument();
   });
 
