@@ -25,7 +25,7 @@ interface Prop {
 }
 
 function LatestValueTable({ title, value }: Prop) {
-  const { t } = useTranslation('lates_value_table');
+  const { t } = useTranslation('latest_value_table');
 
   const { data, error, isLoading, isEmpty } = useRequestValues({ type: 'latest-values', value });
   const tableRows: { name: string; latestValue: number; latestData: string }[] = [];
