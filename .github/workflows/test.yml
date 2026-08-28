@@ -2,9 +2,9 @@ name: Rodar Testes
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   pipeline:
@@ -39,14 +39,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Envia cobertura para o Codecov
-        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./
-          fail_ci_if_error: true
-          files: ./coverage/clover.xml
-          flags: unittests
-          name: 2026.1-MeasureSoftGram-Front
-          verbose: true
+          args: >
+            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
+
+      # - name: Envia cobertura para o Codecov
+      #   uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     directory: ./
+      #     fail_ci_if_error: true
+      #     files: ./coverage/clover.xml
+      #     flags: unittests
+      #     name: 2026.2-MeasureSoftGram-Front
+      #     verbose: true
