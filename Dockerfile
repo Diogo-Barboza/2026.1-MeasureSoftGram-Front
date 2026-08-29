@@ -34,7 +34,7 @@ WORKDIR /usr/src
 
 # Camada de dependencias: so invalida quando o lockfile muda.
 COPY package.json pnpm-lock.yaml* ./
-RUN npm install -g pnpm@9.0.0 && pnpm install --frozen-lockfile
+RUN npm install -g pnpm@9.0.0 --ignore-scripts && pnpm install --frozen-lockfile --ignore-scripts
 
 # Codigo + build de producao.
 COPY . .
@@ -57,6 +57,9 @@ COPY --from=builder /usr/src/.next ./.next
 COPY --from=builder /usr/src/public ./public
 COPY --from=builder /usr/src/package.json ./package.json
 COPY --from=builder /usr/src/next.config.js ./next.config.js
+
+RUN chown -R node:node /usr/src
+USER node
 
 EXPOSE 3000
 
