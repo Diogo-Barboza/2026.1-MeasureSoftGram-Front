@@ -2,22 +2,22 @@ name: Export de métricas
 
 on:
   push:
-    branches: [main,develop]
+    branches: [main, develop]
     tags:
-      - "v*"
+      - 'v*'
   workflow_dispatch:
 jobs:
   release:
-    runs-on: "ubuntu-latest"
+    runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
       - name: Instalar dependências
         run: pip install -r requirements.txt
@@ -32,7 +32,7 @@ jobs:
         run: |
           git config --global user.email "${{secrets.USER_EMAIL}}"
           git config --global user.name "${{secrets.USER_NAME}}"
-          git clone --single-branch --branch main "https://x-access-token:${{secrets.API_TOKEN_DOC}}@github.com/fga-eps-mds/2026.1-MeasureSoftGram-DOC" doc
+          git clone --single-branch --branch main "https://x-access-token:${{secrets.API_TOKEN_DOC}}@github.com/fga-eps-mds/2026.2-MeasureSoftGram-DOC" doc
           mkdir -p doc/Analytics/data
           cp -R analytics-raw-data/*.json doc/Analytics/data
           cd doc/
@@ -42,7 +42,7 @@ jobs:
 
       - name: Envia métricas como assets da release
         if: startsWith(github.ref, 'refs/tags')
-        uses: AButler/upload-release-assets@v2.0
+        uses: AButler/upload-release-assets@ec6d3263266dc57eb6645b5f75e827987f7c217d # v2.0
         with:
           files: 'analytics-raw-data/*'
           repo-token: ${{ secrets.TOKEN_GITHUB }}
