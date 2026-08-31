@@ -3,14 +3,15 @@ import { useRouter } from 'next/router';
 import getLayout from '@components/Layout';
 import { toast } from 'react-toastify';
 import { getAllUsers, User } from '@services/user';
-import { TextField, Button, Typography, Box, List, ListItem, ListItemText, Modal, Backdrop, Fade, Grid, FormControl } from '@mui/material';
+import { TextField, Button, Typography, Box, List, ListItem, ListItemText, Modal, Fade, FormControl } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import MSGButton from '../../components/idv/buttons/MSGButton';
 import { useOrganizationQuery } from './hooks/useOrganizationQuery';
 import { Title, Container, Wrapper, Description, Form, Header } from './styles';
 
 interface OrganizationsType extends React.FC {
-  getLayout?: (page: React.ReactElement) => React.ReactNode;
+  getLayout?: (_page: React.ReactElement) => React.ReactNode;
 }
 
 const Organizations: OrganizationsType = () => {
@@ -21,6 +22,7 @@ const Organizations: OrganizationsType = () => {
   const [membros, setMembros] = useState<string[]>([]);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const { createOrganization, getOrganizationById, updateOrganization } = useOrganizationQuery();
+  const { setCurrentOrganizations, fetchOrganizations } = useOrganizationContext();
   const [users, setUsers] = useState<User[]>([]);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
@@ -61,6 +63,7 @@ const Organizations: OrganizationsType = () => {
       };
       fetchOrganizationData();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query.edit]);
 
 
@@ -77,6 +80,18 @@ const Organizations: OrganizationsType = () => {
     setMembros(newMembros);
   };
 
+  const handleResultError = (result: any, defaultErrorMsg: string) => {
+    const nameExist = t('toast.name-exists');
+    const keyExist = t('toast.key-exists');
+    if (result.error?.message === nameExist) {
+      toast.error(nameExist);
+    } else if (result.error?.message === keyExist) {
+      toast.error(keyExist);
+    } else {
+      toast.error(t(defaultErrorMsg));
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const novaOrganizacao = {
@@ -87,37 +102,31 @@ const Organizations: OrganizationsType = () => {
     };
 
     let result;
-    const nameExist = t('toast.name-exists')
-    const keyExist = t('toast.key-exists')
     if (isEditMode && router.query.edit) {
       result = await updateOrganization(router.query.edit as string, novaOrganizacao);
       if (result.type === 'success') {
         toast.success(t('toast.sucess-edit'));
         setTimeout(() => {
-          window.location.reload();
-          window.location.href = '/home';
+          router.push('/home');
         }, 2000);
-      } else if (result.error.message === nameExist) {
-        toast.error(nameExist);
-      } else if (result.error.message === keyExist) {
-        toast.error(keyExist);
       } else {
-        toast.error(t('toast.error-edit'));
+        handleResultError(result, 'toast.error-edit');
       }
     } else {
       result = await createOrganization(novaOrganizacao);
       if (result.type === 'success') {
         toast.success(t('toast.sucess'));
+        const createdOrg = result.value as any;
+        if (createdOrg && createdOrg.id) {
+          localStorage.setItem('selectedOrgId', JSON.stringify(createdOrg.id.toString()));
+          setCurrentOrganizations([createdOrg]);
+        }
+        fetchOrganizations(true);
         setTimeout(() => {
-          window.location.reload();
-          window.location.href = '/home';
+          router.push('/home');
         }, 2000);
-      } else if (result.error.message === nameExist) {
-        toast.error(nameExist);
-      } else if (result.error.message === keyExist) {
-        toast.error(keyExist);
       } else {
-        toast.error(t('toast.error'));
+        handleResultError(result, 'toast.error');
       }
     }
   };

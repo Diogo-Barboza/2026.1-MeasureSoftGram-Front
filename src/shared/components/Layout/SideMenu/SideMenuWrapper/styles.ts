@@ -9,8 +9,8 @@ export const Wrapper = styled.div`
   padding: 0 4px;
 
   align-items: center;
-  border-right: 0.1px solid rgba(0,0,0,0.5);
-  background-color: #2B4D6F;
+  border-right: 0.1px solid rgba(0, 0, 0, 0.5);
+  background-color: #2b4d6f;
   position: sticky;
   top: 0;
   left: 0;
@@ -41,14 +41,14 @@ export const CollapseButton = styled.div`
   transform: translate(28%, -50%);
 
   border-radius: 50%;
-  background-color: #38618A;
+  background-color: #38618a;
   cursor: pointer;
   z-index: 1;
 
-  border: 0.1px solid rgba(0,0,0,0.5);
+  border: 0.1px solid rgba(0, 0, 0, 0.5);
 
   &:hover {
-    background-color: #4073A7;
+    background-color: #4073a7;
   }
 `;
 

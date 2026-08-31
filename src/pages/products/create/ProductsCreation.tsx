@@ -4,6 +4,7 @@ import getLayout from '@components/Layout';
 import { toast } from 'react-toastify';
 import { TextField, MenuItem } from '@mui/material';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
+import { useProductContext } from '@contexts/ProductProvider';
 import { Botoes, Container, Description, Form, Header, Wrapper } from '@pages/organizations/styles';
 import { useTranslation } from 'react-i18next';
 import MSGButton from '../../../components/idv/buttons/MSGButton';
@@ -18,11 +19,12 @@ const ProductsCreation: OrganizationsType = () => {
   const [nome, setName] = useState('');
   const [descricao, setDescription] = useState('');
   const [organizationId, setOrganizationId] = useState<number>();
-  const { organizationList } = useOrganizationContext();
+  const { organizationList, setCurrentOrganizations } = useOrganizationContext();
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const { createProduct, getProductById, updateProduct } = useProductQuery();
   const currentOrganizationId = router.query.id_organization;
   const currentProductId = router.query.id_product;
+  const { setCurrentProduct, loadAllProducts } = useProductContext();
   const { t } = useTranslation('product');
 
   useEffect(() => {
@@ -47,6 +49,7 @@ const ProductsCreation: OrganizationsType = () => {
     }
   }, [router.query.id_product]);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -59,7 +62,8 @@ const ProductsCreation: OrganizationsType = () => {
     let result;
 
     if (!novoProduto.organizationId && currentOrganizationId) {
-      novoProduto.organizationId = parseInt(currentOrganizationId[0], 10);
+      const orgIdStr = Array.isArray(currentOrganizationId) ? currentOrganizationId[0] : currentOrganizationId;
+      novoProduto.organizationId = parseInt(orgIdStr, 10);
     }
 
     const nameExist = t('toast.name-exists')
@@ -68,8 +72,7 @@ const ProductsCreation: OrganizationsType = () => {
       result = await updateProduct(currentProductId as string, novoProduto);
       if (result.type === 'success') {
         toast.success(t('toast.success-edit'));
-        window.location.reload();
-        window.location.href = '/home';
+        router.push('/products');
       } else if (result.error.message === nameExist) {
         toast.error(nameExist);
       } else {
@@ -81,8 +84,23 @@ const ProductsCreation: OrganizationsType = () => {
         result = await createProduct(novoProduto);
         if (result.type === 'success') {
           toast.success(t('toast.sucess'));
-          window.location.reload();
-          window.location.href = '/home';
+          const createdProduct = result.value as any;
+          if (createdProduct && createdProduct.id) {
+            localStorage.setItem('selectedProductId', JSON.stringify(createdProduct.id.toString()));
+            setCurrentProduct(createdProduct);
+          }
+          if (organizationId || currentOrganizationId) {
+            const finalOrgId = organizationId || (currentOrganizationId ? parseInt(currentOrganizationId as string, 10) : null);
+            if (finalOrgId) {
+              localStorage.setItem('selectedOrgId', JSON.stringify(finalOrgId.toString()));
+              const selectedOrg = organizationList?.find(org => org.id === finalOrgId);
+              if (selectedOrg) {
+                setCurrentOrganizations([selectedOrg]);
+              }
+            }
+          }
+          await loadAllProducts();
+          router.push('/products');
         } else if (result.error.message === nameExist) {
           toast.error(nameExist);
         } else {
@@ -148,7 +166,7 @@ const ProductsCreation: OrganizationsType = () => {
               data-testid="description-input"
             />
             <Botoes>
-              <MSGButton width="200px" variant='secondary' onClick={() => router.push('/home')}  >{t('back')}</MSGButton>
+              <MSGButton width="200px" variant='secondary' onClick={() => router.push('/products')}  >{t('back')}</MSGButton>
 
               <MSGButton width="200px" type='submit' >{isEditMode ? t('save') : t('create')}</MSGButton>
             </Botoes>

@@ -9,14 +9,14 @@ export interface Measure {
   metrics: Metrics[];
   min_threshold?: number;
   max_threshold?: number;
-  active?: boolean
+  active?: boolean;
 }
 
 export interface Subcharacteristic {
   key: string;
   weight: number;
   measures: Measure[];
-  active?: boolean
+  active?: boolean;
 }
 
 export interface Characteristic {
@@ -24,7 +24,7 @@ export interface Characteristic {
   weight: number;
   subcharacteristics: Subcharacteristic[];
   goal: number;
-  active?: boolean
+  active?: boolean;
 }
 
 export interface PreConfigData {
@@ -44,6 +44,7 @@ export interface ReleaseInfoForm {
   start_at: string;
   end_at: string;
   goal: number;
+  repositories_ids: number[];
 }
 
 export type PreConfigAttribute = Measure | Subcharacteristic | Characteristic;

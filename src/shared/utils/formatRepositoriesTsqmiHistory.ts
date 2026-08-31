@@ -1,7 +1,7 @@
 import { RepositoriesTsqmiHistory } from '@customTypes/product';
-import convertToCsv, { CSVFilter } from './convertToCsv';
 import React, { ComponentRef } from 'react';
 import ReactEcharts from 'echarts-for-react';
+import convertToCsv, { CSVFilter } from './convertToCsv';
 
 const formatTwoDecimalPlaces = (value: number) => Math.round(value * 100) / 100;
 
@@ -11,10 +11,10 @@ interface Props {
   ref: React.MutableRefObject<ComponentRef<typeof ReactEcharts> | null>;
 }
 
-const formatRepositoriesTsqmiHistory = ({history, csvFilters, ref}: Props) => {
+const formatRepositoriesTsqmiHistory = ({ history, csvFilters, ref }: Props) => {
   const legendData: string[] = [];
 
-  const series = history.results.map((item) => {
+  const series = (history.results || []).map((item) => {
     legendData.push(item.name);
 
     return {

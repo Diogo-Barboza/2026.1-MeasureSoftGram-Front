@@ -19,7 +19,7 @@ export const useQuery = () => {
 
   async function loadProduct(organizationId: string, productId: string) {
     try {
-      if(!currentProduct) {
+      if (!currentProduct) {
         const result = await productQuery.getProductById(organizationId, productId);
         setCurrentProduct(result.value);
       }

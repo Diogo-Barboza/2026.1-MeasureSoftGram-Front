@@ -2,13 +2,13 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useRouter } from 'next/router';
-import { ProductProvider, useProductContext } from '@contexts/ProductProvider';
+import { useProductContext } from '@contexts/ProductProvider';
 import { useOrganizationContext } from '@contexts/OrganizationProvider';
 import { useRepositoryContext } from '@contexts/RepositoryProvider';
 import { useQuery } from '@hooks/useQuery';
 import { productQuery } from '@services/product';
 import { act } from 'react-dom/test-utils';
-import RepositoriesTable from '../RepositoriesTable'; // Replace with your actual path
+import RepositoriesTable from '../RepositoriesTable';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),

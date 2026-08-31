@@ -2,10 +2,13 @@ import React from 'react';
 
 import { IReleases } from '@customTypes/product';
 
-import ReactEcharts from 'echarts-for-react';
+import dynamic from 'next/dynamic';
+import type ReactEchartsType from 'echarts-for-react';
 import formatCompareGoalsChart from '@utils/formatCompareGoalsChart';
 import { Box } from '@mui/material';
 import * as Styles from './styles';
+
+const ReactEcharts = dynamic(() => import('echarts-for-react'), { ssr: false });
 
 interface Props {
   release: IReleases;

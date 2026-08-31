@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import ConfirmModal from '../ConfirmModal';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { useTranslation } from 'react-i18next';
 
 describe('ConfirmModal Component', () => {

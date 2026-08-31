@@ -8,13 +8,15 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { getPathId } from '@utils/pathDestructer';
 import { useProductContext } from '@contexts/ProductProvider';
-import ReactEcharts from 'echarts-for-react';
+import dynamic from 'next/dynamic';
 import { ProductFormData } from '@services/product';
 import { toNumber } from 'lodash';
 import { useProductQuery } from '@pages/products/hooks/useProductQuery';
 import { useTranslation } from 'react-i18next';
 import GaugeSlider from '../GaugeSlider';
 import CopyBadgeModal from '../CopyBadgeModal';
+
+const ReactEcharts = dynamic(() => import('echarts-for-react'), { ssr: false });
 
 function Header() {
   const { currentProduct, setCurrentProduct } = useProductContext();
@@ -140,7 +142,7 @@ function Header() {
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Editar Intervalos
+            {t("edit_intervals")}
           </Typography>
           {values ?
             <>
@@ -150,6 +152,33 @@ function Header() {
                 }}
               >
                 <ReactEcharts option={option} />
+              </Box>
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                gap="16px"
+                marginBottom="8px"
+              >
+                {[
+                  { color: '#e74c3c', label: t("legend_bad") },
+                  { color: '#f1c40f', label: t("legend_regular") },
+                  { color: '#07bc0c', label: t("legend_good") }
+                ].map((range) => (
+                  <Box key={range.label} display="flex" alignItems="center" gap="6px">
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '2px',
+                        backgroundColor: range.color
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary">
+                      {range.label}
+                    </Typography>
+                  </Box>
+                ))}
               </Box>
               <Box>
                 <GaugeSlider
@@ -172,7 +201,7 @@ function Header() {
                   onClick={handleCloseModal}
                   variant='outlined'
                 >
-                  Cancelar
+                  {t("cancel")}
                 </Button>
                 <Button
                   variant='contained'

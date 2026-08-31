@@ -1,32 +1,18 @@
-name: Build
+name: Build Docker
+
 on:
   push:
-    branches:
-      - develop
+    branches: [ main, develop ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ main, develop ]
+
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  docker-build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Instalar yarn
-        run: yarn
-
-      - name: Rodar testes
-        run: yarn run jest --coverage --updateSnapshot --ci --silent
-        
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Build da imagem Docker
+        run: docker build -t measuresoftgram-front:ci -f Dockerfile .

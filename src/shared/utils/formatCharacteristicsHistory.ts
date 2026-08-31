@@ -1,9 +1,9 @@
-import convertToCsv, { CSVFilter } from './convertToCsv';
 import { Historical } from '@customTypes/repository';
 import { format } from 'date-fns';
 import _ from 'lodash';
 import ReactEcharts from 'echarts-for-react';
 import { ComponentRef } from 'react';
+import convertToCsv, { CSVFilter } from './convertToCsv';
 
 export interface FormatCharacteristicsHistoryType {
   historical?: Historical[];
@@ -13,7 +13,13 @@ export interface FormatCharacteristicsHistoryType {
   ref: React.MutableRefObject<ComponentRef<typeof ReactEcharts> | null>;
 }
 
-const formatCharacteristicsHistory = ({ historical, title, isEmpty = false, csvFilters, ref }: FormatCharacteristicsHistoryType) => {
+const formatCharacteristicsHistory = ({
+  historical,
+  title,
+  isEmpty = false,
+  csvFilters,
+  ref
+}: FormatCharacteristicsHistoryType) => {
   const legendData = _.map(historical, 'name');
   const historicalData = _.map(historical, 'history');
   const xAxisData = _.uniq(historicalData.flat(1).map((h) => format(new Date(h?.created_at), 'dd/MM/yyyy HH:mm')));
@@ -31,7 +37,7 @@ const formatCharacteristicsHistory = ({ historical, title, isEmpty = false, csvF
 
   const onEvents = {
     datazoom: () => {
-      if (ref.current && csvFilters.dateRange) {
+      if (ref.current && csvFilters.dateRange && typeof ref.current.getEchartsInstance === 'function') {
         const chart = ref.current.getEchartsInstance();
         // @ts-ignore
         const { startValue, endValue } = chart.getOption().dataZoom[0];

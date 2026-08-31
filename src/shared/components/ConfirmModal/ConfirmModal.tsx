@@ -48,8 +48,7 @@ export default function ConfirmModal({ isModalOpen, btnConfirmText, btnDismissTe
         >
           {text}
         </Alert>
-        <Box sx={{ width: '100%' }}>
-        </Box>
+        <Box sx={{ width: '100%' }} />
         <Box
           sx={{
             display: 'flex',

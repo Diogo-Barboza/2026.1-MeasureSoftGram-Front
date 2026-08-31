@@ -1,130 +1,129 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { useTranslation } from 'react-i18next';
-import { Characteristic, PreConfigData } from '@customTypes/preConfig';
-import '@testing-library/jest-dom';
 import CharacteristicsBalanceForm from '../CharacteristicsBalanceForm';
 
 jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t: (key: string) => key })
 }));
 
-const mockSetDinamicBalance = jest.fn();
-const mockSetConfigPageData = jest.fn();
+jest.mock('../../SectionTooltip/SectionTooltip', () => function MockSectionTooltip() {
+  return <div data-testid="section-tooltip" />;
+});
 
-const mockCharacteristicRelations = {
-  reliability: {
-    "+": ["performance"],
-  },
-};
-
-const mockConfigPageData: PreConfigData = {
-  characteristics: [
-    {
-      key: 'reliability',
-      goal: 50,
-      active: true,
-      weight: 0,
-      subcharacteristics: []
-    },
-    {
-      key: 'performance',
-      goal: 30,
-      active: true,
-      weight: 0,
-      subcharacteristics: []
-    },
-    {
-      key: 'usability',
-      goal: 20,
-      active: false,
-      weight: 0,
-      subcharacteristics: []
-    },
-  ],
-};
-
-function renderCharacteristicsBalanceForm(dinamicBalance = true) {
-  return render(
-    <CharacteristicsBalanceForm
-      configPageData={mockConfigPageData}
-      setConfigPageData={mockSetConfigPageData}
-      dinamicBalance={dinamicBalance}
-      setDinamicBalance={mockSetDinamicBalance}
-      characteristicRelations={mockCharacteristicRelations}
-    />
-  );
-}
+jest.mock('@components/Equalizer/EqualizerSlider/styles', () => ({
+  StyledSlider: (props: any) => <input type="range" {...props} />
+}));
 
 describe('CharacteristicsBalanceForm', () => {
+  const CHARACTERISTIC_RELIABILITY = 'characteristic-reliability';
+  const CHARACTERISTIC_PERFORMANCE = 'characteristic-performance';
+  const mockSetDinamicBalance = jest.fn();
+  const mockSetConfigPageData = jest.fn();
+
+  const mockConfigPageData = {
+    characteristics: [
+      { key: 'reliability', name: 'Reliability', weight: 50, goal: 50, active: true },
+      { key: 'performance', name: 'Performance', weight: 50, goal: 50, active: true },
+      { key: 'maintainability', name: 'Maintainability', weight: 50, goal: 50, active: false }
+    ]
+  };
+
+  const mockRelations = {
+    reliability: {
+      "+": ["performance"]
+    }
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render the balance goal tooltip and switch', () => {
-    renderCharacteristicsBalanceForm();
-    const { t } = useTranslation('plan_release');
+  it('deve renderizar os sliders apenas para as características ativas', () => {
+    render(
+      <CharacteristicsBalanceForm
+        dinamicBalance
+        setDinamicBalance={mockSetDinamicBalance}
+        configPageData={mockConfigPageData as any}
+        setConfigPageData={mockSetConfigPageData}
+        characteristicRelations={mockRelations}
+      />
+    );
 
-    expect(screen.getByText(t('balanceGoal'))).toBeInTheDocument();
-    expect(screen.getByLabelText(t('allowBalanceGoal'))).toBeInTheDocument();
+expect(screen.getByTestId(CHARACTERISTIC_RELIABILITY)).toBeInTheDocument();
+      expect(screen.getByTestId(CHARACTERISTIC_PERFORMANCE)).toBeInTheDocument();
+    
+    expect(screen.queryByTestId('characteristic-maintainability')).not.toBeInTheDocument();
   });
 
-  it('should toggle the dinamicBalance switch', () => {
-    renderCharacteristicsBalanceForm(false);
-    const { t } = useTranslation('plan_release');
+  it('deve alternar o switch de dinamicBalance corretamente', () => {
+    render(
+      <CharacteristicsBalanceForm
+        dinamicBalance
+        setDinamicBalance={mockSetDinamicBalance}
+        configPageData={mockConfigPageData as any}
+        setConfigPageData={mockSetConfigPageData}
+        characteristicRelations={mockRelations}
+      />
+    );
 
-    const switchElement = screen.getByLabelText(t('allowBalanceGoal')) as HTMLInputElement;
-    expect(switchElement.checked).toBe(false);
+    const switchInput = screen.getByTestId('allowBalanceGoal');
+    fireEvent.click(switchInput);
 
-    fireEvent.click(switchElement);
-
-    expect(mockSetDinamicBalance).toHaveBeenCalledWith(true);
+    expect(mockSetDinamicBalance).toHaveBeenCalledWith(false);
   });
 
-  it('should render the active characteristics with their sliders and labels', () => {
-    renderCharacteristicsBalanceForm();
-    const { t } = useTranslation('plan_release');
+  it('deve alterar a meta apenas da característica alvo quando dinamicBalance for TRUE', () => {
+    render(
+      <CharacteristicsBalanceForm
+        dinamicBalance
+        setDinamicBalance={mockSetDinamicBalance}
+        configPageData={mockConfigPageData as any}
+        setConfigPageData={mockSetConfigPageData}
+        characteristicRelations={mockRelations}
+      />
+    );
 
-    expect(screen.getByText(t('characteristics.reliability'))).toBeInTheDocument();
-    expect(screen.getByText(t('characteristics.performance'))).toBeInTheDocument();
-    expect(screen.queryByText(t('characteristics.usability'))).not.toBeInTheDocument();
+    const reliabilitySlider = screen.getByTestId(CHARACTERISTIC_RELIABILITY);
+    
+    fireEvent.change(reliabilitySlider, { target: { value: 80 } });
 
-    const reliabilitySlider = screen.getByText(('characteristics.reliability'));
-    const performanceSlider = screen.getByText(('characteristics.performance'));
+    expect(mockSetConfigPageData).toHaveBeenCalled();
 
-    expect(reliabilitySlider).toBeInTheDocument();
-    expect(performanceSlider).toBeInTheDocument();
+    const setStateCallback = mockSetConfigPageData.mock.calls.at(-1)[0];
+    
+    const updatedData = setStateCallback(mockConfigPageData);
+
+    const reliability = updatedData.characteristics.find((c: any) => c.key === 'reliability');
+    const performance = updatedData.characteristics.find((c: any) => c.key === 'performance');
+
+    expect(reliability?.goal).toBe(80);
+    expect(performance?.goal).toBe(50); 
   });
 
-  it('should call handleCharacteristicChange when the slider value is changed', () => {
-    renderCharacteristicsBalanceForm();
+  it('deve alterar metas relacionadas quando dinamicBalance for FALSE', () => {
+    render(
+      <CharacteristicsBalanceForm
+        dinamicBalance={false}
+        setDinamicBalance={mockSetDinamicBalance}
+        configPageData={mockConfigPageData as any}
+        setConfigPageData={mockSetConfigPageData}
+        characteristicRelations={mockRelations}
+      />
+    );
 
-    const reliabilitySlider = screen.getByTestId('characteristic-reliability').querySelector("input") as HTMLInputElement;
-
+    const reliabilitySlider = screen.getByTestId(CHARACTERISTIC_RELIABILITY);
+    
     fireEvent.change(reliabilitySlider, { target: { value: 70 } });
 
-    expect(mockSetConfigPageData).toHaveBeenCalledTimes(1);
-    expect(mockSetConfigPageData).toHaveBeenCalledWith(expect.any(Function));
-  });
+    expect(mockSetConfigPageData).toHaveBeenCalled();
 
-  it('should update related characteristics when dinamicBalance is false', () => {
-    renderCharacteristicsBalanceForm(false);
+    const setStateCallback = mockSetConfigPageData.mock.calls.at(-1)[0];
+    const updatedData = setStateCallback(mockConfigPageData);
 
-    const reliabilitySlider = screen.getByTestId('characteristic-reliability').querySelector("input") as HTMLInputElement;
-
-    fireEvent.change(reliabilitySlider, { target: { value: 70 } });
-
-    expect(mockSetConfigPageData).toHaveBeenCalledWith(expect.any(Function));
-    const callback = mockSetConfigPageData.mock.calls[0][0];
-
-    const updatedData = callback(mockConfigPageData);
-
-    const reliability = updatedData.characteristics.find((c: Characteristic) => c.key === 'reliability');
-    const performance = updatedData.characteristics.find((c: Characteristic) => c.key === 'performance');
+    const reliability = updatedData.characteristics.find((c: any) => c.key === 'reliability');
+    const performance = updatedData.characteristics.find((c: any) => c.key === 'performance');
 
     expect(reliability?.goal).toBe(70);
-    expect(performance?.goal).toBe(70);
+    expect(performance?.goal).toBe(70); 
   });
 });

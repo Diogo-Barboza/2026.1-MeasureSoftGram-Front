@@ -521,18 +521,15 @@ describe('ReleaseInfo Component', () => {
     const checkbox = screen.getByLabelText(t('followLastConfig')) as HTMLInputElement;
     fireEvent.click(checkbox);
 
-    const nextButton = screen.getByText(/Next/i);
+    let nextButton = screen.getByText(/Next/i);
     fireEvent.click(nextButton);
 
-    await waitFor(async () => {
-      expect(screen.getByText(t('defineCharacteristics'))).toBeInTheDocument();
-      await waitFor(async () => {
-        fireEvent.click(nextButton);
-        await waitFor(async () => {
-          expect(screen.getByText(t("balanceGoal"))).toBeInTheDocument();
-        });
-      });
-    });
+    expect(await screen.findByText(t('defineCharacteristics'))).toBeInTheDocument();
+
+    nextButton = screen.getByText(/Next/i);
+    fireEvent.click(nextButton);
+
+    expect(await screen.findByText(t('balanceGoal'))).toBeInTheDocument();
   });
 
   it('should create release', async () => {
@@ -647,18 +644,9 @@ describe('ReleaseInfo Component', () => {
     const checkbox = screen.getByLabelText(t('followLastConfig')) as HTMLInputElement;
     fireEvent.click(checkbox);
 
-    const nextButton = screen.getByText(/Next/i);
+    await clickButtonAndWaitFor(t('next'), t('defineCharacteristics'));
+    await clickButtonAndWaitFor(t('next'), t('balanceGoal'));
 
-    await waitFor(async () => {
-      fireEvent.click(nextButton);
-      await waitFor(async () => {
-        fireEvent.click(nextButton);
-        await waitFor(async () => {
-          fireEvent.click(nextButton);
-          expect(screen.getByText(t("balanceGoal"))).toBeInTheDocument();
-        });
-      });
-    });
   });
 
   it('should test error characteristic weight', async () => {
@@ -780,6 +768,12 @@ describe('ReleaseInfo Component', () => {
     });
   });
 
+  const clickButtonAndWaitFor = async (buttonName: string, expectedText: string) => {
+    const Btn = await screen.findByText(buttonName, { selector: 'button' });
+    fireEvent.click(Btn);
+    expect(await screen.findByText(expectedText)).toBeInTheDocument();
+  };
+
   it('should test back button', async () => {
     (productQuery.getProductDefaultPreConfig as jest.Mock).mockResolvedValue({
       data: {
@@ -892,22 +886,10 @@ describe('ReleaseInfo Component', () => {
     const checkbox = screen.getByLabelText(t('followLastConfig')) as HTMLInputElement;
     fireEvent.click(checkbox);
 
-    const nextButton = screen.getByText(/Next/i);
-
-    await waitFor(async () => {
-      fireEvent.click(nextButton);
-      await waitFor(async () => {
-        const backButton = screen.getByText(t('back'));
-        fireEvent.click(nextButton);
-        await waitFor(async () => {
-          fireEvent.click(nextButton);
-          expect(screen.getByText(t("balanceGoal"))).toBeInTheDocument();
-          fireEvent.click(backButton);
-          fireEvent.click(backButton);
-          fireEvent.click(backButton);
-        });
-      });
-    });
+    await clickButtonAndWaitFor(t('next'), t('defineCharacteristics'));
+    await clickButtonAndWaitFor(t('next'), t('balanceGoal'));
+    await clickButtonAndWaitFor(t('back'), t('defineCharacteristics'));
+    await clickButtonAndWaitFor(t('back'), t('basicConfig'));
   });
 
   it('should test checks values', async () => {
@@ -1022,19 +1004,11 @@ describe('ReleaseInfo Component', () => {
     const checkbox = screen.getByLabelText(t('followLastConfig')) as HTMLInputElement;
     fireEvent.click(checkbox);
 
-    const nextButton = screen.getByText(/Next/i);
+    await clickButtonAndWaitFor(t('next'), t('defineCharacteristics'));
+    await clickButtonAndWaitFor(t('next'), t('balanceGoal'));
 
-    await waitFor(async () => {
-      fireEvent.click(nextButton);
-      await waitFor(async () => {
-        fireEvent.click(nextButton);
-        await waitFor(async () => {
-          fireEvent.click(nextButton);
-          fireEvent.click(screen.getByText(t('allowBalanceGoal')));
-          expect(screen.getByText(t("balanceGoal"))).toBeInTheDocument();
-        });
-      });
-    });
+    fireEvent.click(await screen.findByText(t('allowBalanceGoal')));
+    expect(await screen.findByText(t("balanceGoal"))).toBeInTheDocument();
   });
 
   it('should test modal back', async () => {

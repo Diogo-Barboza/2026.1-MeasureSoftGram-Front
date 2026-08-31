@@ -5,7 +5,10 @@ import formatCompareGoalsChart from '@utils/formatCompareGoalsChart';
 import CompareGoalsChart from '../CompareGoalsChart';
 
 jest.mock('@utils/formatCompareGoalsChart');
-jest.mock('echarts-for-react', () => () => <div data-testid="react-echarts" />);
+jest.mock('echarts-for-react', () => ({
+  __esModule: true,
+  default: () => <div data-testid="react-echarts" />,
+}));
 jest.mock('@mui/material', () => ({
   Box: ({ children }: { children: React.ReactNode }) => <div data-testid="mui-box">{children}</div>,
 }));
@@ -31,10 +34,12 @@ describe('CompareGoalsChart', () => {
     expect(screen.queryByTestId('mui-box')).toBeNull();
   });
 
-  it('should render the chart with formatted options when release is provided', () => {
+  it('should render the chart with formatted options when release is provided', async () => {
     render(<CompareGoalsChart release={mockRelease} />);
     expect(formatCompareGoalsChart).toHaveBeenCalledWith(mockRelease);
     expect(screen.getByTestId('mui-box')).toBeInTheDocument();
-    expect(screen.getByTestId('react-echarts')).toBeInTheDocument();
+
+    const chartElement = await screen.findByTestId('react-echarts');
+    expect(chartElement).toBeInTheDocument();
   });
 });

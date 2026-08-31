@@ -25,7 +25,7 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting }
-  } = useForm<SignUpFormData>();
+  } = useForm<any>();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,13 +37,22 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
     event.preventDefault();
   };
 
-  const onSubmit = async (data: SignUpFormData) => {
+  const onSubmit = async (data: any) => {
     const response = await signUp(data);
+
     if (response.type === 'success') {
       toast.success('Usuário cadastrado com sucesso!');
-      changeAuthState(); // Switch to sign-in state after successful sign-up
+      changeAuthState();
     } else {
-      toast.error(`Erro ao cadastrar usuário: ${response.error.message}`);
+      const AxiosError = response.error;
+      const status = AxiosError.response?.status;
+      const errorData = AxiosError.response?.data as any;
+
+      if (status === 400 && (errorData?.email || errorData?.username || JSON.stringify(errorData).includes('already exists'))) {
+        toast.error("Esse usuário já existe, tente usar um email diferente.");
+      } else {
+        toast.error(`Erro ao cadastrar usuário: ${AxiosError.message}`);
+      }
     }
   };
 
@@ -52,7 +61,7 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
       <Box sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '2rem' }}>
         <TextField
           label="Email"
-          id="outlined-start-adornment"
+          id="email" // <-- ID Único
           {...register('email', {
             required: 'Email é obrigatório',
             pattern: {
@@ -62,11 +71,11 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
             }
           })}
           error={!!errors?.email}
-          helperText={errors?.email?.message}
+          helperText={errors?.email?.message as string}
         />
         <TextField
           label="Username"
-          id="outlined-start-adornment"
+          id="username" // <-- ID Único
           {...register('username', {
             required: 'Username é obrigatório',
             pattern: {
@@ -79,11 +88,11 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
             }
           })}
           error={!!errors?.username}
-          helperText={errors?.username?.message}
+          helperText={errors?.username?.message as string}
         />
         <TextField
           label="Nome"
-          id="outlined-start-adornment"
+          id="first_name" // <-- ID Único
           {...register('first_name', {
             required: 'Nome é obrigatório'
           })}
@@ -92,7 +101,7 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
         />
         <TextField
           label="Sobrenome"
-          id="outlined-start-adornment"
+          id="last_name" // <-- ID Único
           {...register('last_name', {
             required: 'Sobrenome é obrigatório'
           })}
@@ -100,9 +109,9 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
           helperText={errors?.last_name?.message as string}
         />
         <FormControl variant="outlined" error={!!errors?.password}>
-          <InputLabel htmlFor="outlined-adornment-password">Senha</InputLabel>
+          <InputLabel htmlFor="password">Senha</InputLabel>
           <OutlinedInput
-            id="outlined-adornment-password"
+            id="password" // <-- ID Único e atrelado ao htmlFor acima
             type={showPassword ? 'text' : 'password'}
             endAdornment={
               <InputAdornment position="end">
@@ -116,7 +125,7 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
                 </IconButton>
               </InputAdornment>
             }
-            label="Password"
+            label="Senha"
             {...register('password', {
               required: 'Senha é obrigatória',
               minLength: {
@@ -131,19 +140,19 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
           />
           {errors.password && (
             <Typography variant="body2" color="error">
-              {errors.password.message}
+              {errors.password.message as string}
             </Typography>
           )}
         </FormControl>
         <FormControl variant="outlined" error={!!errors?.confirmPassword}>
-          <InputLabel htmlFor="outlined-adornment-password">Confirmar senha</InputLabel>
+          <InputLabel htmlFor="confirm-password">Confirmar senha</InputLabel>
           <OutlinedInput
-            id="outlined-adornment-password"
+            id="confirm-password" // <-- ID Único e atrelado ao htmlFor acima
             type={showPassword ? 'text' : 'password'}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
+                  aria-label="toggle confirm password visibility"
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
                   edge="end"
@@ -160,7 +169,7 @@ export const SignUpForm: React.FC<SignupFormProps> = ({ changeAuthState }) => {
           />
           {errors.confirmPassword && (
             <Typography variant="body2" color="error">
-              {errors.confirmPassword.message}
+              {errors.confirmPassword.message as string}
             </Typography>
           )}
         </FormControl>

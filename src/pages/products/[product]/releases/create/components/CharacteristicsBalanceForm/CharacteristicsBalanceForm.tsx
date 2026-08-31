@@ -3,19 +3,32 @@ import { Box, FormControlLabel, Grid, Switch, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Characteristic, PreConfigData } from '@customTypes/preConfig';
 import { StyledSlider } from '@components/Equalizer/EqualizerSlider/styles';
-import { Container } from '@mui/system';
 import SectionTooltip from '../SectionTooltip/SectionTooltip';
 
 interface CharacteristicsBalanceFormProps {
   dinamicBalance: boolean;
-  setDinamicBalance: any;
+  setDinamicBalance: (value: boolean) => void;
   configPageData: PreConfigData;
   setConfigPageData: any;
   characteristicRelations: any;
 }
 
-export default function CharacteristicsBalanceForm({ configPageData, setConfigPageData, dinamicBalance, setDinamicBalance, characteristicRelations }: CharacteristicsBalanceFormProps) {
+export default function CharacteristicsBalanceForm({ 
+  configPageData, 
+  setConfigPageData, 
+  dinamicBalance, 
+  setDinamicBalance, 
+  characteristicRelations 
+}: CharacteristicsBalanceFormProps) {
   const { t } = useTranslation('plan_release');
+
+  const activeCharacteristics = configPageData?.characteristics?.filter(c => c.active) || [];
+  const totalItems = activeCharacteristics.length;
+
+// Lógica de Grid Simétrico: Balanceia os itens de forma igual entre as linhas
+  const maxColsScreen = 6; 
+  const numRows = totalItems > 0 ? Math.ceil(totalItems / maxColsScreen) : 1;
+  const optimalCols = totalItems > 0 ? Math.ceil(totalItems / numRows) : 1;
 
   function handleCharacteristicChange(event: any, characteristicKey: string) {
     const { value } = event.target;
@@ -23,9 +36,10 @@ export default function CharacteristicsBalanceForm({ configPageData, setConfigPa
 
     setConfigPageData((prevData: { characteristics: Characteristic[] }) => {
       let relatedCharacteristics: string[] = [];
-
-      if (!dinamicBalance)
+      
+      if (!dinamicBalance) {
         relatedCharacteristics = characteristicRelations[characteristicKey]?.["+"] || [];
+      }
 
       return {
         ...prevData,
@@ -42,31 +56,53 @@ export default function CharacteristicsBalanceForm({ configPageData, setConfigPa
     });
   }
 
-  return <>
-    <SectionTooltip text={t("balanceGoal")} tooltip={t("balanceGoalTooltip")} />
-    <FormControlLabel
-      sx={{
-        marginLeft: 0
-      }}
-      control={<Switch
-        data-testid="allowBalanceGoal"
-        checked={dinamicBalance}
-        onChange={() => setDinamicBalance(!dinamicBalance)}
-        color="primary" />}
-      label={t("allowBalanceGoal")}
-      labelPlacement="start"
-    />
-    <Container sx={{ border: 1, borderRadius: 3, paddingX: 8, paddingY: 0 }}>
-      <Box display="flex" justifyContent="center" alignItems="center" height="20rem">
-        {configPageData?.characteristics
-          ?.filter(characteristic => characteristic.active)
-          .map(characteristic => (
-            <Grid container key={`GridCharacteristicsBalance-${characteristic.key}`} gap={2} direction="column" width={120}>
+  return (
+    <>
+      <SectionTooltip text={t("balanceGoal")} tooltip={t("balanceGoalTooltip")} />
+      <FormControlLabel
+        sx={{ marginLeft: 0, marginBottom: 2 }}
+        control={
+          <Switch
+            data-testid="allowBalanceGoal"
+            checked={dinamicBalance}
+            // eslint-disable-next-line react/jsx-no-bind
+            onChange={() => setDinamicBalance(!dinamicBalance)}
+            color="primary" 
+          />
+        }
+        label={t("allowBalanceGoal")}
+        labelPlacement="start"
+      />
+      
+      {/* APLICANDO CSS GRID E LIMITANDO A ALTURA COM SCROLL */}
+      <Box sx={{ 
+        border: 1, 
+        borderRadius: 3, 
+        paddingX: 3, 
+        paddingY: 6, 
+        width: '100%',
+      }}>
+        <Box 
+          display="grid" 
+          gridTemplateColumns={`repeat(${optimalCols}, 1fr)`} // Cria no máximo 6 colunas
+          gap={6} // Espaçamento fixo entre os sliders
+          justifyItems="center" // Centraliza o slider na coluna
+          alignItems="center" 
+        >
+          {activeCharacteristics.map(characteristic => (
+            <Grid 
+              container 
+              key={`GridCharacteristicsBalance-${characteristic.key}`} 
+              gap={2} 
+              direction="column" 
+              sx={{ width: '100%', maxWidth: '120px' }} // Mantém o slider fininho
+            >
               <Grid item xs={9} display="flex" justifyContent="center">
                 <StyledSlider
                   data-testid={`characteristic-${characteristic.key}`}
                   sx={{ minHeight: "15rem" }}
                   value={characteristic.goal}
+                  // eslint-disable-next-line react/jsx-no-bind
                   onChange={(event: any) => handleCharacteristicChange(event, characteristic.key)}
                   orientation="vertical"
                   valueLabelDisplay="auto"
@@ -79,7 +115,8 @@ export default function CharacteristicsBalanceForm({ configPageData, setConfigPa
               </Grid>
             </Grid>
           ))}
+        </Box>
       </Box>
-    </Container>
-  </>
+    </>
+  );
 }

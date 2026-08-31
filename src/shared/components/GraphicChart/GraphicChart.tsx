@@ -1,5 +1,6 @@
 import React, { ComponentRef, useMemo, useRef, useState } from 'react';
-import ReactEcharts from 'echarts-for-react';
+import dynamic from 'next/dynamic';
+import type ReactEchartsType from 'echarts-for-react';
 
 import formatCharacteristicsHistory from '@utils/formatCharacteristicsHistory';
 import formatMsgramChart from '@utils/formatMsgramChart';
@@ -15,6 +16,8 @@ import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp
 import { useProductContext } from '@contexts/ProductProvider';
 import { HistoryDateRange } from '@customTypes/product';
 import { useTranslation } from 'react-i18next';
+
+const ReactEcharts = dynamic(() => import('echarts-for-react'), { ssr: false });
 
 interface Prop {
   title: string;
@@ -77,7 +80,7 @@ const GraphicChart = ({
     chartStyle = { height: chartBoxHeight };
   }
 
-  const echartsRef = useRef<ComponentRef<typeof ReactEcharts>>(null);
+  const echartsRef = useRef<any>(null);
 
   const dateRange: HistoryDateRange = {
     startDate: null,
@@ -127,6 +130,7 @@ const GraphicChart = ({
           {(type !== 'gauge') || (type === 'gauge' && showCharts) && (typeof window !== 'undefined') ?
             (typeof window !== 'undefined') && chartsOption.map((option) => (
               < ReactEcharts
+                // @ts-ignore
                 ref={echartsRef}
                 onEvents={option?.onEvents}
                 key={option.key} notMerge lazyUpdate style={chartStyle} option={option} />

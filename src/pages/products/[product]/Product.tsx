@@ -15,7 +15,7 @@ import ProductContent from './components/ProductContent';
 
 const Product: NextPageWithLayout = () => {
   useRequireAuth();
-  const { repositoriesTsqmiHistory } = useQuery();
+  useQuery();
   const { currentProduct } = useProductContext();
   const router = useRouter();
   const { t } = useTranslation('overview');
@@ -34,7 +34,7 @@ const Product: NextPageWithLayout = () => {
         <title>{currentProduct?.name}</title>
       </Head>
 
-      <ProductContent repositoriesTsqmiHistory={repositoriesTsqmiHistory} />
+      <ProductContent />
 
       <div style={{ margin: '20px', paddingLeft: '15px' }}>
         <div style={{ marginBottom: '20px' }}>

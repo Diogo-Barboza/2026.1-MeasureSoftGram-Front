@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
 
-import { Repository, Historical, Result } from '@customTypes/repository';
+import { Repository, Historical } from '@customTypes/repository';
 import { RepositoriesLatestTsqmi, TsqmiValue } from '@customTypes/product';
+import { useLocalStorage } from '@hooks/useLocalStorage';
 
 interface Props {
   children: ReactNode;
@@ -9,9 +10,9 @@ interface Props {
 
 interface IRepositoryContext {
   currentRepository?: Repository;
-  setCurrentRepository: (repository: Repository) => void;
+  setCurrentRepository: (repository?: Repository) => void;
   repositoryList?: Repository[];
-  setRepositoryList: (repository: Repository) => void;
+  setRepositoryList: (repository?: Repository[]) => void;
   characteristics: string[];
   setCharacteristics: (characteristics: string[]) => void;
   subCharacteristics: string[];
@@ -21,13 +22,15 @@ interface IRepositoryContext {
   metrics: string[];
   setMetrics: (metrics: string[]) => void;
   historicalTSQMI: Historical;
-  setHistoricalTSQMI: (historical: Historical) => void;
+  setHistoricalTSQMI: (historical?: Historical) => void;
   latestTSQMI: TsqmiValue;
-  setLatestTSQMI: (result: TsqmiValue) => void;
+  setLatestTSQMI: (result?: TsqmiValue) => void;
   latestTSQMIBadgeUrl: string;
-  setLatestTSQMIBadgeUrl: (result: string) => void;
+  setLatestTSQMIBadgeUrl: (result?: string) => void;
+  characteristicBadgeUrls: Record<string, string>;
+  setCharacteristicBadgeUrls: (urls: Record<string, string>) => void;
   repositoriesLatestTsqmi: RepositoriesLatestTsqmi;
-  setRepositoriesLatestTsqmi: (result: RepositoriesLatestTsqmi) => void;
+  setRepositoriesLatestTsqmi: (result?: RepositoriesLatestTsqmi) => void;
 }
 
 const RepositoryContext = createContext<IRepositoryContext | undefined>(undefined);
@@ -35,6 +38,7 @@ const RepositoryContext = createContext<IRepositoryContext | undefined>(undefine
 export function RepositoryProvider({ children }: Props) {
   const [currentRepository, setCurrentRepository] = useState<Repository | undefined>();
   const [repositoryList, setRepositoryList] = useState<Repository[]>();
+  const { storedValue: storedRepoId, setValue: setStoredRepoId } = useLocalStorage<string | null>('selectedRepositoryId', null);
 
   const [characteristics, setCharacteristics] = useState<string[]>([]);
   const [subCharacteristics, setSubCharacteristics] = useState<string[]>([]);
@@ -43,7 +47,33 @@ export function RepositoryProvider({ children }: Props) {
   const [historicalTSQMI, setHistoricalTSQMI] = useState<Historical>();
   const [latestTSQMI, setLatestTSQMI] = useState<TsqmiValue>();
   const [latestTSQMIBadgeUrl, setLatestTSQMIBadgeUrl] = useState<string>();
+  const [characteristicBadgeUrls, setCharacteristicBadgeUrls] = useState<Record<string, string>>({});
   const [repositoriesLatestTsqmi, setRepositoriesLatestTsqmi] = useState<RepositoriesLatestTsqmi>();
+
+  React.useEffect(() => {
+    if (repositoryList && repositoryList.length > 0) {
+      if (currentRepository === undefined) {
+        if (storedRepoId) {
+          const found = repositoryList.find(r => r.id === Number(storedRepoId) || r.id === storedRepoId);
+          if (found) {
+            setCurrentRepository(found);
+            return;
+          }
+        }
+        setCurrentRepository(repositoryList[0]);
+      }
+    } else if (repositoryList && repositoryList.length === 0) {
+      setCurrentRepository(undefined);
+    }
+  }, [repositoryList, storedRepoId, currentRepository]);
+
+  React.useEffect(() => {
+    if (currentRepository && currentRepository.id) {
+      setStoredRepoId(currentRepository.id.toString());
+    } else if (currentRepository === undefined && repositoryList && repositoryList.length === 0) {
+      setStoredRepoId(null);
+    }
+  }, [currentRepository, repositoryList, setStoredRepoId]);
 
 
   const value = useMemo(
@@ -66,10 +96,24 @@ export function RepositoryProvider({ children }: Props) {
       setLatestTSQMI,
       latestTSQMIBadgeUrl,
       setLatestTSQMIBadgeUrl,
+      characteristicBadgeUrls,
+      setCharacteristicBadgeUrls,
       repositoriesLatestTsqmi,
       setRepositoriesLatestTsqmi
     }),
-    [currentRepository, repositoryList, characteristics, subCharacteristics, measures, metrics, historicalTSQMI, latestTSQMI]
+    [
+      currentRepository,
+      repositoryList,
+      characteristics,
+      subCharacteristics,
+      measures,
+      metrics,
+      historicalTSQMI,
+      latestTSQMI,
+      latestTSQMIBadgeUrl,
+      characteristicBadgeUrls,
+      repositoriesLatestTsqmi
+    ]
   );
 
   return <RepositoryContext.Provider value={value}>{children}</RepositoryContext.Provider>;
