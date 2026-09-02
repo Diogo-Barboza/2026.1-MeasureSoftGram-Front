@@ -22,11 +22,11 @@ Módulo responsável pelo Frontend da aplicação MeasureSoftGram.
 
 ## Contribuição
 
-Consulte o [Guia de Contribuição](./CONTRIBUTING.md) antes de realizar alterações no projeto.
+Consulte o [Guia de Contribuição](https://fga-eps-mds.github.io/MeasureSoftGram-Docs/docs/como-contribuir/) antes de realizar alterações no projeto.
 
 ## Código de Conduta
 
-Este projeto segue o [Código de Conduta](./code_of_conduct.md).
+Este projeto segue o [Código de Conduta](https://fga-eps-mds.github.io/MeasureSoftGram-Docs/docs/codigo-de-conduta/).
 
 ## Licença
 
